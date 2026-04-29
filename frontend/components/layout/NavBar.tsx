@@ -42,7 +42,7 @@ import {
 
 
 
-type MenuKey = "atividades" | null;
+type MenuKey = "prefeitura" | null;
 
 type MenuItem = { href: string; label: string };
 
@@ -68,7 +68,7 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
 
 
-  const atividadesRefs = useRef<Array<HTMLAnchorElement | null>>([]);
+  const prefeituraRefs = useRef<Array<HTMLAnchorElement | null>>([]);
 
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -78,15 +78,13 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
 
 
-  const atividadesItems: MenuItem[] = [
+  const prefeituraItems: MenuItem[] = [
 
-    { href: "/atividades/saude", label: "Saúde" },
+    { href: "/prefeitura/estrutura-organizacional", label: "Estrutura organizacional" },
 
-    { href: "/atividades/educacao", label: "Educação" },
+    { href: "/prefeitura/competencias", label: "Competências" },
 
-    { href: "/atividades/assistencia", label: "Assistência Social" },
-
-    { href: "/atividades/demais", label: "Demais Programas" },
+    { href: "/prefeitura/gestao", label: "Gestão" },
 
   ];
 
@@ -94,16 +92,16 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
   const fixedItems: FixedItem[] = [
 
-    { href: "/page", label: "Transparência", icon: <FileText size={18} aria-hidden="true" /> },
 
-    { href: "/esic", label: "E-SIC", icon: <MessageSquare size={18} aria-hidden="true" /> },
+
+    { href: "/servicos", label: "Serviços", icon: <FileText size={18} aria-hidden="true" /> },
+
+    { href: "/page", label: "Transparência", icon: <FileText size={18} aria-hidden="true" /> },
 
     { href: "/ouvidoria", label: "Ouvidoria", icon: <MessageSquare size={18} aria-hidden="true" /> },
 
-    { href: "/contato", label: "Contato", icon: <Phone size={18} aria-hidden="true" /> },
 
   ];
-
 
 
   const isActive = (href: string) =>
@@ -118,7 +116,7 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
     if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
 
-    setOpenMenu("atividades");
+    setOpenMenu("prefeitura");
 
   }
 
@@ -194,7 +192,7 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
   const linkClass = (href: string) => `
 
-    px-4 py-2.5 rounded-full flex items-center gap-2
+    px-3 py-1.5 rounded-full flex items-center gap-1.5
 
     text-sm whitespace-nowrap transition-all duration-200 cursor-pointer
 
@@ -260,13 +258,13 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
                 aria-haspopup="true"
 
-                aria-expanded={openMenu === "atividades"}
+                aria-expanded={openMenu === "prefeitura"}
 
-                aria-controls="menu-atividades"
+                aria-controls="menu-prefeitura"
 
-                className={linkClass("/atividades")}
+                className={linkClass("/prefeitura")}
 
-                onClick={() => openMenu === "atividades" ? closeMenus() : setOpenMenu("atividades")}
+                onClick={() => openMenu === "prefeitura" ? closeMenus() : setOpenMenu("prefeitura")}
 
                 onKeyDown={(e: KeyboardEvent<HTMLButtonElement>) => {
 
@@ -274,9 +272,9 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
                     e.preventDefault();
 
-                    setOpenMenu("atividades");
+                    setOpenMenu("prefeitura");
 
-                    setTimeout(() => atividadesRefs.current[0]?.focus(), 0);
+                    setTimeout(() => prefeituraRefs.current[0]?.focus(), 0);
 
                   }
 
@@ -286,25 +284,25 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
                 <Folder size={18} aria-hidden="true" />
 
-                Atividades Finalísticas
+                A Prefeitura
 
                 <ChevronDown aria-hidden="true"
 
-                  className={`w-4 h-4 transition-transform duration-200 ${openMenu === "atividades" ? "rotate-180" : ""}`} />
+                  className={`w-4 h-4 transition-transform duration-200 ${openMenu === "prefeitura" ? "rotate-180" : ""}`} />
 
               </button>
 
 
 
-              {openMenu === "atividades" && (
+              {openMenu === "prefeitura" && (
 
-                <ul ref={menuRef} id="menu-atividades" role="menu"
+                <ul ref={menuRef} id="menu-prefeitura" role="menu"
 
                   className="text-sm absolute left-0 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden"
 
                   onMouseEnter={cancelClose} onMouseLeave={() => scheduleClose()}>
 
-                  {atividadesItems.map((item, i) => (
+                  {prefeituraItems.map((item, i) => (
 
                     <li key={item.href} role="none">
 
@@ -312,7 +310,7 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
                         href={item.href} role="menuitem"
 
-                        ref={(el) => { atividadesRefs.current[i] = el; }}
+                        ref={(el) => { prefeituraRefs.current[i] = el; }}
 
                         className={`block px-5 py-3.5 transition-all duration-200
 
@@ -328,9 +326,9 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
                         onKeyDown={(e: KeyboardEvent<HTMLAnchorElement>) => {
 
-                          if (e.key === "ArrowDown") { e.preventDefault(); atividadesRefs.current[i + 1]?.focus(); }
+                          if (e.key === "ArrowDown") { e.preventDefault(); prefeituraRefs.current[i + 1]?.focus(); }
 
-                          if (e.key === "ArrowUp") { e.preventDefault(); i === 0 ? buttonRef.current?.focus() : atividadesRefs.current[i - 1]?.focus(); }
+                          if (e.key === "ArrowUp") { e.preventDefault(); i === 0 ? buttonRef.current?.focus() : prefeituraRefs.current[i - 1]?.focus(); }
 
                           if (e.key === "Escape") { closeMenus(); buttonRef.current?.focus(); }
 
@@ -466,9 +464,9 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
             <button
 
-              aria-expanded={openMenu === "atividades"}
+              aria-expanded={openMenu === "prefeitura"}
 
-              onClick={() => setOpenMenu(openMenu === "atividades" ? null : "atividades")}
+              onClick={() => setOpenMenu(openMenu === "prefeitura" ? null : "prefeitura")}
 
               className={`w-full flex items-center justify-between gap-3 px-4 py-3.5 rounded-xl
 
@@ -478,7 +476,7 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
                 focus-visible:ring-2 focus-visible:ring-[#173572]
 
-                ${pathname.startsWith("/atividades") ? "bg-[#173572]/10 text-[#173572]" : "text-gray-700"}`}
+                ${pathname.startsWith("/prefeitura") ? "bg-[#173572]/10 text-[#173572]" : "text-gray-700"}`}
 
             >
 
@@ -486,23 +484,23 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
                 <Folder size={18} aria-hidden="true" />
 
-                Atividades Finalísticas
+                A Prefeitura
 
               </span>
 
               <ChevronDown aria-hidden="true"
 
-                className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${openMenu === "atividades" ? "rotate-180" : ""}`} />
+                className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${openMenu === "prefeitura" ? "rotate-180" : ""}`} />
 
             </button>
 
 
 
-            {openMenu === "atividades" && (
+            {openMenu === "prefeitura" && (
 
               <ul className="mt-1 ml-4 flex flex-col gap-0.5 border-l-2 border-[#173572]/20 pl-3">
 
-                {atividadesItems.map((item) => (
+                {prefeituraItems.map((item) => (
 
                   <li key={item.href}>
 

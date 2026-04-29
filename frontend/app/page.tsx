@@ -1,6 +1,6 @@
 import TransparencyCard from "../components/ui/Card";
 import TransparencySection from "../components/transparencia/Section";
-import DashboardResumo from "../components/transparencia/DashboardResumo";
+import DashboardResumo from "../components/transparencia/Hero";
 
 import {
   Building2,

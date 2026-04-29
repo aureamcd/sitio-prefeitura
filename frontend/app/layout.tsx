@@ -63,7 +63,7 @@ export default function RootLayout({
 }: RootLayoutProps): JSX.Element {
   return (
     <html lang="pt-BR" className="scroll-smooth">
-      <body 
+      <body
         className={`${inter.variable} font-sans min-h-screen flex flex-col transition-colors duration-200`}
       >
         {/* Camada de acessibilidade prioritária */}

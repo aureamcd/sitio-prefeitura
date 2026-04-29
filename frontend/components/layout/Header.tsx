@@ -115,7 +115,7 @@ export default function Header(): JSX.Element {
 
       {/* 🔷 BARRA AZUL */}
       <div className="w-full bg-[#0B3D91] text-white">
-        <div className="relative z-50 w-[90%] mx-auto flex flex-wrap justify-end items-center min-h-9 py-1 gap-1 sm:gap-2 text-sm">
+        <div className="relative z-50 w-[90%] mx-auto flex flex-nowrap justify-end items-center py-0 gap-0 sm:gap-1 text-xs overflow-hidden">
 
           <Tooltip text="Aumentar fonte" id="tooltip-aumentar">
             <button
@@ -126,13 +126,13 @@ export default function Header(): JSX.Element {
               }}
               aria-label="Aumentar fonte"
               className="
-                min-w-[40px] min-h-[36px]
+                min-w-[22px] min-h-[22px]
                 relative z-[100]
                 flex items-center justify-center
-                rounded-md hover:bg-white/10
-                focus:ring-2 focus:ring-white
+                rounded hover:bg-white/10
+                focus:ring-1 focus:ring-white
                 touch-manipulation cursor-pointer
-                active:scale-90 transition-transform
+                active:scale-90 transition-transform text-xs
               "
             >
               A+
@@ -148,13 +148,13 @@ export default function Header(): JSX.Element {
               }}
               aria-label="Diminuir fonte"
               className="
-                min-w-[40px] min-h-[36px]
+                min-w-[22px] min-h-[22px]
                 relative z-[100]
                 flex items-center justify-center
-                rounded-md hover:bg-white/10
-                focus:ring-2 focus:ring-white
+                rounded hover:bg-white/10
+                focus:ring-1 focus:ring-white
                 touch-manipulation cursor-pointer
-                active:scale-90 transition-transform
+                active:scale-90 transition-transform text-xs
               "
             >
               A-
@@ -170,20 +170,20 @@ export default function Header(): JSX.Element {
               }}
               aria-label="Fonte padrão"
               className="
-                min-w-[40px] min-h-[36px]
+                min-w-[22px] min-h-[22px]
                 relative z-[100]
                 flex items-center justify-center
-                rounded-md hover:bg-white/10
-                focus:ring-2 focus:ring-white
+                rounded hover:bg-white/10
+                focus:ring-1 focus:ring-white
                 touch-manipulation cursor-pointer
-                active:scale-90 transition-transform
+                active:scale-90 transition-transform text-xs
               "
             >
               A
             </button>
           </Tooltip>
 
-          <div className="w-px h-4 bg-white/40 mx-2" />
+          <div className="hidden sm:block w-px h-4 bg-white/40 mx-1" />
 
           <Tooltip text="Contraste" id="tooltip-contraste">
             <button
@@ -195,11 +195,11 @@ export default function Header(): JSX.Element {
               aria-label="Alternar alto contraste"
               aria-pressed={contrast}
               className="
-                min-w-[40px] min-h-[36px]
+                min-w-[22px] min-h-[22px]
                 relative z-[100]
                 flex items-center justify-center
-                rounded-md hover:bg-white/10
-                focus:ring-2 focus:ring-white
+                rounded hover:bg-white/10
+                focus:ring-1 focus:ring-white
                 touch-manipulation cursor-pointer
                 active:scale-90 transition-transform
               "
@@ -208,30 +208,30 @@ export default function Header(): JSX.Element {
             </button>
           </Tooltip>
 
-          <div className="w-px h-4 bg-white/40 mx-2" />
+          <div className="hidden sm:block w-px h-4 bg-white/40 mx-1" />
 
           <Tooltip text="Ir para página de acessibilidade" id="tooltip-acess">
             <Link
               href="/acessibilidade"
-              className="flex items-center gap-1 px-2 py-1 rounded-md hover:bg-white/10 cursor-pointer active:scale-95"
+              className="flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-white/10 cursor-pointer active:scale-95 text-xs"
             >
               <UniversalAccessIcon />
               <span className="hidden sm:inline">Acessibilidade</span>
             </Link>
           </Tooltip>
 
-          <div className="w-px h-4 bg-white/40 mx-2" />
+          <div className="hidden sm:block w-px h-4 bg-white/40 mx-1" />
 
-          <Tooltip text="Ir para Site da Prefeitura" id="tooltip-prefeitura">
+          <Tooltip text="Ir para Portal da Transparência" id="tooltip-transparencia">
             <a
-              href="https://padremarcos.pi.gov.br"
+              href="https://portal-da-transparencia-brown.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Site da Prefeitura (abre em nova aba)"
-              className="flex items-center gap-1 px-2 py-1 rounded-md hover:bg-white/10 cursor-pointer active:scale-95"
+              aria-label="Portal da Transparência (abre em nova aba)"
+              className="flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-white/10 cursor-pointer active:scale-95 text-xs"
             >
-              <ExternalLink size={16} />
-              <span className="hidden sm:inline">Site da Prefeitura</span>
+              <ExternalLink size={13} />
+              <span className="hidden sm:inline">Portal da Transparência</span>
               <span className="sr-only">(abre em nova aba)</span>
             </a>
           </Tooltip>
@@ -246,7 +246,7 @@ export default function Header(): JSX.Element {
       </div>
 
       {/* 🔷 LOGO + BUSCA + RADAR */}
-      <div className="w-[90%] md:w-[70%] mx-auto py-7 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="w-[90%] md:w-[70%] mx-auto py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
         {/* ESQUERDA: LOGO + NOME */}
         <Link
@@ -262,8 +262,12 @@ export default function Header(): JSX.Element {
           />
 
           <div className="py-1 text-center sm:text-left">
+            <p className=" md:text-sm text-gray-600 ">
+              Prefeitura Municipal de
+            </p>
+
             <h1
-              className="text-xl md:text-2xl font-bold text-[#173572] leading-tight"
+              className="text-2xl font-bold text-[#173572] leading-tight whitespace-nowrap"
               style={{
                 textShadow: `
             -1px -1px 0 #ffffff,
@@ -277,12 +281,8 @@ export default function Header(): JSX.Element {
           `,
               }}
             >
-              Portal da Transparência
+              PADRE MARCOS - PI
             </h1>
-
-            <p className="text-xs md:text-sm text-gray-600">
-              Município de Padre Marcos - PI
-            </p>
           </div>
         </Link>
 
@@ -290,13 +290,16 @@ export default function Header(): JSX.Element {
         <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4 w-full md:w-auto md:ml-auto">
 
           {/* SEARCH */}
-          <div className="w-full md:flex-1 md:w-100">
+          <div className="w-full md:w-auto md:max-w-xs">
             <SearchBar />
           </div>
 
-          {/* MENU MOBILE + RADAR */}
-          <div className="flex items-center justify-center md:justify-start gap-4">
-            
+          {/* SEPARADOR VERTICAL (só desktop) */}
+          <div className="hidden md:block w-px h-8 bg-gray-300" />
+
+          {/* BOTÕES E-SIC + FALE CONOSCO */}
+          <div className="flex md:gap-2 gap-3 w-full md:w-auto justify-center md:justify-end items-center">
+
             {/* BOTÃO MENU MOBILE (estilo pílula) */}
             <button
               type="button"
@@ -304,36 +307,58 @@ export default function Header(): JSX.Element {
               aria-expanded={isMenuOpen}
               aria-controls="menu-mobile"
               onClick={() => setIsMenuOpen(true)}
-              className="md:hidden flex items-center gap-2 px-4 py-2 rounded-full
-                border border-[#173572]/20 bg-gray-50 text-[#173572] font-semibold
-                hover:bg-[#173572]/10 transition-colors shadow-sm"
+              className="md:hidden flex items-center justify-center p-2 rounded-md
+      border border-[#173572]/20 bg-gray-50 text-[#173572]
+      hover:bg-[#173572]/10 transition-colors shadow-sm"
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <line x1="3" y1="12" x2="21" y2="12" />
                 <line x1="3" y1="18" x2="21" y2="18" />
               </svg>
-              Menu
             </button>
 
-            {/* RADAR */}
-            <div className="flex items-center md:border-l md:border-gray-300 md:pl-3">
-              <a
-                href="https://radardatransparencia.atricon.org.br/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-gray-100 hover:bg-gray-200 border border-gray-200 px-2 py-1 rounded-lg shadow-sm transition-all"
-              >
-                <Image
-                  src="/LOGO RADAR.png"
-                  alt="Radar da Transparência"
-                  width={90}
-                  height={45}
-                  style={{ width: "auto", height: "40px" }}
-                />
-              </a>
-            </div>
+            {/* E-SIC */}
+            <Link
+              href="/e-sic"
+              className="
+      w-auto
+      text-center
+      px-5 py-2
+      rounded-xl
+      bg-[#173572] text-white
+      font-medium text-sm
+      hover:bg-[#2563EB]
+      transition
+      shadow-sm
+      
+    "
+            >
+              E-SIC
+            </Link>
+
+            {/* FALE CONOSCO */}
+            <Link
+              href="/fale-conosco"
+              className="
+      w-auto
+      text-center
+      px-4 py-2
+      rounded-xl
+      border border-red-500
+      text-red-500
+      font-medium text-sm
+      hover:bg-red-600 hover:text-white hover:border-red-600
+      transition
+      shadow-sm
+    "
+            >
+              Fale Conosco
+            </Link>
+
           </div>
+
+
         </div>
 
       </div>
