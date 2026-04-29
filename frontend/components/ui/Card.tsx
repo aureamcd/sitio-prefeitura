@@ -19,7 +19,7 @@ export default function GovCard({
   featured = false,
 }: GovCardProps) {
   return (
-    <article className="h-full max-w-[250px] mx-auto w-full">
+    <article className="h-full max-w-[250px] w-full">
       <Link
         href={href}
         aria-label={`Acessar ${title}`}
@@ -53,48 +53,49 @@ export default function GovCard({
           "
         />
 
-        {/* Ícone */}
-        <div className="mb-3 flex justify-center relative z-10">
-          <div
+        {/* Container centralizador */}
+        <div className="flex-1 flex flex-col items-center justify-center w-full mt-2">
+          {/* Ícone */}
+          <div className="mb-4 flex justify-center relative z-10">
+            <div
+              className={`
+                flex items-center justify-center
+                rounded-full
+                border border-gray-200
+                bg-gray-100
+                transition-all duration-300
+                group-hover:bg-gradient-to-br group-hover:from-blue-100 group-hover:to-blue-200
+                ${featured ? "h-16 w-16" : "h-14 w-14"}
+              `}
+            >
+              {Icon && (
+                <Icon
+                  className={`
+                    text-gray-600
+                    transition-all duration-300
+                    group-hover:text-blue-700
+                    ${featured ? "h-8 w-8" : "h-7 w-7"}
+                  `}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Conteúdo */}
+          <h3
             className={`
-              flex items-center justify-center
-              rounded-full
-              border border-gray-200
-              bg-gray-100
-              transition-all duration-300
-              group-hover:bg-gradient-to-br group-hover:from-blue-100 group-hover:to-blue-200
-              ${featured ? "h-16 w-16" : "h-14 w-14"}
+              text-center font-semibold uppercase text-gray-800 relative z-10
+              ${featured ? "text-base" : "text-sm"}
             `}
           >
-            {Icon && (
-              <Icon
-                className={`
-                  text-gray-600
-                  transition-all duration-300
-                  group-hover:text-blue-700
-                  ${featured ? "h-8 w-8" : "h-7 w-7"}
-                `}
-              />
-            )}
-          </div>
+            {title}
+          </h3>
         </div>
-
-        {/* Conteúdo */}
-        <h3
-          className={`
-            text-center font-semibold uppercase text-gray-800 relative z-10
-            ${featured ? "text-base" : "text-sm"}
-          `}
-        >
-          {title}
-        </h3>
-
-        {/* Descrição removida conforme solicitado */}
 
         {/* 🚀 Ação (aparece suave) */}
         <div
           className="
-            mt-auto pt-3 text-center text-xs font-medium text-blue-700
+            mt-3 text-center text-xs font-medium text-blue-700
             opacity-0 translate-y-2
             group-hover:opacity-100 group-hover:translate-y-0
             transition-all duration-300

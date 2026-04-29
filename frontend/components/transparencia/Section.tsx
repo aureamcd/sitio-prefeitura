@@ -20,20 +20,7 @@ export default function TransparencySection({
       ? "bg-blue-100"
       : "bg-gray-100";
 
-  // 🔢 Quantidade de cards
-  const cardsArray = Children.toArray(children);
-  const cardsCount = cardsArray.length;
-
-  // 🎯 Ajustes automáticos do grid
-  const gridClasses =
-    cardsCount === 1
-      ? "grid-cols-1 max-w-[280px]"
-      : cardsCount === 2
-        ? "grid-cols-1 sm:grid-cols-2 max-w-2xl"
-        : cardsCount === 3
-          ? "grid-cols-1 sm:grid-cols-3 max-w-4xl"
-          : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 max-w-6xl";
-
+  // O layout agora usa flexbox para centralizar a última linha perfeitamente
   return (
     <section
       id={id}
@@ -56,13 +43,10 @@ export default function TransparencySection({
 
         {/* Cards */}
         <div
-          className={`
-            grid
-            ${gridClasses}
-            gap-6
-            mx-auto
-            justify-center
-          `}
+          className="
+            flex flex-wrap justify-center gap-6
+            max-w-6xl mx-auto
+          "
         >
           {children}
         </div>

@@ -6,7 +6,7 @@ export default function DashboardResumo() {
       <img
         src="/hero4.png"
         alt="Cidade de Padre Marcos"
-        className="w-full h-auto block"
+        className="w-full h-[220px] md:h-[500px] object-cover object-right md:object-center"
       />
 
 
@@ -21,7 +21,7 @@ export default function DashboardResumo() {
         <svg
           viewBox="0 0 1200 120"
           preserveAspectRatio="none"
-          className="relative block w-[calc(100%+1.3px)] h-[60px] fill-gray-100"
+          className="relative block w-[calc(100%+1.3px)] h-[20px] sm:h-[15px] md:h-[60px] fill-gray-100"
         >
           <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V120c159.27-23.26,243.71-45.42,321.39-63.56Z"></path>
         </svg>

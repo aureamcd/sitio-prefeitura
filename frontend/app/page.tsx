@@ -3,30 +3,22 @@ import TransparencySection from "../components/transparencia/Section";
 import DashboardResumo from "../components/transparencia/Hero";
 
 import {
-  Building2,
-  ClipboardList,
-  Scale,
-  Phone,
-  Banknote,
   Receipt,
-  AlertTriangle,
-  FileText,
-  Clipboard,
-  ArrowLeftRight,
-  Wrench,
-  Users,
-  GraduationCap,
-  Ticket,
-  BarChart,
-  Info,
-  Inbox,
+  FileCheck,
+  Landmark,
+  IdCard,
+  Banknote,
+  BookOpen,
+  Eye,
+  Gavel,
+  Newspaper,
   MessageSquare,
-  HelpCircle,
-  ShieldCheck,
-  Database,
-  Map,
-  Activity,
-  Book, // Novo ícone para Glossário
+  Info,
+  Briefcase,
+  Building2,
+  PieChart,
+  Handshake,
+  HardHat,
 } from "lucide-react";
 
 import { LucideIcon } from "lucide-react";
@@ -46,70 +38,126 @@ type SectionItem = {
 
 const sections: SectionItem[] = [
   {
-
-    title: "Informações Institucionais",
+    title: "Serviços ao Cidadão",
     cards: [
       {
-        title: "Estrutura Organizacional",
-        description:
-          "Estrutura organizacional (organograma) com a relação hierárquica entre as unidades administrativas (Gabinete, Secretarias e equivalentes), incluindo a identificação nominal dos atuais responsáveis pela gestão (Prefeito, Secretários e demais gestores).",
-        href: "/S1-Info_Institucionais/estrutura_organizacional",
-        Icon: Building2,
+        title: "Nota Fiscal Eletrônica",
+        description: "Emissão de Nota Fiscal Eletrônica.",
+        href: "/servicos/nota-fiscal",
+        Icon: Receipt,
         variant: "highlight",
       },
       {
-        title: "Competências e Atribuições",
-        description:
-          "Competências legais do município e atribuições de cada secretaria e órgão.",
-        href: "/S1-Info_Institucionais/competencias_atribuicoes",
-        Icon: ClipboardList,
+        title: "Certidão Negativa",
+        description: "Emissão de Certidões Negativas de Débito.",
+        href: "/servicos/certidao-negativa",
+        Icon: FileCheck,
       },
       {
-        title: "Legislação e Atos Normativos",
-        description: "Leis, decretos, portarias e demais atos normativos municipais.",
-        href: "/transparencia/legislacao",
-        Icon: Scale,
+        title: "Portal do Contribuinte",
+        description: "Acesso aos serviços do contribuinte.",
+        href: "/servicos/portal-contribuinte",
+        Icon: Landmark,
+        variant: "highlight",
       },
       {
-        title: "Contatos Institucionais e Horários",
-        description:
-          "Endereços físicos, telefones, e-mails institucionais e horários de atendimento da sede da prefeitura e de suas secretarias.",
-        href: "/transparencia/contatos",
-        Icon: Phone,
+        title: "Portal do Servidor",
+        description: "Acesso exclusivo para servidores municipais.",
+        href: "/servicos/portal-servidor",
+        Icon: IdCard,
+      },
+      {
+        title: "Contracheque",
+        description: "Emissão de contracheque online.",
+        href: "/servicos/contracheque",
+        Icon: Banknote,
+      },
+      {
+        title: "Carta de Serviços",
+        description: "Guia completo de serviços oferecidos.",
+        href: "/servicos/carta-servicos",
+        Icon: BookOpen,
         variant: "highlight",
       },
     ],
   },
 
   {
-    title: "Execução Orçamentária e Financeira",
+    title: "Acesso Rápido",
     cards: [
       {
-        title: "Receitas",
-        description:
-          "Previsão e arrecadação, classificação orçamentária por natureza e a lista de inscritos em Dívida Ativa do município.",
-        href: "/S2-Execucao_Orc_e_Fin/receitas",
-        Icon: Banknote,
+        title: "Portal da Transparência",
+        description: "Acompanhe as receitas e despesas do município.",
+        href: "/transparencia",
+        Icon: Eye,
         variant: "highlight",
       },
       {
-        title: "Despesas",
-        description:
-          "Total de despesas empenhadas, liquidadas e pagas, classificação orçamentária e possibilidade de consulta detalhada de pagamentos por credor e fornecedor.",
-        href: "/S2-Execucao_Orc_e_Fin/despesas",
-        Icon: Receipt,
+        title: "Licitações",
+        description: "Acompanhe os processos licitatórios.",
+        href: "/transparencia/licitacoes",
+        Icon: Gavel,
+      },
+      {
+        title: "Diário Oficial",
+        description: "Acesso às publicações oficiais do município.",
+        href: "/transparencia/diario-oficial",
+        Icon: Newspaper,
         variant: "highlight",
       },
       {
-        title: "Renúncias de Receita",
-        description:
-          "Desonerações tributárias concedidas, fundamentação legal, beneficiários e isenções fiscais.",
-        href: "/S2-Execucao_Orc_e_Fin/renuncias-de-receitas",
-        Icon: AlertTriangle,
+        title: "Ouvidoria",
+        description: "Canal de comunicação direta com a prefeitura.",
+        href: "/ouvidoria",
+        Icon: MessageSquare,
+      },
+      {
+        title: "E-SIC",
+        description: "Serviço de Informação ao Cidadão.",
+        href: "/esic",
+        Icon: Info,
+      },
+      {
+        title: "Concursos",
+        description: "Informações sobre concursos e seletivos.",
+        href: "/concursos",
+        Icon: Briefcase,
+        variant: "highlight",
       },
     ],
-  }, 
-  
+  },
+
+  {
+    title: "Institucional",
+    cards: [
+      {
+        title: "Estrutura Organizacional",
+        description: "Conheça a organização da prefeitura.",
+        href: "/prefeitura/estrutura-organizacional",
+        Icon: Building2,
+        variant: "highlight",
+      },
+      {
+        title: "Prestação de Contas",
+        description: "Relatórios e contas públicas.",
+        href: "/prefeitura/prestacao-contas",
+        Icon: PieChart,
+      },
+      {
+        title: "Contratos",
+        description: "Íntegra dos contratos vigentes.",
+        href: "/prefeitura/contratos",
+        Icon: Handshake,
+      },
+      {
+        title: "Obras Públicas",
+        description: "Acompanhamento das obras no município.",
+        href: "/prefeitura/obras-publicas",
+        Icon: HardHat,
+        variant: "highlight",
+      },
+    ],
+  },
 ];
 
 export default function TransparenciaPage() {

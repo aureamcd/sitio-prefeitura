@@ -123,36 +123,37 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   const navLinkCls = (href: string) => `
-    px-3 py-1.5 rounded-full flex items-center gap-1.5
+    px-4 py-2.5 rounded-full flex items-center gap-2
     text-sm whitespace-nowrap transition-all duration-200 cursor-pointer
-    hover:bg-blue-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
-    ${isActive(href) ? "bg-[#173572] text-white shadow-sm font-medium" : "text-gray-600 hover:text-[#173572]"}
+    hover:bg-blue-100 hover:text-blue-700
+    focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
+    ${isActive(href) ? "bg-[#173572] text-white shadow-md font-medium" : "text-gray-700"}
   `;
 
   const navBtnCls = (prefix: string, _key: RootKey) => `
-    px-3 py-1.5 rounded-full flex items-center gap-1.5
+    px-4 py-2.5 rounded-full flex items-center gap-2
     text-sm whitespace-nowrap transition-all duration-200 cursor-pointer
-    hover:bg-blue-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
+    hover:bg-blue-100 hover:text-blue-700
+    focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
     ${pathname.startsWith(prefix)
-      ? "bg-[#173572] text-white shadow-sm font-medium"
-      : "text-gray-600 hover:text-[#173572]"}
+      ? "bg-[#173572] text-white shadow-md font-medium"
+      : "text-gray-700"}
   `;
 
   const mobileLinkCls = (href: string) => `
     flex items-center gap-3 px-4 py-3.5 rounded-xl text-base
-    transition-all duration-200 hover:bg-blue-50 hover:text-blue-700
+    transition-all duration-200 hover:bg-blue-100 hover:text-blue-700
     focus-visible:ring-2 focus-visible:ring-blue-500
-    ${isActive(href) ? "bg-[#173572] text-white" : "text-gray-700"}
+    ${isActive(href) ? "bg-[#173572] text-white font-medium" : "text-gray-700"}
   `;
 
   const dropItemCls = (href: string) => `
-    flex items-center justify-between gap-2
-    px-5 py-3.5 text-sm transition-all duration-200
-    border-l-4 cursor-pointer whitespace-nowrap
+    block px-5 py-3 text-sm transition-all duration-200 cursor-pointer whitespace-nowrap
+    hover:bg-blue-100 hover:text-blue-700 rounded-lg mx-2 my-1
+    focus-visible:ring-2 focus-visible:ring-blue-500 focus:outline-none
     ${isActive(href)
-      ? "text-[#173572] font-semibold bg-gradient-to-r from-[#173572]/5 to-[#173572]/10 border-[#173572] pl-7"
-      : "text-gray-700 border-transparent hover:text-[#173572] hover:bg-gradient-to-r hover:from-[#173572]/5 hover:to-[#173572]/10 hover:border-[#173572] hover:pl-7"}
-    focus-visible:ring-2 focus-visible:ring-[#173572] focus:outline-none
+      ? "text-blue-700 font-semibold bg-blue-50"
+      : "text-gray-700"}
   `;
 
   // ════════════════════════════════════════════════════════════════════════════

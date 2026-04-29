@@ -115,7 +115,7 @@ export default function Header(): JSX.Element {
 
       {/* 🔷 BARRA AZUL */}
       <div className="w-full bg-[#0B3D91] text-white">
-        <div className="relative z-50 w-[90%] mx-auto flex flex-nowrap justify-end items-center py-2 gap-2 sm:gap-1 text-xs overflow-hidden">
+        <div className="relative z-50 w-[90%] mx-auto flex flex-nowrap justify-end items-center py-2 gap-2 sm:gap-3 text-xs overflow-hidden">
 
           <Tooltip text="Aumentar fonte" id="tooltip-aumentar">
             <button
