@@ -19,7 +19,7 @@ export default function GovCard({
   featured = false,
 }: GovCardProps) {
   return (
-    <article className="h-full">
+    <article className="h-full max-w-[250px] mx-auto w-full">
       <Link
         href={href}
         aria-label={`Acessar ${title}`}
@@ -37,7 +37,7 @@ export default function GovCard({
           focus:outline-none
           focus-visible:ring-4
           focus-visible:ring-blue-600
-          p-6
+          p-4
         "
       >
         {/* 🔵 Barra colorida topo */}
@@ -54,7 +54,7 @@ export default function GovCard({
         />
 
         {/* Ícone */}
-        <div className="mb-4 flex justify-center relative z-10">
+        <div className="mb-3 flex justify-center relative z-10">
           <div
             className={`
               flex items-center justify-center
@@ -89,18 +89,12 @@ export default function GovCard({
           {title}
         </h3>
 
-        {description && (
-          <p
-            title={description} // Tooltip nativo para ler o texto completo ao pairar
-            className="mt-2 text-center text-sm text-gray-500 relative z-10 line-clamp-3 leading-relaxed">
-            {description}
-          </p>
-        )}
+        {/* Descrição removida conforme solicitado */}
 
         {/* 🚀 Ação (aparece suave) */}
         <div
           className="
-            mt-auto pt-6 text-center text-sm font-medium text-blue-700
+            mt-auto pt-3 text-center text-xs font-medium text-blue-700
             opacity-0 translate-y-2
             group-hover:opacity-100 group-hover:translate-y-0
             transition-all duration-300

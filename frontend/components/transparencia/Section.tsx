@@ -27,12 +27,12 @@ export default function TransparencySection({
   // 🎯 Ajustes automáticos do grid
   const gridClasses =
     cardsCount === 1
-      ? "grid-cols-1 max-w-md"
+      ? "grid-cols-1 max-w-[280px]"
       : cardsCount === 2
-        ? "grid-cols-1 sm:grid-cols-2 max-w-5xl"
+        ? "grid-cols-1 sm:grid-cols-2 max-w-2xl"
         : cardsCount === 3
-          ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl"
-          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-7xl";
+          ? "grid-cols-1 sm:grid-cols-3 max-w-4xl"
+          : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 max-w-6xl";
 
   return (
     <section

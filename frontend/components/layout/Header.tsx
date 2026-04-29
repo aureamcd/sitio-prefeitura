@@ -115,7 +115,7 @@ export default function Header(): JSX.Element {
 
       {/* 🔷 BARRA AZUL */}
       <div className="w-full bg-[#0B3D91] text-white">
-        <div className="relative z-50 w-[90%] mx-auto flex flex-nowrap justify-end items-center py-0 gap-0 sm:gap-1 text-xs overflow-hidden">
+        <div className="relative z-50 w-[90%] mx-auto flex flex-nowrap justify-end items-center py-2 gap-2 sm:gap-1 text-xs overflow-hidden">
 
           <Tooltip text="Aumentar fonte" id="tooltip-aumentar">
             <button
@@ -262,12 +262,12 @@ export default function Header(): JSX.Element {
           />
 
           <div className="py-1 text-center sm:text-left">
-            <p className=" md:text-sm text-gray-600 ">
+            <p className="text-xs sm:text-sm text-gray-500 font-medium tracking-wide">
               Prefeitura Municipal de
             </p>
 
             <h1
-              className="text-2xl font-bold text-[#173572] leading-tight whitespace-nowrap"
+              className="text-xl sm:text-2xl font-bold text-[#173572] leading-tight whitespace-nowrap"
               style={{
                 textShadow: `
             -1px -1px 0 #ffffff,
@@ -286,38 +286,11 @@ export default function Header(): JSX.Element {
           </div>
         </Link>
 
-        {/* DIREITA: SEARCH + RADAR + MENU */}
+        {/* DIREITA: BOTOES + SEARCH + MENU */}
         <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4 w-full md:w-auto md:ml-auto">
 
-          {/* SEARCH */}
-          <div className="w-full md:w-auto md:max-w-xs">
-            <SearchBar />
-          </div>
-
-          {/* SEPARADOR VERTICAL (só desktop) */}
-          <div className="hidden md:block w-px h-8 bg-gray-300" />
-
           {/* BOTÕES E-SIC + FALE CONOSCO */}
-          <div className="flex md:gap-2 gap-3 w-full md:w-auto justify-center md:justify-end items-center">
-
-            {/* BOTÃO MENU MOBILE (estilo pílula) */}
-            <button
-              type="button"
-              aria-label="Abrir menu"
-              aria-expanded={isMenuOpen}
-              aria-controls="menu-mobile"
-              onClick={() => setIsMenuOpen(true)}
-              className="md:hidden flex items-center justify-center p-2 rounded-md
-      border border-[#173572]/20 bg-gray-50 text-[#173572]
-      hover:bg-[#173572]/10 transition-colors shadow-sm"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
-            </button>
-
+          <div className="flex gap-2 md:gap-3 w-full md:w-auto justify-center md:justify-end items-center">
             {/* E-SIC */}
             <Link
               href="/e-sic"
@@ -355,9 +328,35 @@ export default function Header(): JSX.Element {
             >
               Fale Conosco
             </Link>
-
           </div>
 
+          {/* SEPARADOR VERTICAL (só desktop) */}
+          <div className="hidden md:block w-px h-8 bg-gray-300" />
+
+          {/* SEARCH + MOBILE MENU */}
+          <div className="flex items-center gap-2 w-full md:w-auto justify-between md:justify-end">
+            <div className="w-full md:w-auto md:max-w-xs flex-1">
+              <SearchBar />
+            </div>
+
+            {/* BOTÃO MENU MOBILE (estilo pílula) */}
+            <button
+              type="button"
+              aria-label="Abrir menu"
+              aria-expanded={isMenuOpen}
+              aria-controls="menu-mobile"
+              onClick={() => setIsMenuOpen(true)}
+              className="md:hidden flex items-center justify-center p-2 rounded-md
+      border border-[#173572]/20 bg-gray-50 text-[#173572]
+      hover:bg-[#173572]/10 transition-colors shadow-sm flex-shrink-0"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
+          </div>
 
         </div>
 

@@ -1,561 +1,486 @@
 "use client";
 
-
-
 import Link from "next/link";
-
 import { usePathname } from "next/navigation";
-
+import { useState, useRef, useEffect, KeyboardEvent, JSX, ReactElement } from "react";
 import {
-
-  useState,
-
-  useRef,
-
-  useEffect,
-
-  KeyboardEvent,
-
-  JSX,
-
-  ReactElement,
-
-} from "react";
-
-import {
-
-  Home,
-
-  Folder,
-
-  FileText,
-
-  MessageSquare,
-
-  Phone,
-
-  X,
-
-  ChevronDown,
-
+  Home, Folder, FileText, MessageSquare, X, ChevronDown, ChevronRight,
 } from "lucide-react";
 
-
-
-type MenuKey = "prefeitura" | null;
-
+// ── tipos ──────────────────────────────────────────────────────────────────────
+type RootKey = "prefeitura" | "servicos" | null;
+type SubKey = "institucional" | "leis-normas" | "publicacoes" | null;
 type MenuItem = { href: string; label: string };
-
 type FixedItem = { href: string; label: string; icon: ReactElement };
 
-
-
 interface NavbarProps {
-
   mobileOpen: boolean;
-
   setMobileOpen: (open: boolean) => void;
-
 }
 
+// ── dados ──────────────────────────────────────────────────────────────────────
+const institucionalItems: MenuItem[] = [
+  { href: "/prefeitura/estrutura-organizacional", label: "Estrutura Organizacional" },
+  { href: "/prefeitura/competencias", label: "Competências" },
+  { href: "/prefeitura/gestao", label: "Gestão" },
+  { href: "/prefeitura/contatos", label: "Contatos" },
+  { href: "/prefeitura/horario-atendimento", label: "Horário de Atendimento" },
+  { href: "/prefeitura/perguntas-frequentes", label: "FAQ" },
+];
+
+const atosNormativosItems: MenuItem[] = [
+  { href: "/prefeitura/atos-normativos/leis", label: "Leis" },
+  { href: "/prefeitura/atos-normativos/decretos", label: "Decretos" },
+  { href: "/prefeitura/atos-normativos/portarias", label: "Portarias" },
+  { href: "/prefeitura/atos-normativos/resolucoes", label: "Resoluções" },
+];
+
+const publicacoesItems: MenuItem[] = [
+  { href: "/prefeitura/publicacoes/atas", label: "Atas de Reuniões" },
+  { href: "/prefeitura/publicacoes/editais", label: "Editais" },
+  { href: "/prefeitura/publicacoes/avisos", label: "Avisos / Comunicados" },
+  { href: "/prefeitura/publicacoes/diversas", label: "Publicações Diversas" },
+];
+
+const servicosItems = [
+  { href: "/servicos", label: "Todos os Serviços" },
+  { href: "/servicos/online", label: "Serviços Online" },
+  { href: "/servicos/carta", label: "Carta de Serviços" },
+  { href: "/servicos/concursos", label: "Concursos e Processos Seletivos" },
+];
 
 
+const fixedItems: FixedItem[] = [
+  { href: "/acesso-informacao", label: "Acesso à Informação", icon: <FileText size={18} aria-hidden="true" /> },
+  { href: "/transparencia", label: "Transparência", icon: <FileText size={18} aria-hidden="true" /> },
+  { href: "/ouvidoria", label: "Ouvidoria", icon: <MessageSquare size={18} aria-hidden="true" /> },
+];
+
+const prefeituraCategories = [
+  { key: "institucional" as SubKey, label: "Institucional", items: institucionalItems },
+  { key: "leis-normas" as SubKey, label: "Leis e Normas", items: atosNormativosItems },
+  { key: "publicacoes" as SubKey, label: "Publicações Oficiais", items: publicacoesItems },
+];
+
+// ══════════════════════════════════════════════════════════════════════════════
 export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.Element {
-
   const pathname = usePathname();
 
-  const [openMenu, setOpenMenu] = useState<MenuKey>(null);
+  // qual dropdown raiz está aberto (prefeitura ou servicos)
+  const [openRoot, setOpenRoot] = useState<RootKey>(null);
+  // qual flyout de sub-categoria está aberto (dentro de prefeitura)
+  const [openSub, setOpenSub] = useState<SubKey>(null);
 
+  // timer único para fechar tudo
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prefBtnRef = useRef<HTMLButtonElement | null>(null);
+  const svcBtnRef = useRef<HTMLButtonElement | null>(null);
 
+  function clearTimer() { if (closeTimer.current) clearTimeout(closeTimer.current); }
+  function keepAlive() { clearTimer(); }
 
-  const prefeituraRefs = useRef<Array<HTMLAnchorElement | null>>([]);
-
-  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-
-  const menuRef = useRef<HTMLUListElement | null>(null);
-
-
-
-  const prefeituraItems: MenuItem[] = [
-
-    { href: "/prefeitura/estrutura-organizacional", label: "Estrutura organizacional" },
-
-    { href: "/prefeitura/competencias", label: "Competências" },
-
-    { href: "/prefeitura/gestao", label: "Gestão" },
-
-  ];
-
-
-
-  const fixedItems: FixedItem[] = [
-
-
-
-    { href: "/servicos", label: "Serviços", icon: <FileText size={18} aria-hidden="true" /> },
-
-    { href: "/page", label: "Transparência", icon: <FileText size={18} aria-hidden="true" /> },
-
-    { href: "/ouvidoria", label: "Ouvidoria", icon: <MessageSquare size={18} aria-hidden="true" /> },
-
-
-  ];
-
-
-  const isActive = (href: string) =>
-
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
-
-
-
-  function closeMenus() { setOpenMenu(null); }
-
-  function openMenuHover() {
-
-    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-
-    setOpenMenu("prefeitura");
-
+  function scheduleClose(ms = 250) {
+    clearTimer();
+    closeTimer.current = setTimeout(() => {
+      setOpenRoot(null);
+      setOpenSub(null);
+    }, ms);
   }
 
-  function scheduleClose(delay = 200) {
-
-    closeTimeoutRef.current = setTimeout(() => setOpenMenu(null), delay);
-
+  function openMenu(key: RootKey) {
+    clearTimer();
+    if (openRoot !== key) setOpenSub(null); // reseta sub ao trocar de menu
+    setOpenRoot(key);
   }
 
-  function cancelClose() {
+  function closeAll() { clearTimer(); setOpenRoot(null); setOpenSub(null); }
 
-    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-
-  }
-
-
-
+  // ── efeitos ─────────────────────────────────────────────────────────────────
   useEffect(() => {
-
-    function handleResize() {
-
-      if (window.innerWidth >= 768) { setMobileOpen(false); closeMenus(); }
-
+    function onResize() {
+      if (window.innerWidth >= 768) { setMobileOpen(false); closeAll(); }
     }
-
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, [setMobileOpen]);
 
-
-
   useEffect(() => {
-
-    function handleEscape(e: Event) {
-
-      if ((e as unknown as KeyboardEvent).key === "Escape") {
-
-        if (mobileOpen) { setMobileOpen(false); }
-
-        else { closeMenus(); buttonRef.current?.focus(); }
-
-      }
-
+    function onKey(e: Event) {
+      if ((e as unknown as KeyboardEvent).key !== "Escape") return;
+      if (mobileOpen) setMobileOpen(false);
+      else closeAll();
     }
-
-    function handleClickOutside(e: MouseEvent) {
-
-      const target = e.target as Node;
-
-      if (menuRef.current && !menuRef.current.contains(target) && !buttonRef.current?.contains(target))
-
-        closeMenus();
-
-    }
-
-    document.addEventListener("keydown", handleEscape);
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-
-      document.removeEventListener("keydown", handleEscape);
-
-      document.removeEventListener("mousedown", handleClickOutside);
-
-    };
-
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
   }, [mobileOpen, setMobileOpen]);
 
+  // mobile
+  const [mobileRoot, setMobileRoot] = useState<"prefeitura" | "servicos" | null>(null);
+  const [mobileSub, setMobileSub] = useState<SubKey>(null);
 
+  // ── estilos ─────────────────────────────────────────────────────────────────
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
 
-  const linkClass = (href: string) => `
-
+  const navLinkCls = (href: string) => `
     px-3 py-1.5 rounded-full flex items-center gap-1.5
-
     text-sm whitespace-nowrap transition-all duration-200 cursor-pointer
-
-    hover:bg-blue-100 hover:text-blue-700
-
-    focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
-
-    ${isActive(href) ? "bg-[#173572] text-white shadow-md" : "text-gray-700"}
-
+    hover:bg-blue-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
+    ${isActive(href) ? "bg-[#173572] text-white shadow-sm font-medium" : "text-gray-600 hover:text-[#173572]"}
   `;
 
+  const navBtnCls = (prefix: string, _key: RootKey) => `
+    px-3 py-1.5 rounded-full flex items-center gap-1.5
+    text-sm whitespace-nowrap transition-all duration-200 cursor-pointer
+    hover:bg-blue-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
+    ${pathname.startsWith(prefix)
+      ? "bg-[#173572] text-white shadow-sm font-medium"
+      : "text-gray-600 hover:text-[#173572]"}
+  `;
 
-
-  const mobileLinkClass = (href: string) => `
-
+  const mobileLinkCls = (href: string) => `
     flex items-center gap-3 px-4 py-3.5 rounded-xl text-base
-
-    transition-all duration-200
-
-    hover:bg-blue-50 hover:text-blue-700
-
+    transition-all duration-200 hover:bg-blue-50 hover:text-blue-700
     focus-visible:ring-2 focus-visible:ring-blue-500
-
     ${isActive(href) ? "bg-[#173572] text-white" : "text-gray-700"}
-
   `;
 
+  const dropItemCls = (href: string) => `
+    flex items-center justify-between gap-2
+    px-5 py-3.5 text-sm transition-all duration-200
+    border-l-4 cursor-pointer whitespace-nowrap
+    ${isActive(href)
+      ? "text-[#173572] font-semibold bg-gradient-to-r from-[#173572]/5 to-[#173572]/10 border-[#173572] pl-7"
+      : "text-gray-700 border-transparent hover:text-[#173572] hover:bg-gradient-to-r hover:from-[#173572]/5 hover:to-[#173572]/10 hover:border-[#173572] hover:pl-7"}
+    focus-visible:ring-2 focus-visible:ring-[#173572] focus:outline-none
+  `;
 
-
+  // ════════════════════════════════════════════════════════════════════════════
   return (
-
     <>
-
-      {/* ── DESKTOP ── */}
-
-      <nav aria-label="Menu principal">
-
-        <div className="w-[90%] mx-auto">
-
-          <ul role="menubar" className="hidden md:flex flex-wrap justify-center gap-1 py-3">
-
-
-
-            <li role="none">
-
-              <Link href="/" className={linkClass("/")}>
-
-                <Home size={18} aria-hidden="true" />
-
-                Início
-
-              </Link>
-
-            </li>
-
-
-
-            <li role="none" className="relative" onMouseEnter={openMenuHover} onMouseLeave={() => scheduleClose()}>
-
-              <button
-
-                ref={buttonRef}
-
-                aria-haspopup="true"
-
-                aria-expanded={openMenu === "prefeitura"}
-
-                aria-controls="menu-prefeitura"
-
-                className={linkClass("/prefeitura")}
-
-                onClick={() => openMenu === "prefeitura" ? closeMenus() : setOpenMenu("prefeitura")}
-
-                onKeyDown={(e: KeyboardEvent<HTMLButtonElement>) => {
-
-                  if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown") {
-
-                    e.preventDefault();
-
-                    setOpenMenu("prefeitura");
-
-                    setTimeout(() => prefeituraRefs.current[0]?.focus(), 0);
-
-                  }
-
-                }}
-
-              >
-
-                <Folder size={18} aria-hidden="true" />
-
-                A Prefeitura
-
-                <ChevronDown aria-hidden="true"
-
-                  className={`w-4 h-4 transition-transform duration-200 ${openMenu === "prefeitura" ? "rotate-180" : ""}`} />
-
-              </button>
-
-
-
-              {openMenu === "prefeitura" && (
-
-                <ul ref={menuRef} id="menu-prefeitura" role="menu"
-
-                  className="text-sm absolute left-0 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden"
-
-                  onMouseEnter={cancelClose} onMouseLeave={() => scheduleClose()}>
-
-                  {prefeituraItems.map((item, i) => (
-
-                    <li key={item.href} role="none">
-
-                      <Link
-
-                        href={item.href} role="menuitem"
-
-                        ref={(el) => { prefeituraRefs.current[i] = el; }}
-
-                        className={`block px-5 py-3.5 transition-all duration-200
-
-                          hover:text-[#173572] hover:bg-gradient-to-r hover:from-[#173572]/5 hover:to-[#173572]/10
-
-                          hover:pl-7 border-l-4 border-transparent hover:border-[#173572]
-
-                          focus:bg-[#173572]/5 focus:outline-none
-
-                          focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#173572]
-
-                          ${isActive(item.href) ? "text-[#173572] font-semibold bg-[#173572]/5 border-l-4 border-[#173572] pl-7" : "text-gray-700"}`}
-
-                        onKeyDown={(e: KeyboardEvent<HTMLAnchorElement>) => {
-
-                          if (e.key === "ArrowDown") { e.preventDefault(); prefeituraRefs.current[i + 1]?.focus(); }
-
-                          if (e.key === "ArrowUp") { e.preventDefault(); i === 0 ? buttonRef.current?.focus() : prefeituraRefs.current[i - 1]?.focus(); }
-
-                          if (e.key === "Escape") { closeMenus(); buttonRef.current?.focus(); }
-
-                        }}
-
-                      >
-
-                        {item.label}
-
-                      </Link>
-
-                    </li>
-
-                  ))}
-
-                </ul>
-
-              )}
-
-            </li>
-
-
-
-            {fixedItems.map((item) => (
-
-              <li key={item.href} role="none">
-
-                <Link href={item.href} className={linkClass(item.href)}>
-
-                  {item.icon}
-
-                  {item.label}
-
-                </Link>
-
-              </li>
-
-            ))}
-
-          </ul>
-
-        </div>
-
-      </nav>
-
-
-
-      {/* ── MOBILE: overlay ── */}
-
-      {mobileOpen && (
-
-        <div className="md:hidden fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
-
-          onClick={() => setMobileOpen(false)} aria-hidden="true" />
-
+      {/* overlay */}
+      {openRoot && (
+        <div
+          className="fixed inset-0 z-30 bg-black/35 transition-opacity duration-200"
+          aria-hidden="true"
+          onClick={closeAll}
+        />
       )}
 
+      {/* ── DESKTOP NAV ─────────────────────────────────────────────────────── */}
+      <nav aria-label="Menu principal" className="relative z-40">
+        <div className="w-[90%] mx-auto">
+          <ul role="menubar" className="hidden md:flex flex-wrap justify-center gap-1 py-3">
 
+            {/* Início */}
+            <li role="none">
+              <Link href="/" className={navLinkCls("/")}>
+                <Home size={18} aria-hidden="true" />
+                Início
+              </Link>
+            </li>
 
-      {/* ── MOBILE: painel lateral ── */}
+            {/* ── A Prefeitura ── */}
+            <li
+              role="none"
+              className="relative"
+              onMouseEnter={() => openMenu("prefeitura")}
+              onMouseLeave={() => scheduleClose()}
+            >
+              <button
+                ref={prefBtnRef}
+                aria-haspopup="true"
+                aria-expanded={openRoot === "prefeitura"}
+                aria-controls="dropdown-prefeitura"
+                className={navBtnCls("/prefeitura", "prefeitura")}
+                onClick={() => openRoot === "prefeitura" ? closeAll() : openMenu("prefeitura")}
+              >
+                <Folder size={18} aria-hidden="true" />
+                A Prefeitura
+                <ChevronDown
+                  aria-hidden="true"
+                  className={`w-4 h-4 transition-transform duration-200 ${openRoot === "prefeitura" ? "rotate-180" : ""}`}
+                />
+              </button>
 
-      <div
+              {/* DROPDOWN PREFEITURA — nível 1 com flyout */}
+              {openRoot === "prefeitura" && (
+                <div
+                  id="dropdown-prefeitura"
+                  role="menu"
+                  onMouseEnter={keepAlive}
+                  onMouseLeave={() => scheduleClose()}
+                  className="absolute left-0 top-full mt-2 z-50
+                    bg-white border border-gray-100 rounded-2xl shadow-lg py-2 w-64"
+                >
+                  {prefeituraCategories.map((cat) => (
+                    <div
+                      key={cat.key}
+                      className="relative"
+                      onMouseEnter={() => { keepAlive(); setOpenSub(cat.key); }}
+                      onMouseLeave={() => scheduleClose()}
+                    >
+                      <div
+                        role="menuitem"
+                        aria-haspopup="true"
+                        aria-expanded={openSub === cat.key}
+                        className={`
+                          flex items-center justify-between gap-2
+                          px-5 py-3.5 text-sm transition-all duration-200 select-none cursor-default
+                          border-l-4
+                          ${openSub === cat.key
+                            ? "text-[#173572] font-semibold bg-gradient-to-r from-[#173572]/5 to-[#173572]/10 border-[#173572] pl-7"
+                            : "text-gray-700 border-transparent hover:text-[#173572] hover:bg-gradient-to-r hover:from-[#173572]/5 hover:to-[#173572]/10 hover:border-[#173572] hover:pl-7"}
+                        `}
+                      >
+                        <span className="whitespace-nowrap">{cat.label}</span>
+                        <ChevronRight size={14} aria-hidden="true" className="opacity-40 flex-shrink-0" />
+                      </div>
 
-        id="menu-mobile"
+                      {/* FLYOUT nível 2 */}
+                      {openSub === cat.key && (
+                        <div
+                          role="menu"
+                          onMouseEnter={keepAlive}
+                          onMouseLeave={() => scheduleClose()}
+                          className="absolute left-full top-0 ml-1 z-50
+                            bg-white border border-gray-100 rounded-2xl shadow-lg py-2 min-w-[220px]"
+                        >
+                          {cat.items.map((item) => (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              role="menuitem"
+                              onClick={closeAll}
+                              className={dropItemCls(item.href)}
+                            >
+                              {item.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </li>
 
-        role="dialog"
+            {/* ── Serviços ── */}
+            <li
+              role="none"
+              className="relative"
+              onMouseEnter={() => openMenu("servicos")}
+              onMouseLeave={() => scheduleClose()}
+            >
+              <button
+                ref={svcBtnRef}
+                aria-haspopup="true"
+                aria-expanded={openRoot === "servicos"}
+                aria-controls="dropdown-servicos"
+                className={navBtnCls("/servicos", "servicos")}
+                onClick={() => openRoot === "servicos" ? closeAll() : openMenu("servicos")}
+              >
+                <FileText size={18} aria-hidden="true" />
+                Serviços
+                <ChevronDown
+                  aria-hidden="true"
+                  className={`w-4 h-4 transition-transform duration-200 ${openRoot === "servicos" ? "rotate-180" : ""}`}
+                />
+              </button>
 
-        aria-modal="true"
+              {/* DROPDOWN SERVIÇOS — flat, sem flyout */}
+              {openRoot === "servicos" && (
+                <div
+                  id="dropdown-servicos"
+                  role="menu"
+                  onMouseEnter={keepAlive}
+                  onMouseLeave={() => scheduleClose()}
+                  className="absolute left-0 top-full mt-2 z-50
+                    bg-white border border-gray-100 rounded-2xl shadow-lg py-2 min-w-[210px]"
+                >
+                  {servicosItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      role="menuitem"
+                      onClick={closeAll}
+                      className={dropItemCls(item.href)}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </li>
 
-        aria-label="Menu de navegação"
-
-        className={`
-
-          md:hidden fixed top-0 right-0 h-full w-72 max-w-[85vw] z-50
-
-          bg-white shadow-2xl
-
-          transform transition-transform duration-300 ease-in-out
-
-          ${mobileOpen ? "translate-x-0" : "translate-x-full"}
-
-        `}
-
-      >
-
-        {/* Cabeçalho do painel — azul, igual ao header */}
-
-        <div className="flex items-center justify-between px-4 py-4 bg-[#173572]">
-
-          <span className="text-sm font-semibold text-white">Portal da Transparência</span>
-
-          <button
-
-            aria-label="Fechar menu"
-
-            onClick={() => setMobileOpen(false)}
-
-            className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10
-
-                       focus-visible:ring-2 focus-visible:ring-white transition-colors"
-
-          >
-
-            <X size={20} aria-hidden="true" />
-
-          </button>
-
+            {/* Itens fixos */}
+            {fixedItems.map((item) => (
+              <li key={item.href} role="none">
+                <Link href={item.href} className={navLinkCls(item.href)}>
+                  {item.icon}
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
+      </nav>
 
+      {/* ── MOBILE: overlay ─────────────────────────────────────────────────── */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+      )}
 
-
-        {/* Itens de navegação */}
+      {/* ── MOBILE: painel ──────────────────────────────────────────────────── */}
+      <div
+        id="menu-mobile"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu de navegação"
+        className={`
+          md:hidden fixed top-0 right-0 h-full w-72 max-w-[85vw] z-50
+          bg-white shadow-2xl
+          transform transition-transform duration-300 ease-in-out
+          ${mobileOpen ? "translate-x-0" : "translate-x-full"}
+        `}
+      >
+        <div className="flex items-center justify-between px-4 py-4 bg-[#173572]">
+          <span className="text-sm font-semibold text-white">Prefeitura Municipal</span>
+          <button
+            aria-label="Fechar menu"
+            onClick={() => setMobileOpen(false)}
+            className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10
+                       focus-visible:ring-2 focus-visible:ring-white transition-colors"
+          >
+            <X size={20} aria-hidden="true" />
+          </button>
+        </div>
 
         <ul className="flex flex-col gap-1 p-4 overflow-y-auto h-[calc(100%-60px)]">
 
+          {/* Início */}
           <li>
-
-            <Link href="/" onClick={() => setMobileOpen(false)} className={mobileLinkClass("/")}>
-
+            <Link href="/" onClick={() => setMobileOpen(false)} className={mobileLinkCls("/")}>
               <Home size={18} aria-hidden="true" />
-
               Início
-
             </Link>
-
           </li>
 
-
-
-          {/* Atividades — acordeão */}
-
+          {/* A Prefeitura */}
           <li>
-
             <button
-
-              aria-expanded={openMenu === "prefeitura"}
-
-              onClick={() => setOpenMenu(openMenu === "prefeitura" ? null : "prefeitura")}
-
+              aria-expanded={mobileRoot === "prefeitura"}
+              onClick={() => { setMobileRoot(mobileRoot === "prefeitura" ? null : "prefeitura"); setMobileSub(null); }}
               className={`w-full flex items-center justify-between gap-3 px-4 py-3.5 rounded-xl
-
                 text-base transition-all duration-200
-
-                hover:bg-[#173572]/10 hover:text-[#173572]
-
-                focus-visible:ring-2 focus-visible:ring-[#173572]
-
+                hover:bg-[#173572]/10 hover:text-[#173572] focus-visible:ring-2 focus-visible:ring-[#173572]
                 ${pathname.startsWith("/prefeitura") ? "bg-[#173572]/10 text-[#173572]" : "text-gray-700"}`}
-
             >
-
               <span className="flex items-center gap-3">
-
                 <Folder size={18} aria-hidden="true" />
-
                 A Prefeitura
-
               </span>
-
-              <ChevronDown aria-hidden="true"
-
-                className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${openMenu === "prefeitura" ? "rotate-180" : ""}`} />
-
+              <ChevronDown
+                aria-hidden="true"
+                className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${mobileRoot === "prefeitura" ? "rotate-180" : ""}`}
+              />
             </button>
 
-
-
-            {openMenu === "prefeitura" && (
-
-              <ul className="mt-1 ml-4 flex flex-col gap-0.5 border-l-2 border-[#173572]/20 pl-3">
-
-                {prefeituraItems.map((item) => (
-
-                  <li key={item.href}>
-
-                    <Link
-
-                      href={item.href}
-
-                      onClick={() => setMobileOpen(false)}
-
-                      className={`block px-3 py-2.5 rounded-lg text-sm transition-all duration-200
-
-                        hover:bg-[#173572]/10 hover:text-[#173572]
-
-                        ${isActive(item.href) ? "text-[#173572] font-medium" : "text-gray-600"}`}
-
+            {mobileRoot === "prefeitura" && (
+              <div className="mt-1 ml-4 border-l-2 border-[#173572]/20 pl-3 flex flex-col gap-2 pb-1">
+                {prefeituraCategories.map((cat) => (
+                  <div key={cat.key}>
+                    <button
+                      aria-expanded={mobileSub === cat.key}
+                      onClick={() => setMobileSub(mobileSub === cat.key ? null : cat.key)}
+                      className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg
+                        text-sm font-semibold text-[#173572] hover:bg-[#173572]/8 transition"
                     >
+                      {cat.label}
+                      <ChevronRight
+                        size={13}
+                        aria-hidden="true"
+                        className={`transition-transform duration-200 ${mobileSub === cat.key ? "rotate-90" : ""}`}
+                      />
+                    </button>
 
-                      {item.label}
-
-                    </Link>
-
-                  </li>
-
+                    {mobileSub === cat.key && (
+                      <ul className="mt-1 flex flex-col gap-0.5">
+                        {cat.items.map((item) => (
+                          <li key={item.href}>
+                            <Link
+                              href={item.href}
+                              onClick={() => setMobileOpen(false)}
+                              className={`block px-4 py-2.5 rounded-lg text-sm transition-all duration-150
+                                hover:bg-[#173572]/10 hover:text-[#173572]
+                                ${isActive(item.href) ? "text-[#173572] font-medium" : "text-gray-600"}`}
+                            >
+                              {item.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 ))}
-
-              </ul>
-
+              </div>
             )}
-
           </li>
 
+          {/* Serviços */}
+          <li>
+            <button
+              aria-expanded={mobileRoot === "servicos"}
+              onClick={() => setMobileRoot(mobileRoot === "servicos" ? null : "servicos")}
+              className={`w-full flex items-center justify-between gap-3 px-4 py-3.5 rounded-xl
+                text-base transition-all duration-200
+                hover:bg-[#173572]/10 hover:text-[#173572] focus-visible:ring-2 focus-visible:ring-[#173572]
+                ${pathname.startsWith("/servicos") ? "bg-[#173572]/10 text-[#173572]" : "text-gray-700"}`}
+            >
+              <span className="flex items-center gap-3">
+                <FileText size={18} aria-hidden="true" />
+                Serviços
+              </span>
+              <ChevronDown
+                aria-hidden="true"
+                className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${mobileRoot === "servicos" ? "rotate-180" : ""}`}
+              />
+            </button>
 
+            {mobileRoot === "servicos" && (
+              <ul className="mt-1 ml-4 border-l-2 border-[#173572]/20 pl-3 flex flex-col gap-0.5">
+                {servicosItems.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={`block px-3 py-2.5 rounded-lg text-sm transition-all duration-150
+                        hover:bg-[#173572]/10 hover:text-[#173572]
+                        ${isActive(item.href) ? "text-[#173572] font-medium" : "text-gray-600"}`}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
 
+          {/* Itens fixos */}
           {fixedItems.map((item) => (
-
             <li key={item.href}>
-
-              <Link href={item.href} onClick={() => setMobileOpen(false)} className={mobileLinkClass(item.href)}>
-
+              <Link href={item.href} onClick={() => setMobileOpen(false)} className={mobileLinkCls(item.href)}>
                 {item.icon}
-
                 {item.label}
-
               </Link>
-
             </li>
-
           ))}
-
         </ul>
-
       </div>
-
     </>
-
   );
-
 }
