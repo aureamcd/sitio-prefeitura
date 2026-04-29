@@ -6,7 +6,7 @@ import SkipLink from "../components/acessibilidade/SkipLink";
 import Footer from "../components/layout/Footer";
 import VLibras from "../components/acessibilidade/VLibras";
 import SolicitaLai from "../components/ui/SolicitaLai";
-import KeyboardShortcuts from "@/components/acessibilidade/KeyboardShortcuts";
+import KeyboardShortcuts from "../components/acessibilidade/KeyboardShortcuts";
 
 import type { Metadata, Viewport } from "next";
 import type { ReactNode, JSX } from "react";
