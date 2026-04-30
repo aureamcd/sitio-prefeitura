@@ -4,6 +4,7 @@ export default function SkipLink() {
   return (
     <a
       href="#main-content"
+      aria-label="Pular diretamente para o conteúdo principal"
       className="
         fixed left-4 top-0
         -translate-y-full
@@ -13,6 +14,7 @@ export default function SkipLink() {
         rounded-md
         shadow-lg
         transition-transform duration-200
+        motion-reduce:transition-none
         z-[9999]
         focus:outline-none
         focus:ring-4 

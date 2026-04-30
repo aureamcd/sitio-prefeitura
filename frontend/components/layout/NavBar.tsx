@@ -11,7 +11,7 @@ import {
 type RootKey = "prefeitura" | "servicos" | null;
 type SubKey = "institucional" | "leis-normas" | "publicacoes" | null;
 type MenuItem = { href: string; label: string };
-type FixedItem = { href: string; label: string; icon: ReactElement };
+type FixedItem = { href: string; label: string; icon: ReactElement; target?: string; rel?: string; ariaLabel?: string };
 
 interface NavbarProps {
   mobileOpen: boolean;
@@ -52,7 +52,14 @@ const servicosItems = [
 
 const fixedItems: FixedItem[] = [
   { href: "/acesso-informacao", label: "Acesso à Informação", icon: <FileText size={18} aria-hidden="true" /> },
-  { href: "/transparencia", label: "Transparência", icon: <FileText size={18} aria-hidden="true" /> },
+  { 
+    href: "https://transparencia.padremarcos.pi.gov.br/transparencia/", 
+    target: "_blank",
+    rel: "noopener noreferrer",
+    ariaLabel: "Portal da Transparência (abre em nova aba)",
+    label: "Transparência", 
+    icon: <FileText size={18} aria-hidden="true" /> 
+  },
   { href: "/ouvidoria", label: "Ouvidoria", icon: <MessageSquare size={18} aria-hidden="true" /> },
 ];
 
@@ -169,7 +176,7 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
       )}
 
       {/* ── DESKTOP NAV ─────────────────────────────────────────────────────── */}
-      <nav aria-label="Menu principal" className="relative z-40">
+      <nav id="main-nav" tabIndex={-1} aria-label="Menu principal" className="relative z-40 focus:outline-none">
         <div className="w-[90%] mx-auto">
           <ul role="menubar" className="hidden md:flex flex-wrap justify-center gap-1 py-3">
 
@@ -195,6 +202,23 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
                 aria-controls="dropdown-prefeitura"
                 className={navBtnCls("/prefeitura", "prefeitura")}
                 onClick={() => openRoot === "prefeitura" ? closeAll() : openMenu("prefeitura")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openMenu("prefeitura");
+                  }
+                  if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    if (openRoot !== "prefeitura") openMenu("prefeitura");
+                    setTimeout(() => {
+                      const first = document.querySelector('#dropdown-prefeitura [role="menuitem"]') as HTMLElement;
+                      first?.focus();
+                    }, 50);
+                  }
+                  if (e.key === "Escape") {
+                    closeAll();
+                  }
+                }}
               >
                 <Folder size={18} aria-hidden="true" />
                 A Prefeitura
@@ -211,6 +235,24 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
                   role="menu"
                   onMouseEnter={keepAlive}
                   onMouseLeave={() => scheduleClose()}
+                  onKeyDown={(e) => {
+                    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                      const isSubMenuOpen = !!openSub;
+                      if (!isSubMenuOpen) {
+                         e.preventDefault();
+                         const items = Array.from(document.querySelectorAll('#dropdown-prefeitura > div > button[role="menuitem"]')) as HTMLElement[];
+                         const idx = items.indexOf(document.activeElement as HTMLElement);
+                         if (idx !== -1) {
+                           if (e.key === "ArrowDown") (items[idx + 1] || items[0])?.focus();
+                           else (items[idx - 1] || items[items.length - 1])?.focus();
+                         }
+                      }
+                    }
+                    if (e.key === "Escape") {
+                      closeAll();
+                      prefBtnRef.current?.focus();
+                    }
+                  }}
                   className="absolute left-0 top-full mt-2 z-50
                     bg-white border border-gray-100 rounded-2xl shadow-lg py-2 w-64"
                 >
@@ -221,14 +263,25 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
                       onMouseEnter={() => { keepAlive(); setOpenSub(cat.key); }}
                       onMouseLeave={() => scheduleClose()}
                     >
-                      <div
+                      <button
                         role="menuitem"
                         aria-haspopup="true"
                         aria-expanded={openSub === cat.key}
+                        onClick={() => setOpenSub(openSub === cat.key ? null : cat.key)}
+                        onKeyDown={(e) => {
+                          if (e.key === "ArrowRight" || e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setOpenSub(cat.key);
+                            setTimeout(() => {
+                              const subFirst = document.querySelector(`#submenu-${cat.key} [role="menuitem"]`) as HTMLElement;
+                              subFirst?.focus();
+                            }, 50);
+                          }
+                        }}
                         className={`
-                          flex items-center justify-between gap-2
-                          px-5 py-3.5 text-sm transition-all duration-200 select-none cursor-default
-                          border-l-4
+                          w-full flex items-center justify-between gap-2
+                          px-5 py-3.5 text-sm transition-all duration-200 select-none cursor-pointer
+                          border-l-4 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500
                           ${openSub === cat.key
                             ? "text-[#173572] font-semibold bg-gradient-to-r from-[#173572]/5 to-[#173572]/10 border-[#173572] pl-7"
                             : "text-gray-700 border-transparent hover:text-[#173572] hover:bg-gradient-to-r hover:from-[#173572]/5 hover:to-[#173572]/10 hover:border-[#173572] hover:pl-7"}
@@ -236,14 +289,33 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
                       >
                         <span className="whitespace-nowrap">{cat.label}</span>
                         <ChevronRight size={14} aria-hidden="true" className="opacity-40 flex-shrink-0" />
-                      </div>
+                      </button>
 
                       {/* FLYOUT nível 2 */}
                       {openSub === cat.key && (
                         <div
+                          id={`submenu-${cat.key}`}
                           role="menu"
                           onMouseEnter={keepAlive}
                           onMouseLeave={() => scheduleClose()}
+                          onKeyDown={(e) => {
+                            if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                              e.preventDefault();
+                              const items = Array.from(document.querySelectorAll(`#submenu-${cat.key} [role="menuitem"]`)) as HTMLElement[];
+                              const idx = items.indexOf(document.activeElement as HTMLElement);
+                              if (idx !== -1) {
+                                if (e.key === "ArrowDown") (items[idx + 1] || items[0])?.focus();
+                                else (items[idx - 1] || items[items.length - 1])?.focus();
+                              }
+                            }
+                            if (e.key === "ArrowLeft" || e.key === "Escape") {
+                              e.preventDefault();
+                              setOpenSub(null);
+                              // Retorna foco para o botão que abriu o submenu
+                              const parentBtn = document.activeElement?.closest('.relative')?.querySelector('button[role="menuitem"]') as HTMLElement;
+                              parentBtn?.focus();
+                            }
+                          }}
                           className="absolute left-full top-0 ml-1 z-50
                             bg-white border border-gray-100 rounded-2xl shadow-lg py-2 min-w-[220px]"
                         >
@@ -280,6 +352,23 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
                 aria-controls="dropdown-servicos"
                 className={navBtnCls("/servicos", "servicos")}
                 onClick={() => openRoot === "servicos" ? closeAll() : openMenu("servicos")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openMenu("servicos");
+                  }
+                  if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    if (openRoot !== "servicos") openMenu("servicos");
+                    setTimeout(() => {
+                      const first = document.querySelector('#dropdown-servicos [role="menuitem"]') as HTMLElement;
+                      first?.focus();
+                    }, 50);
+                  }
+                  if (e.key === "Escape") {
+                    closeAll();
+                  }
+                }}
               >
                 <FileText size={18} aria-hidden="true" />
                 Serviços
@@ -296,6 +385,22 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
                   role="menu"
                   onMouseEnter={keepAlive}
                   onMouseLeave={() => scheduleClose()}
+                  onKeyDown={(e) => {
+                    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                      e.preventDefault();
+                      const items = Array.from(document.querySelectorAll('#dropdown-servicos [role="menuitem"]')) as HTMLElement[];
+                      const idx = items.indexOf(document.activeElement as HTMLElement);
+                      if (e.key === "ArrowDown") {
+                        (items[idx + 1] || items[0])?.focus();
+                      } else {
+                        (items[idx - 1] || items[items.length - 1])?.focus();
+                      }
+                    }
+                    if (e.key === "Escape") {
+                      closeAll();
+                      svcBtnRef.current?.focus();
+                    }
+                  }}
                   className="absolute left-0 top-full mt-2 z-50
                     bg-white border border-gray-100 rounded-2xl shadow-lg py-2 min-w-[210px]"
                 >
@@ -317,7 +422,7 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
             {/* Itens fixos */}
             {fixedItems.map((item) => (
               <li key={item.href} role="none">
-                <Link href={item.href} className={navLinkCls(item.href)}>
+                <Link href={item.href} target={item.target} rel={item.rel} aria-label={item.ariaLabel} className={navLinkCls(item.href)}>
                   {item.icon}
                   {item.label}
                 </Link>
@@ -474,7 +579,7 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
           {/* Itens fixos */}
           {fixedItems.map((item) => (
             <li key={item.href}>
-              <Link href={item.href} onClick={() => setMobileOpen(false)} className={mobileLinkCls(item.href)}>
+              <Link href={item.href} target={item.target} rel={item.rel} aria-label={item.ariaLabel} onClick={() => setMobileOpen(false)} className={mobileLinkCls(item.href)}>
                 {item.icon}
                 {item.label}
               </Link>

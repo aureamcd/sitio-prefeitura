@@ -32,12 +32,13 @@ export default function Header(): JSX.Element {
   );
 
   const UniversalAccessIcon = () => (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="5" r="1" />
-      <path d="m9 20 3-6 3 6" />
-      <path d="m6 8 6 2 6-2" />
-      <path d="M12 10v4" />
-    </svg>
+    <Image 
+      src="/acessibilidade.png" 
+      alt="Acessibilidade" 
+      width={22} 
+      height={22} 
+      className="object-contain bg-white rounded-full p-[2px]" 
+    />
   );
 
   useEffect(() => {
@@ -224,7 +225,7 @@ export default function Header(): JSX.Element {
 
           <Tooltip text="Ir para Portal da Transparência" id="tooltip-transparencia">
             <a
-              href="https://portal-da-transparencia-brown.vercel.app/"
+              href="https://transparencia.padremarcos.pi.gov.br/transparencia/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Portal da Transparência (abre em nova aba)"
@@ -263,7 +264,7 @@ export default function Header(): JSX.Element {
 
           <div className="py-1 text-center sm:text-left">
             <p className="text-xs sm:text-sm text-gray-500 font-medium tracking-wide">
-              Prefeitura Municipal de
+              Prefeitura de
             </p>
 
             <h1
@@ -293,7 +294,7 @@ export default function Header(): JSX.Element {
           <div className="flex gap-2 md:gap-3 w-full md:w-auto justify-center md:justify-end items-center">
             {/* E-SIC */}
             <Link
-              href="/e-sic"
+              href="/esic"
               className="
       w-auto
       text-center
@@ -366,14 +367,9 @@ export default function Header(): JSX.Element {
       <div className="hidden md:block w-[80%] mx-auto h-[1.5px] bg-[#0B3D91]" />
 
       {/* Navbar */}
-      <nav
-        id="main-nav"
-        tabIndex={-1}
-        className="focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-      >
+      <div className="focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
         <Navbar mobileOpen={isMenuOpen} setMobileOpen={setIsMenuOpen} />
-
-      </nav>
+      </div>
     </header >
   );
 }

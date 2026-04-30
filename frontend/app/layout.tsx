@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   description:
     "Acesso oficial a dados, contas públicas e informações do Município de Padre Marcos (PI), em conformidade com a Lei de Acesso à Informação.",
   keywords: ["transparência", "Padre Marcos", "Piauí", "gestão pública", "dados abertos", "LAI"],
-  authors: [{ name: "Prefeitura Municipal de Padre Marcos" }],
+  authors: [{ name: "Prefeitura de Padre Marcos" }],
   openGraph: {
     title: "Portal da Transparência - Município de Padre Marcos",
     description: "Transparência ativa e acesso à informação pública municipal.",

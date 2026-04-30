@@ -53,9 +53,23 @@ body {
 /* ── VLibras: forçar botão no canto inferior direito ── */
 [vw] {
   position: fixed !important;
-  bottom: 1.5rem !important;
-  right: 1.5rem !important;
+  bottom: 98px !important;
+  right: 7px !important;
   top: auto !important;
   left: auto !important;
   transform: none !important;
+}
+
+/* modo seguro pro PDF */
+.pdf-mode * {
+  color: #000 !important;
+  background: #fff !important;
+  border-color: #ccc !important;
+  box-shadow: none !important;
+}
+
+.pdf-safe * {
+  color: #000 !important;
+  background-color: #fff !important;
+  border-color: #ccc !important;
 }

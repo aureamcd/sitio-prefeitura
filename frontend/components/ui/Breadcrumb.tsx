@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Home } from "lucide-react";
 import type { JSX } from "react";
 
@@ -25,29 +26,54 @@ export default function Breadcrumb({ items }: BreadcrumbProps): JSX.Element {
       className="mb-6 text-sm text-gray-600"
     >
       <ol className="flex flex-wrap items-center gap-1">
+
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
           const isFirst = index === 0;
 
           return (
-            <li key={index} className="flex items-center gap-1">
+            <li
+              key={item.href ?? item.label}
+              className="flex items-center gap-1"
+            >
               {!isLast ? (
                 <>
-                  <a
-                    href={item.href}
-                    className="text-blue-700 underline hover:text-blue-900 focus:outline-2 focus:outline-blue-700 flex items-center gap-1"
+                  <Link
+                    href={item.href ?? "#"}
+                    className="
+                      flex items-center gap-1
+                      text-blue-700
+                      hover:text-blue-900
+                      underline
+                      transition-colors
+                      focus:outline-none
+                      focus-visible:ring-2
+                      focus-visible:ring-blue-700
+                      focus-visible:ring-offset-2
+                      rounded
+                    "
                   >
                     {isFirst && (
                       <Home className="w-4 h-4" aria-hidden="true" />
                     )}
                     <span>{item.label}</span>
-                  </a>
-                  <span aria-hidden="true">{">"}</span>
+                  </Link>
+
+                  {/* Separador */}
+                  <span
+                    aria-hidden="true"
+                    className="mx-1 text-gray-400"
+                  >
+                    /
+                  </span>
                 </>
               ) : (
                 <span
                   aria-current="page"
-                  className="font-semibold text-gray-800 flex items-center gap-1"
+                  className="
+                    flex items-center gap-1
+                    font-semibold text-gray-800
+                  "
                 >
                   {isFirst && (
                     <Home className="w-4 h-4" aria-hidden="true" />
@@ -58,6 +84,7 @@ export default function Breadcrumb({ items }: BreadcrumbProps): JSX.Element {
             </li>
           );
         })}
+
       </ol>
     </nav>
   );

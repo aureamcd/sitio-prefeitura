@@ -19,6 +19,7 @@ import {
   PieChart,
   Handshake,
   HardHat,
+  HeartPulse,
 } from "lucide-react";
 
 import { LucideIcon } from "lucide-react";
@@ -43,33 +44,39 @@ const sections: SectionItem[] = [
       {
         title: "Nota Fiscal Eletrônica",
         description: "Emissão de Nota Fiscal Eletrônica.",
-        href: "/servicos/nota-fiscal",
+        href: "https://picontreina2.dcfiorilli.com.br:8447/issweb/home",
         Icon: Receipt,
         variant: "highlight",
       },
       {
+        title: "e-SUS Saúde",
+        description: "Acesso ao sistema e-SUS da atenção básica.",
+        href: "https://esus.padremarcos.pi.gov.br/",
+        Icon: HeartPulse,
+      },
+      {
         title: "Certidão Negativa",
         description: "Emissão de Certidões Negativas de Débito.",
-        href: "/servicos/certidao-negativa",
+        href: "http://picontreina2.dcfiorilli.com.br:8084/issweb/home.jsf",
         Icon: FileCheck,
       },
       {
         title: "Portal do Contribuinte",
         description: "Acesso aos serviços do contribuinte.",
-        href: "/servicos/portal-contribuinte",
+        href: "http://picontreina2.dcfiorilli.com.br:8084/servicosweb/home.jsf",
         Icon: Landmark,
         variant: "highlight",
       },
       {
         title: "Portal do Servidor",
         description: "Acesso exclusivo para servidores municipais.",
-        href: "/servicos/portal-servidor",
+        href: "https://transparencia.padremarcos.pi.gov.br/transparencia/Servidores.aspx",
         Icon: IdCard,
       },
       {
         title: "Contracheque",
         description: "Emissão de contracheque online.",
-        href: "/servicos/contracheque",
+        href: "https://picontreina2.dcfiorilli.com.br:8447/sipweb/",
         Icon: Banknote,
       },
       {
