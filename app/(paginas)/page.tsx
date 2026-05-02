@@ -1,0 +1,199 @@
+import TransparencyCard from "@/components/ui/Card";
+import TransparencySection from "@/components/transparencia/Section";
+import DashboardResumo from "@/components/ui/Hero";
+
+import {
+  Receipt,
+  FileCheck,
+  Landmark,
+  IdCard,
+  Banknote,
+  BookOpen,
+  Eye,
+  Gavel,
+  Newspaper,
+  MessageSquare,
+  Info,
+  Briefcase,
+  Building2,
+  PieChart,
+  Handshake,
+  HardHat,
+  HeartPulse,
+} from "lucide-react";
+
+import { LucideIcon } from "lucide-react";
+
+type CardItem = {
+  title: string;
+  description: string;
+  href: string;
+  Icon: LucideIcon;
+  variant?: "highlight";
+};
+
+type SectionItem = {
+  title: string;
+  cards: CardItem[];
+};
+
+const sections: SectionItem[] = [
+  {
+    title: "Serviços ao Cidadão",
+    cards: [
+      {
+        title: "Nota Fiscal Eletrônica",
+        description: "Emissão de Nota Fiscal Eletrônica.",
+        href: "https://picontreina2.dcfiorilli.com.br:8447/issweb/home",
+        Icon: Receipt,
+        variant: "highlight",
+      },
+      {
+        title: "e-SUS Saúde",
+        description: "Acesso ao sistema e-SUS da atenção básica.",
+        href: "https://esus.padremarcos.pi.gov.br/",
+        Icon: HeartPulse,
+      },
+      {
+        title: "Certidão Negativa",
+        description: "Emissão de Certidões Negativas de Débito.",
+        href: "http://picontreina2.dcfiorilli.com.br:8084/issweb/home.jsf",
+        Icon: FileCheck,
+      },
+      {
+        title: "Portal do Contribuinte",
+        description: "Acesso aos serviços do contribuinte.",
+        href: "http://picontreina2.dcfiorilli.com.br:8084/servicosweb/home.jsf",
+        Icon: Landmark,
+        variant: "highlight",
+      },
+      {
+        title: "Portal do Servidor",
+        description: "Acesso exclusivo para servidores municipais.",
+        href: "https://transparencia.padremarcos.pi.gov.br/transparencia/Servidores.aspx",
+        Icon: IdCard,
+      },
+      {
+        title: "Contracheque",
+        description: "Emissão de contracheque online.",
+        href: "https://picontreina2.dcfiorilli.com.br:8447/sipweb/",
+        Icon: Banknote,
+      },
+      {
+        title: "Carta de Serviços",
+        description: "Guia completo de serviços oferecidos.",
+        href: "/carta-servicos",
+        Icon: BookOpen,
+        variant: "highlight",
+      },
+    ],
+  },
+
+  {
+    title: "Acesso Rápido",
+    cards: [
+      {
+        title: "Portal da Transparência",
+        description: "Acompanhe as receitas e despesas do município.",
+        href: "https://transparencia.padremarcos.pi.gov.br/transparencia/",
+        Icon: Eye,
+        variant: "highlight",
+      },
+      {
+        title: "Licitações",
+        description: "Acompanhe os processos licitatórios.",
+        href: "/licitacoes",
+        Icon: Gavel,
+      },
+      {
+        title: "Diário Oficial",
+        description: "Acesso às publicações oficiais do município.",
+        href: "https://www.diarioficialdosmunicipios.org/consulta/ConPublicacaoGeral/ConPublicacaoGeral.php",
+        Icon: Newspaper,
+        variant: "highlight",
+      },
+      {
+        title: "Ouvidoria",
+        description: "Canal de comunicação direta com a prefeitura.",
+        href: "/ouvidoria",
+        Icon: MessageSquare,
+      },
+      {
+        title: "E-SIC",
+        description: "Serviço de Informação ao Cidadão.",
+        href: "/esic",
+        Icon: Info,
+      },
+      {
+        title: "Concursos e Processo Seletivos",
+        description: "Informações sobre concursos e seletivos.",
+        href: "/concursos-e-processos",
+        Icon: Briefcase,
+        variant: "highlight",
+      },
+    ],
+  },
+
+  {
+    title: "Informações Institucionais",
+    cards: [
+      {
+        title: "Estrutura Organizacional",
+        description: "Conheça a organização da prefeitura.",
+        href: "/estrutura-organizacional",
+        Icon: Building2,
+        variant: "highlight",
+      },
+      {
+        title: "Prestação de Contas",
+        description: "Relatórios e contas públicas.",
+        href: "/prefeitura/prestacao-contas",
+        Icon: PieChart,
+      },
+      {
+        title: "Contratos",
+        description: "Íntegra dos contratos vigentes.",
+        href: "/prefeitura/contratos",
+        Icon: Handshake,
+      },
+      {
+        title: "Obras Públicas",
+        description: "Acompanhamento das obras no município.",
+        href: "/prefeitura/obras-publicas",
+        Icon: HardHat,
+        variant: "highlight",
+      },
+    ],
+  },
+];
+
+export default function TransparenciaPage() {
+  return (
+    <div className="min-h-screen relative z-0">
+
+      {/* ─── Hero ─── */}
+      <DashboardResumo />
+
+      <div className="absolute top-0 left-0 right-0 h-[3px] flex">
+        <div className="flex-1 bg-[#F7C325]" />
+        <div className="flex-1 bg-[#E53935]" />
+        <div className="flex-1 bg-[#0052CC]" />
+      </div>
+
+      {/* ─── Sections ─── */}
+      {sections.map((section, index) => (
+        <TransparencySection
+          key={section.title}
+          id={`secao-${index}`}
+          title={section.title}
+          index={index + 1}
+        >
+          {section.cards.map((card) => (
+            <TransparencyCard key={card.title} {...card} />
+          ))}
+        </TransparencySection>
+      ))}
+
+    </div>
+  );
+}
