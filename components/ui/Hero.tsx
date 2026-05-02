@@ -6,33 +6,46 @@ export default function DashboardResumo() {
       <img
         src="/padremarcos.png"
         alt="Cidade de Padre Marcos"
-        className="absolute inset-0 w-full h-[100px] md:h-[500px] object-cover object-right md:object-center"
+        className="absolute inset-0 w-full h-[280px] sm:h-[350px] md:h-[500px] object-cover object-center"
       />
 
-      {/* 🔵 OVERLAY (DA DIREITA PRA ESQUERDA, MAIS INSTITUCIONAL) */}
-      <div className="absolute inset-0 bg-gradient-to-l from-[#0f2c5c]/95 via-[#173572]/85 to-transparent z-10" />
+      {/* 🔵 OVERLAY (AZUL MAIS ABERTO) */}
+      <div className="absolute inset-0 bg-gradient-to-l from-blue-800/90 via-blue-600/80 to-transparent z-10" />
+      <div className="absolute inset-0 bg-blue-700/40 md:hidden z-10" />
 
       {/* 📝 CONTEÚDO (AGORA À DIREITA) */}
-      <div className="relative z-20 max-w-7xl mx-auto h-[220px] md:h-[500px] flex items-center justify-end px-6">
-        <div className="max-w-xl text-white text-right">
+      <div className="relative z-20 max-w-7xl mx-auto h-[280px] sm:h-[350px] md:h-[500px] flex items-center justify-end px-5 sm:px-6">
+        <div className="max-w-xl text-white text-right flex flex-col items-end">
 
-          <h1 className="text-2xl md:text-5xl font-semibold leading-tight tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight tracking-normal drop-shadow-lg">
             Trabalhando{" "}
-            <span className="text-[#FFD84D] font-bold">juntos</span>,<br />
+            <span className="text-[#FFD84D]">juntos</span>,<br />
             desenvolvendo{" "}
-            <span className="text-[#FFD84D] font-bold">mais</span>.
+            <span className="text-[#FFD84D]">mais</span>.
           </h1>
 
-          <p className="mt-3 md:mt-4 text-xs md:text-base text-gray-200 leading-relaxed">
+          <p className="mt-3 md:mt-4 text-sm sm:text-base md:text-lg text-gray-50 font-medium leading-relaxed drop-shadow-md max-w-md">
             Construindo uma cidade melhor para todos, com transparência,
             responsabilidade e compromisso com a população.
           </p>
 
-          {/* LINHA DECORATIVA */}
-          <div className="mt-3 md:mt-4 flex justify-end gap-2">
-            <div className="w-10 h-[3px] bg-[#FFD84D] rounded-full" />
-            <div className="w-6 h-[3px] bg-red-500 rounded-full" />
-            <div className="w-16 h-[3px] bg-blue-600 rounded-full" />
+          {/* BOTÃO E LINHA DECORATIVA */}
+          <div className="mt-5 md:mt-8 flex flex-col items-end gap-5">
+            <a 
+              href="https://transparencia.padremarcos.pi.gov.br/transparencia/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center bg-[#FFD84D] hover:bg-[#e6c245] text-blue-900 font-bold py-2 sm:py-3 px-6 sm:px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg text-sm sm:text-base"
+            >
+             Acessar Portal da Transparência
+            </a>
+
+            {/* LINHA DECORATIVA */}
+            <div className="flex justify-end gap-2">
+              <div className="w-10 h-[3px] bg-[#FFD84D] rounded-full" />
+              <div className="w-6 h-[3px] bg-red-500 rounded-full" />
+              <div className="w-16 h-[3px] bg-white rounded-full" />
+            </div>
           </div>
 
         </div>

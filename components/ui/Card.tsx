@@ -19,29 +19,31 @@ export default function GovCard({
   featured = false,
 }: GovCardProps) {
   return (
-    <article className="h-full max-w-[250px] w-full">
+    <article className="h-[180px] max-w-[250px] w-full">
       <Link
         href={href}
         aria-label={`Acessar ${title}`}
-        className="
-          group
-          relative
-          flex flex-col
-          h-full
-          bg-white
-          border border-gray-200
-          rounded-2xl
-          overflow-hidden
-          transition-all duration-300 ease-out
-          hover:shadow-lg hover:-translate-y-1
-          focus:outline-none
-          focus-visible:ring-4
-          focus-visible:ring-blue-600
-          p-4
-        "
+        className={`
+    group relative flex flex-col h-full bg-white
+    border rounded-2xl overflow-hidden
+    transition-all duration-300 ease-out
+    hover:shadow-lg hover:-translate-y-1
+    focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-600
+    p-4
+  ${featured
+            ? "border-blue-200 shadow-sm bg-blue-50/40"
+            : "border-gray-200"}
+`}
       >
         {/* 🔵 Barra colorida topo */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-green-500 to-yellow-400" />
+        <div
+          className={`
+            absolute top-0 left-0 w-full h-[4px] rounded-t-2xl
+            ${featured
+              ? "bg-[#0052CC]" 
+              : "bg-gradient-to-r from-blue-600 via-green-500 to-yellow-400"}
+          `}
+        />
 
         {/* ✨ Brilho de fundo (hover) */}
         <div
@@ -65,7 +67,7 @@ export default function GovCard({
                 bg-gray-100
                 transition-all duration-300
                 group-hover:bg-gradient-to-br group-hover:from-blue-100 group-hover:to-blue-200
-                ${featured ? "h-16 w-16" : "h-14 w-14"}
+                h-14 w-14
               `}
             >
               {Icon && (
@@ -74,7 +76,7 @@ export default function GovCard({
                     text-gray-600
                     transition-all duration-300
                     group-hover:text-blue-700
-                    ${featured ? "h-8 w-8" : "h-7 w-7"}
+                    h-7 w-7
                   `}
                 />
               )}
@@ -82,12 +84,7 @@ export default function GovCard({
           </div>
 
           {/* Conteúdo */}
-          <h3
-            className={`
-              text-center font-semibold uppercase text-gray-800 relative z-10
-              ${featured ? "text-base" : "text-sm"}
-            `}
-          >
+          <h3 className="text-center font-semibold text-gray-800 relative z-10 text-sm leading-snug min-h-[40px] flex items-center justify-center px-1">
             {title}
           </h3>
         </div>
