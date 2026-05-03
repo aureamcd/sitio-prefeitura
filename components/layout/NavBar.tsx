@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect, KeyboardEvent, JSX, ReactElement } from "react";
 import {
-  Home, Folder, FileText, MessageSquare, X, ChevronDown, ChevronRight, Scale,
+  Home, Folder, FileText, MessageSquare, X, ChevronDown, ChevronRight, Scale, Newspaper,
 } from "lucide-react";
 
 // ── tipos ──────────────────────────────────────────────────────────────────────
@@ -47,6 +47,7 @@ const servicosItems = [
 const fixedItems: FixedItem[] = [
   { href: "/acesso-informacao", label: "Acesso à Informação", icon: <FileText size={18} aria-hidden="true" /> },
   { href: "/leis-normas", label: "Leis e Normas", icon: <Scale size={18} aria-hidden="true" /> },
+  { href: "/noticias", label: "Notícias", icon: <Newspaper size={18} aria-hidden="true" /> },
   { href: "/ouvidoria", label: "Ouvidoria", icon: <MessageSquare size={18} aria-hidden="true" /> },
 ];
 
@@ -142,11 +143,10 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
   const dropItemCls = (href: string) => `
     block px-5 py-3 text-sm transition-all duration-200 cursor-pointer whitespace-nowrap
-    hover:bg-blue-100 hover:text-blue-700 rounded-lg mx-2 my-1
-    focus-visible:ring-2 focus-visible:ring-blue-500 focus:outline-none
+    border-l-4 outline-none
     ${isActive(href)
-      ? "text-blue-700 font-semibold bg-blue-50"
-      : "text-gray-700"}
+      ? "text-[#173572] font-semibold bg-gradient-to-r from-[#173572]/5 to-[#173572]/10 border-[#173572] pl-7"
+      : "text-gray-700 border-transparent hover:text-[#173572] hover:bg-gradient-to-r hover:from-[#173572]/5 hover:to-[#173572]/10 hover:border-[#173572] hover:pl-7"}
   `;
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -225,13 +225,13 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
                     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
                       const isSubMenuOpen = !!openSub;
                       if (!isSubMenuOpen) {
-                         e.preventDefault();
-                         const items = Array.from(document.querySelectorAll('#dropdown-prefeitura > div > button[role="menuitem"]')) as HTMLElement[];
-                         const idx = items.indexOf(document.activeElement as HTMLElement);
-                         if (idx !== -1) {
-                           if (e.key === "ArrowDown") (items[idx + 1] || items[0])?.focus();
-                           else (items[idx - 1] || items[items.length - 1])?.focus();
-                         }
+                        e.preventDefault();
+                        const items = Array.from(document.querySelectorAll('#dropdown-prefeitura > div > button[role="menuitem"]')) as HTMLElement[];
+                        const idx = items.indexOf(document.activeElement as HTMLElement);
+                        if (idx !== -1) {
+                          if (e.key === "ArrowDown") (items[idx + 1] || items[0])?.focus();
+                          else (items[idx - 1] || items[items.length - 1])?.focus();
+                        }
                       }
                     }
                     if (e.key === "Escape") {

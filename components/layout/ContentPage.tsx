@@ -28,6 +28,7 @@ type ContentPageProps = {
   lastUpdate?: string;
   responsavel?: string;
   showSearch?: boolean;
+  hideStripe?: boolean;
 };
 
 /* =========================
@@ -55,6 +56,7 @@ export default function ContentPage({
   lastUpdate,
   responsavel,
   showSearch = true,
+  hideStripe = false,
 }: ContentPageProps): JSX.Element {
   const titleRef = useRef<HTMLHeadingElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -85,45 +87,50 @@ export default function ContentPage({
       >
 
         {breadcrumb && (
-          <nav aria-label="Localização na página" className="mb-4">
+          <nav aria-label="Localização na página" className="mb-2">
             <Breadcrumb items={breadcrumb} />
           </nav>
         )}
 
-        <div className="mb-7 flex flex-col items-center text-center">
+        {(title || description || icon) && (
+          <div className="mb-6 flex flex-col items-center text-center">
 
-          {/* Ícone decorativo */}
-          {icon && (
-            <div aria-hidden="true" className="mb-3.5 w-10 h-10 rounded-[10px] bg-[#e8edf7] flex items-center justify-center text-[#173572]">
-              {icon}
-            </div>
-          )}
+            {/* Ícone decorativo */}
+            {icon && (
+              <div aria-hidden="true" className="mb-3.5 w-10 h-10 rounded-[10px] bg-[#e8edf7] flex items-center justify-center text-[#173572]">
+                {icon}
+              </div>
+            )}
 
-          <h1
-            id="page-title"
-            ref={titleRef}
-            className="text-[26px] font-bold text-gray-900 tracking-[-0.02em] leading-[1.2] mb-2.5"
-          >
-            {title}
-          </h1>
+            {title && (
+              <h1
+                id="page-title"
+                ref={titleRef}
+                className="text-[26px] font-bold text-gray-900 tracking-[-0.02em] leading-[1.2] mb-2.5"
+              >
+                {title}
+              </h1>
+            )}
 
-          {/* Linha decorativa institucional */}
-          <div
-            role="presentation"
-            className={`mb-3.5 h-[3px] w-9 rounded-full bg-[#173572] ${prefersReducedMotion ? "" : "transition-all duration-300"
-              }`}
-            aria-hidden="true"
-          />
+            {!hideStripe && title && (
+              <div
+                role="presentation"
+                className={`mb-3.5 h-[3px] w-9 rounded-full bg-[#173572] ${prefersReducedMotion ? "" : "transition-all duration-300"
+                  }`}
+                aria-hidden="true"
+              />
+            )}
 
-          {description && (
-            <p
-              id="page-description"
-              className="text-[#4b5563] max-w-[560px] text-base sm:text-lg leading-relaxed m-0"
-            >
-              {description}
-            </p>
-          )}
-        </div>
+            {description && (
+              <p
+                id="page-description"
+                className="text-[#4b5563] max-w-[560px] text-base sm:text-lg leading-relaxed m-0"
+              >
+                {description}
+              </p>
+            )}
+          </div>
+        )}
 
         <div
           id="page-content"

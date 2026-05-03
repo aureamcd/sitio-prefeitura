@@ -2,6 +2,7 @@ import TransparencyCard from "@/components/ui/Card";
 import TransparencySection from "@/components/transparencia/Section";
 import DashboardResumo from "@/components/ui/Hero";
 
+
 import {
   Receipt,
   FileCheck,
@@ -188,12 +189,6 @@ export default function TransparenciaPage() {
 
       {/* ─── Hero ─── */}
       <DashboardResumo />
-
-      <div className="absolute top-0 left-0 right-0 h-[4px] flex z-50">
-        <div className="flex-1 bg-[#F7C325]" />
-        <div className="flex-1 bg-[#E53935]" />
-        <div className="flex-1 bg-[#0052CC]" />
-      </div>
 
       {/* ─── Sections ─── */}
       {sections.map((section, index) => (

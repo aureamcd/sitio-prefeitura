@@ -14,7 +14,7 @@ export default function DashboardResumo() {
       <div className="absolute inset-0 bg-blue-700/40 md:hidden z-10" />
 
       {/* 📝 CONTEÚDO (AGORA À DIREITA) */}
-      <div className="relative z-20 max-w-7xl mx-auto h-[280px] sm:h-[350px] md:h-[500px] flex items-center justify-end px-5 sm:px-6">
+      <div className="relative z-20 max-w-7xl mx-auto h-[280px] sm:h-[350px] md:h-[500px] flex items-center justify-end px-5 sm:px-16">
         <div className="max-w-xl text-white text-right flex flex-col items-end">
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight tracking-normal drop-shadow-lg">

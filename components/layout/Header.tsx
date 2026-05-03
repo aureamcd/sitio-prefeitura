@@ -32,12 +32,12 @@ export default function Header(): JSX.Element {
   );
 
   const UniversalAccessIcon = () => (
-    <Image 
-      src="/acessibilidade.png" 
-      alt="Acessibilidade" 
-      width={22} 
-      height={22} 
-      className="object-contain bg-white rounded-full p-[2px]" 
+    <Image
+      src="/acessibilidade.png"
+      alt="Acessibilidade"
+      width={22}
+      height={22}
+      className="object-contain bg-white rounded-full p-[2px]"
     />
   );
 
@@ -112,7 +112,7 @@ export default function Header(): JSX.Element {
   }
 
   return (
-    <header className="w-full bg-white border-b border-gray-200 shadow-sm print:hidden">
+    <header className="w-full bg-white relative z-50 print:hidden">
 
       {/* 🔷 BARRA AZUL */}
       <div className="w-full bg-[#0B3D91] text-white">
@@ -256,7 +256,7 @@ export default function Header(): JSX.Element {
         >
           <Image
             src="/logopm.png"
-            alt="Prefeitura de Padre Marcos"
+            alt="Prefeitura Municipal de Padre Marcos"
             width={60}
             height={56}
             style={{ width: "auto", height: "auto" }}
@@ -264,7 +264,7 @@ export default function Header(): JSX.Element {
 
           <div className="py-1 text-center sm:text-left">
             <p className="text-xs sm:text-sm text-gray-500 font-medium tracking-wide">
-              Prefeitura de
+              Prefeitura Municipal de
             </p>
 
             <h1
@@ -370,6 +370,14 @@ export default function Header(): JSX.Element {
       <div className="focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
         <Navbar mobileOpen={isMenuOpen} setMobileOpen={setIsMenuOpen} />
       </div>
+
+      {/* Faixa colorida */}
+      <div className="w-full flex h-[3px] ">
+        <div className="w-1/3 bg-[#F7C325]" />
+        <div className="w-1/3 bg-[#E53935]" />
+        <div className="w-1/3 bg-[#0052CC]" />
+      </div>
+
     </header >
   );
 }

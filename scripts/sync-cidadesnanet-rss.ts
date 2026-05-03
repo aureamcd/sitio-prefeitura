@@ -2,22 +2,24 @@ import Parser from "rss-parser";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 import { extractImageFromContent } from "@/scripts/utils/extractImage";
+import { analisarNoticiaIA } from "@/scripts/utils/ai";
 
 dotenv.config();
 
-// 🔗 Supabase
+/* ─── CONFIG ───────────────────────── */
+
 const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// 🔗 RSS Padre Marcos
 const FEED_URL =
   "https://cidadesnanet.com/portal/category/municipios/padre-marcus/feed/";
 
 const parser = new Parser();
 
-// 🔤 slug
+/* ─── UTILS ───────────────────────── */
+
 function slugify(text: string) {
   return text
     .toLowerCase()
@@ -27,110 +29,71 @@ function slugify(text: string) {
     .replace(/(^-|-$)/g, "");
 }
 
-// 🔎 Palavras relevantes
-const KEYWORDS = [
-  "prefeitura",
-  "prefeito",
-  "prefeita",
-  "secretaria",
-  "educação",
-  "escola",
-  "saúde",
-  "hospital",
-  "vacina",
-  "obras",
-  "licitação",
-  "assistência",
-  "programa",
-  "município",
-];
+function optimizeImage(url: string) {
+  // só otimiza se for CDN compatível
+  if (url.includes("cloudinary") || url.includes("imgix")) {
+    return `${url}?w=1200&h=630&fit=crop`;
+  }
 
-// 🚫 Palavras bloqueadas
-const BLOCKED = [
-  "polícia",
-  "homicídio",
-  "acidente",
-  "prisão",
-  "roubo",
-  "assalto",
-];
-
-// 🎯 Filtro inteligente
-function isRelevant(text: string) {
-  const lower = text.toLowerCase();
-
-  const hasRelevant = KEYWORDS.some((k) => lower.includes(k));
-  const hasBlocked = BLOCKED.some((k) => lower.includes(k));
-
-  return hasRelevant && !hasBlocked;
+  return url;
 }
 
-// 🖼️ pegar imagem da página (OG:image)
+function cleanImage(url: string) {
+  return url
+    .replace(/\?.*$/, "")
+    .replace(/-\d+x\d+(?=\.\w+$)/, "");
+}
+
+/* ─── PEGAR IMAGEM ───────────────── */
+
 async function getImageFromPage(url: string): Promise<string> {
   try {
     const res = await fetch(url, {
-      headers: {
-        "User-Agent": "Mozilla/5.0",
-      },
+      headers: { "User-Agent": "Mozilla/5.0" },
     });
 
     const html = await res.text();
 
-    // og:image (aspas simples ou dupla)
     let match = html.match(
       /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/
     );
-    if (match) return match[1];
+    if (match) return cleanImage(match[1]);
 
-    // twitter:image
     match = html.match(
       /<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/
     );
-    if (match) return match[1];
+    if (match) return cleanImage(match[1]);
 
-    // img src
+    match = html.match(/<img[^>]+srcset=["']([^"']+)["']/);
+    if (match) {
+      const srcset = match[1].split(",");
+
+      const largest = srcset
+        .map((s) => {
+          const [url, size] = s.trim().split(" ");
+          return { url, size: parseInt(size) || 0 };
+        })
+        .sort((a, b) => b.size - a.size)[0];
+
+      if (largest?.url) return cleanImage(largest.url);
+    }
+
     match = html.match(/<img[^>]+src=["']([^"']+)["']/);
-    if (match) return match[1];
-
-    // lazy loading (extra)
-    match = html.match(/<img[^>]+data-src=["']([^"']+)["']/);
-    if (match) return match[1];
+    if (match) return cleanImage(match[1]);
 
     return "";
-  } catch (error) {
-    console.error("Erro ao buscar imagem:", error);
+  } catch (err) {
+    console.error("Erro imagem:", err);
     return "";
   }
 }
 
-// 🧠 destaque inteligente
-function getDestaque(text: string) {
-  const t = text.toLowerCase();
-
-  if (t.includes("saúde") || t.includes("hospital") || t.includes("vacina"))
-    return "saude";
-
-  if (t.includes("educação") || t.includes("escola"))
-    return "educacao";
-
-  if (t.includes("obra") || t.includes("infraestrutura"))
-    return "obras";
-
-  if (t.includes("assistência") || t.includes("social"))
-    return "assistencia";
-
-  if (t.includes("licitação") || t.includes("contrato"))
-    return "licitacao";
-
-  return "geral";
-}
+/* ─── SYNC ───────────────────────── */
 
 export async function runSync() {
   console.log("🌐 Buscando RSS...");
 
   const feed = await parser.parseURL(FEED_URL);
-
-  console.log(`📰 Total no feed: ${feed.items.length}`);
 
   let inseridos = 0;
   let ignorados = 0;
@@ -141,18 +104,26 @@ export async function runSync() {
 
     if (!titulo || !link) continue;
 
-    const texto = `${titulo} ${item.contentSnippet || ""}`;
+    const fullContent =
+      (item as any)["content:encoded"] || item.content || "";
 
-    // 🔎 filtro
-    if (!isRelevant(texto)) {
-      console.log("⛔ Ignorado:", titulo);
+    // 🔒 Limite pra IA (MUITO IMPORTANTE)
+    const conteudoLimitado = fullContent.slice(0, 2000);
+
+    /* ─── IA ───────────────── */
+
+    const analise = await analisarNoticiaIA(titulo, conteudoLimitado);
+
+    if (!analise.relevante) {
+      console.log("⛔ IA ignorou:", titulo);
       ignorados++;
       continue;
     }
 
     const slug = slugify(titulo);
 
-    // 🔁 deduplicação (slug OU link)
+    /* ─── DUPLICAÇÃO ───────────────── */
+
     const { data: exists } = await supabase
       .from("noticias")
       .select("id")
@@ -165,49 +136,47 @@ export async function runSync() {
       continue;
     }
 
-    // 🖼️ IMAGEM (estratégia completa)
+    /* ─── IMAGEM ───────────────── */
     let imagem = "";
 
-    // 1. RSS
+    // 1. RSS (rápido)
     if ((item as any).enclosure?.url) {
-      imagem = (item as any).enclosure.url;
+      imagem = cleanImage((item as any).enclosure.url);
     } else if ((item as any)["media:content"]?.url) {
-      imagem = (item as any)["media:content"].url;
+      imagem = cleanImage((item as any)["media:content"].url);
     }
 
     // 2. conteúdo RSS
-    const fullContent =
-      (item as any)["content:encoded"] || item.content || "";
-
     if (!imagem && fullContent) {
       const extracted = extractImageFromContent(fullContent);
-      if (extracted) imagem = extracted;
+      if (extracted) imagem = cleanImage(extracted);
     }
 
-    // 3. página real (melhor qualidade)
+    // 3. página (MELHOR QUALIDADE, mas só se precisar)
     if (!imagem) {
-      imagem = await getImageFromPage(link);
+      const pageImage = await getImageFromPage(link);
+      if (pageImage) imagem = pageImage;
     }
 
-    const destaque = getDestaque(texto);
+    if (imagem) imagem = optimizeImage(imagem);
+
+    /* ─── POST ───────────────── */
 
     const post = {
       titulo,
-      resumo: item.contentSnippet || "",
-      conteudo: item.content || "",
+      resumo: analise.resumo,
+      conteudo: fullContent,
       imagem,
+      imagem_posicao: analise.imagem_posicao,
       slug,
       origem: "rss",
       fonte: "Cidades na Net",
       link_original: link,
-      destaque,
+      destaque: analise.categorias, // ✅ ARRAY
       status: "pendente",
-
-      // ✅ CORRETO
       data: item.pubDate
         ? new Date(item.pubDate).toISOString()
         : new Date().toISOString(),
-
       created_at: new Date().toISOString(),
     };
 
@@ -216,7 +185,7 @@ export async function runSync() {
     if (error) {
       console.error("❌ Erro:", error.message);
     } else {
-      console.log("✅ Inserido:", titulo);
+      console.log("✅", titulo, "|", analise.categorias.join(", "));
       inseridos++;
     }
   }
@@ -225,3 +194,7 @@ export async function runSync() {
   console.log("✅ Inseridos:", inseridos);
   console.log("⛔ Ignorados:", ignorados);
 }
+
+/* ─── EXECUÇÃO ───────────────── */
+
+runSync().catch(console.error);
