@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Calendar } from "lucide-react";
 import { useState, useCallback } from "react";
 
@@ -46,15 +47,6 @@ function formatarDataRelativa(data: string) {
   return dataNoticia.toLocaleDateString("pt-BR");
 }
 
-/**
- * Calcula o melhor `object-position` baseado na posição definida pela IA
- * e nas dimensões reais da imagem carregada.
- *
- * Lógica por proporção (ratio = largura / altura):
- *   - Retrato  (ratio < 0.85):  imagem alta → rosto fica no topo
- *   - Quadrado (0.85 – 1.3):   rosto ligeiramente acima do centro
- *   - Paisagem (ratio > 1.3):  foto de grupo → rosto no terço superior
- */
 function calcularObjectPosition(
   posicao: string | undefined,
   naturalWidth: number,
@@ -64,38 +56,33 @@ function calcularObjectPosition(
 
   switch (posicao) {
     case "cover_face":
-      if (ratio < 0.85) return "center 12%"; // retrato: rosto bem acima
-      if (ratio < 1.3) return "center 20%";  // quadrado: ligeiramente acima
-      return "center 28%";                    // paisagem: terço superior
+      if (ratio < 0.85) return "center 12%";
+      if (ratio < 1.3) return "center 20%";
+      return "center 28%";
 
     case "cover_top":
-      // Obras e infraestrutura: mostrar o topo da cena
-      if (ratio < 0.85) return "center 5%";  // retrato: construção/prédio
-      return "center top";                    // paisagem: topo padrão
+      if (ratio < 0.85) return "center 5%";
+      return "center top";
 
-    default: // cover_center
-      // Retrato numa moldura paisagem tende a cortar embaixo — sobe levemente
+    default:
       if (ratio < 0.85) return "center 35%";
       return "center center";
   }
 }
 
-/** Posição inicial antes da imagem carregar (evita salto visual) */
 function posicaoInicial(posicao: string | undefined): string {
   if (posicao === "cover_top") return "center top";
   if (posicao === "cover_face") return "center 25%";
   return "center center";
 }
 
-/** Hook que calcula a posição dinâmica ao carregar a imagem */
 function useImagePosition(imagem_posicao: string | undefined) {
   const [objectPosition, setObjectPosition] = useState<string>(
     posicaoInicial(imagem_posicao)
   );
 
-  const onLoad = useCallback(
-    (e: React.SyntheticEvent<HTMLImageElement>) => {
-      const img = e.currentTarget;
+  const onLoadingComplete = useCallback(
+    (img: HTMLImageElement) => {
       const pos = calcularObjectPosition(
         imagem_posicao,
         img.naturalWidth,
@@ -106,7 +93,7 @@ function useImagePosition(imagem_posicao: string | undefined) {
     [imagem_posicao]
   );
 
-  return { objectPosition, onLoad };
+  return { objectPosition, onLoadingComplete };
 }
 
 export default function NewsCard({
@@ -124,10 +111,10 @@ export default function NewsCard({
     Array.isArray(destaque) ? destaque[0] : destaque
   );
 
-  // Posição dinâmica para o card grid
   const grid = useImagePosition(imagem_posicao);
-  // Posição dinâmica para o card lista (miniaturas quadradas)
   const list = useImagePosition(imagem_posicao);
+
+  const finalImage = imagem || "/placeholder.jpg";
 
   // 🟦 GRID
   if (variant === "grid") {
@@ -136,18 +123,18 @@ export default function NewsCard({
         href={`/noticias/${slug}`}
         className="group flex flex-col h-full rounded-2xl overflow-hidden border bg-white hover:shadow-lg transition-all duration-300"
       >
-        {/* imagem */}
-        <div className="w-full aspect-[16/9] bg-gray-100 overflow-hidden">
-          <img
-            src={imagem || "/placeholder.jpg"}
+        <div className="w-full aspect-[16/9] bg-gray-100 overflow-hidden relative">
+          <Image
+            src={finalImage}
             alt={titulo}
-            onLoad={grid.onLoad}
+            fill
+            onLoadingComplete={grid.onLoadingComplete}
             style={{ objectPosition: grid.objectPosition }}
-            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+            className="object-cover group-hover:scale-105 transition duration-500"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
 
-        {/* conteúdo */}
         <div className="p-4 flex flex-col flex-1">
           <div className="space-y-2">
             {destaque && (
@@ -175,15 +162,13 @@ export default function NewsCard({
             </p>
           </div>
 
-          {/* 🔥 rodapé fixo */}
           <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
             <div className="flex items-center gap-1">
               <Calendar size={14} />
               {formattedDate}
             </div>
 
-            {/* 👇 só aparece no hover */}
-            <span className="text-blue-600 font-medium opacity-0 group-hover:opacity-100 transition">
+            <span className="text-blue-600 font-bold opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300">
               Ler mais →
             </span>
           </div>
@@ -198,21 +183,20 @@ export default function NewsCard({
       href={`/noticias/${slug}`}
       className="group flex gap-4 items-center border rounded-xl p-3 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
     >
-      {/* barra lateral */}
       <div className={`w-1 h-full rounded ${categoriaInfo.color}`} />
 
-      {/* imagem */}
-      <div className="w-24 h-24 min-w-[96px] bg-gray-100 rounded-lg overflow-hidden">
-        <img
-          src={imagem || "/placeholder.jpg"}
+      <div className="w-24 h-24 min-w-[96px] bg-gray-100 rounded-lg overflow-hidden relative">
+        <Image
+          src={finalImage}
           alt={titulo}
-          onLoad={list.onLoad}
+          fill
+          onLoadingComplete={list.onLoadingComplete}
           style={{ objectPosition: list.objectPosition }}
-          className="w-full h-full object-cover"
+          className="object-cover"
+          sizes="96px"
         />
       </div>
 
-      {/* conteúdo */}
       <div className="flex-1 flex flex-col">
         <div className="space-y-1">
           {destaque && (
@@ -240,14 +224,13 @@ export default function NewsCard({
           </p>
         </div>
 
-        {/* rodapé */}
         <div className="mt-auto flex items-center justify-between pt-2 text-xs text-gray-500">
           <div className="flex items-center gap-1">
             <Calendar size={14} />
             {formattedDate}
           </div>
 
-          <span className="text-blue-600 font-medium opacity-0 group-hover:opacity-100 transition">
+          <span className="text-blue-600 font-bold opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300">
             Ler mais →
           </span>
         </div>

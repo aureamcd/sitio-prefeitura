@@ -1,21 +1,15 @@
 import { createClient } from "@supabase/supabase-js";
+import { notFound } from "next/navigation";
 import ContentPage from "@/components/layout/ContentPage";
-import PageActions from "@/components/ui/PageActions";
-import Link from "next/link";
-import {
-    Calendar,
-    Clock,
-    User,
-    ExternalLink,
-    ArrowLeft,
-} from "lucide-react";
+import { Calendar, Clock, User, Share2 } from "lucide-react";
+
+// Forçar revalidação a cada 60 segundos
+export const revalidate = 60;
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
-
-/* helpers */
 
 function formatarData(data: string) {
     return new Date(data).toLocaleDateString("pt-BR", {
@@ -25,40 +19,28 @@ function formatarData(data: string) {
     });
 }
 
-function estimarLeitura(conteudo: string) {
-    const palavras = conteudo.replace(/<[^>]*>/g, "").split(/\s+/).length;
-    return `${Math.max(1, Math.ceil(palavras / 200))} min de leitura`;
+function estimarLeitura(texto: string) {
+    const palavrasPorMinuto = 200;
+    const palavras = texto.trim().split(/\s+/).length;
+    const minutos = Math.ceil(palavras / palavrasPorMinuto);
+    return `${minutos} min de leitura`;
 }
 
-/* page */
-
-export default async function NoticiaPage({ params }: any) {
+export default async function NoticiaPage({
+    params,
+}: {
+    params: Promise<{ slug: string }>;
+}) {
     const { slug } = await params;
 
-    const { data } = await supabase
+    const { data, error } = await supabase
         .from("noticias")
         .select("*")
         .eq("slug", slug)
-        .eq("status", "publicado")
         .single();
 
-    if (!data) {
-        return (
-            <ContentPage title="Notícia não encontrada">
-                <div className="text-center py-20">
-                    <p className="text-gray-500 mb-4">
-                        A notícia não está disponível.
-                    </p>
-
-                    <Link
-                        href="/noticias"
-                        className="text-blue-600 hover:underline"
-                    >
-                        ← Voltar para notícias
-                    </Link>
-                </div>
-            </ContentPage>
-        );
+    if (error || !data) {
+        notFound();
     }
 
     const tempoLeitura = estimarLeitura(data.conteudo || "");
@@ -97,10 +79,10 @@ export default async function NoticiaPage({ params }: any) {
                     <div className={`h-2.5 w-full ${topBarColor}`} />
 
                     {/* CONTEÚDO */}
-                    <article className="p-6 sm:p-8 md:p-12 space-y-8">
+                    <article className="p-6 sm:p-8 md:p-12 space-y-12">
                         {/* CATEGORIAS (BADGES) */}
                         {data.destaque && (
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2.5">
                                 {(Array.isArray(data.destaque) ? data.destaque : [data.destaque]).map((cat: string) => {
                                     const badgeColors: Record<string, string> = {
                                         saude: "bg-green-50 text-green-700 border-green-100",
@@ -118,78 +100,69 @@ export default async function NoticiaPage({ params }: any) {
                             </div>
                         )}
 
-                        {/* META */}
-                        <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                            <span className="flex items-center gap-1">
-                                <Calendar size={14} />
-                                {formatarData(data.data)}
-                            </span>
+                        <div className="space-y-8">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 leading-[1.15] tracking-tight">
+                                {data.titulo}
+                            </h1>
 
-                            <span className="flex items-center gap-1">
-                                <Clock size={14} />
-                                {tempoLeitura}
-                            </span>
-
-                            {data.fonte && (
-                                <span className="flex items-center gap-1">
-                                    <User size={14} />
-                                    {data.fonte}
+                            {/* META */}
+                            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-semibold text-gray-500">
+                                <span className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+                                    <Calendar size={15} className="text-blue-500" />
+                                    {formatarData(data.data)}
                                 </span>
-                            )}
-                        </div>
 
-                        {/* TÍTULO */}
-                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-                            {data.titulo}
-                        </h1>
+                                <span className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+                                    <Clock size={15} className="text-blue-500" />
+                                    {tempoLeitura}
+                                </span>
 
-                        {/* RESUMO */}
-                        {data.resumo && (
-                            <p className="text-lg text-gray-600 leading-relaxed border-l-4 border-blue-500 pl-4">
+                                {data.fonte && (
+                                    <span className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+                                        <User size={15} className="text-blue-500" />
+                                        {data.fonte}
+                                    </span>
+                                )}
+                            </div>
+
+                            <p className="text-lg sm:text-xl text-gray-600 leading-relaxed font-medium italic border-l-4 border-blue-500/20 pl-5 py-2">
                                 {data.resumo}
                             </p>
-                        )}
-
-                        {/* TEXTO */}
-                        <div
-                            className="
-                prose prose-lg max-w-none
-                prose-headings:text-gray-900
-                prose-p:text-gray-700
-                prose-a:text-blue-600 hover:prose-a:underline
-              "
-                            dangerouslySetInnerHTML={{
-                                __html: data.conteudo || "",
-                            }}
-                        />
-
-                        {/* RODAPÉ */}
-                        <div className="pt-6 border-t flex flex-wrap justify-between gap-4">
-
-                            {data.link_original && (
-                                <a
-                                    href={data.link_original}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline"
-                                >
-                                    Ver original
-                                    <ExternalLink size={14} />
-                                </a>
-                            )}
-
-                            <Link
-                                href="/noticias"
-                                className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-blue-600"
-                            >
-                                <ArrowLeft size={14} />
-                                Voltar
-                            </Link>
                         </div>
 
+                        {/* CONTEÚDO PRINCIPAL (HTML) */}
+                        <div
+                            className="prose prose-blue prose-lg max-w-none 
+                            prose-headings:font-bold prose-headings:text-gray-900
+                            prose-p:text-gray-700 prose-p:leading-relaxed
+                            prose-img:rounded-2xl prose-img:shadow-lg
+                            prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline"
+                            dangerouslySetInnerHTML={{ __html: data.conteudo || "" }}
+                        />
+
+                        {/* RODAPÉ DO ARTIGO */}
+                        <div className="pt-10 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                            <div className="text-sm text-gray-400">
+                                Publicado em {formatarData(data.data)}
+                            </div>
+
+                            <button className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-50 text-blue-700 font-bold rounded-xl hover:bg-blue-100 transition-colors">
+                                <Share2 size={18} />
+                                Compartilhar Notícia
+                            </button>
+                        </div>
                     </article>
                 </div>
 
+                {/* VOLTAR */}
+                <div className="mt-8 text-center">
+                    <a
+                        href="/noticias"
+                        className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 font-medium transition"
+                    >
+                        ← Voltar para todas as notícias
+                    </a>
+                </div>
             </div>
         </ContentPage>
     );

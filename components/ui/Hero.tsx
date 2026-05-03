@@ -1,12 +1,17 @@
+import Image from "next/image";
+
 export default function DashboardResumo() {
   return (
     <section className="relative overflow-hidden">
 
       {/* 🖼️ IMAGEM */}
-      <img
+      <Image
         src="/padremarcos.png"
         alt="Cidade de Padre Marcos"
-        className="absolute inset-0 w-full h-[280px] sm:h-[350px] md:h-[500px] object-cover object-center"
+        fill
+        priority
+        className="object-cover object-center"
+        sizes="100vw"
       />
 
       {/* 🔵 OVERLAY (AZUL MAIS ABERTO) */}
