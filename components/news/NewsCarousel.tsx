@@ -7,7 +7,7 @@ type Noticia = {
   imagem?: string;
   slug: string;
   data: string;
-  destaque?: string;
+  destaque?: string | string[];
 };
 
 export default function NewsGrid({ noticias }: { noticias: Noticia[] }) {

@@ -8,8 +8,19 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export default function AdminNewsList({ onEdit }: any) {
-  const [noticias, setNoticias] = useState<any[]>([]);
+type Noticia = {
+  id: string;
+  titulo: string;
+  status: string;
+  [key: string]: unknown;
+};
+
+type AdminNewsListProps = {
+  onEdit: (noticia: Noticia) => void;
+};
+
+export default function AdminNewsList({ onEdit }: AdminNewsListProps) {
+  const [noticias, setNoticias] = useState<Noticia[]>([]);
 
   useEffect(() => {
     fetchNoticias();

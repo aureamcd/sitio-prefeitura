@@ -56,7 +56,9 @@ export default function NewsCard({
   variant = "grid",
 }: NewsCardProps) {
   const formattedDate = formatarDataRelativa(data);
-  const categoriaInfo = getCategoriaInfo(destaque);
+  const categoriaInfo = getCategoriaInfo(
+    Array.isArray(destaque) ? destaque[0] : destaque
+  );
 
   // 🟦 GRID
   if (variant === "grid") {

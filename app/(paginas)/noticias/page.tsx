@@ -19,7 +19,7 @@ type Noticia = {
     imagem?: string;
     slug: string;
     data: string;
-    destaque?: string;
+    destaque?: string | string[];
 };
 
 const ITEMS_PER_PAGE = 9;
@@ -94,7 +94,8 @@ export default function NoticiasPage() {
 
     // 🔍 filtro
     const filtradas = data.filter((n) => {
-        const matchCategoria = !categoria || n.destaque.includes(categoria);
+        const matchCategoria =
+            !categoria || (n.destaque ?? []).includes(categoria);
 
         if (!periodo) return matchCategoria;
 
@@ -115,13 +116,13 @@ export default function NoticiasPage() {
     );
 
     return (
-        
+
         <ContentPage
             title="Notícias"
             description="Acompanhe as últimas notícias e ações do município."
         >
             <div className="space-y-6">
-                
+
                 {/* 🔘 FILTROS */}
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
 
@@ -248,8 +249,8 @@ export default function NoticiasPage() {
                                         key={pageNumber}
                                         onClick={() => setPage(pageNumber)}
                                         className={`px-3 py-1 rounded text-sm ${page === pageNumber
-                                                ? "bg-blue-600 text-white"
-                                                : "bg-gray-200"
+                                            ? "bg-blue-600 text-white"
+                                            : "bg-gray-200"
                                             }`}
                                     >
                                         {pageNumber}

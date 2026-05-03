@@ -18,14 +18,119 @@ const CATEGORIAS_VALIDAS = [
 
 const POSICOES_VALIDAS = ["cover_center", "cover_top", "cover_face"];
 
+/** Remove HTML tags e normaliza espaços para passar texto limpo à IA */
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+/**
+ * Heurística de fallback para imagem_posicao baseada em palavras-chave.
+ * Usada quando a IA falha ou retorna posição inválida.
+ */
+function inferirPosicaoHeuristica(
+  titulo: string,
+  conteudo: string
+): AnaliseIA["imagem_posicao"] {
+  const texto = `${titulo} ${conteudo}`.toLowerCase();
+
+  // Palavras que indicam foco em PESSOAS / ROSTOS
+  const palavrasFace = [
+    "prefeito",
+    "secretário",
+    "secretária",
+    "vereador",
+    "atleta",
+    "aluno",
+    "aluna",
+    "criança",
+    "estudante",
+    "professor",
+    "professora",
+    "médico",
+    "médica",
+    "enfermeiro",
+    "enfermeira",
+    "entregou",
+    "entrega",
+    "recebeu",
+    "receberam",
+    "discurso",
+    "palestra",
+    "homenagem",
+    "prêmio",
+    "premiação",
+    "campeão",
+    "campeã",
+    "formatura",
+    "posse",
+    "inaugurou",
+    "visita",
+    "reunião",
+    "assinatura",
+    "assinam",
+  ];
+
+  // Palavras que indicam foco em OBRAS / INFRAESTRUTURA / ESPAÇOS ABERTOS
+  const palavrasTop = [
+    "obra",
+    "obras",
+    "construção",
+    "reforma",
+    "pavimentação",
+    "asfalto",
+    "calçada",
+    "rua",
+    "avenida",
+    "quadra",
+    "campo",
+    "praça",
+    "parque",
+    "ginásio",
+    "escola",
+    "ubs",
+    "posto de saúde",
+    "hospital",
+    "infraestrutura",
+    "saneamento",
+    "drenagem",
+    "ponte",
+    "viaduto",
+    "paisagem",
+    "evento ao ar livre",
+    "torneio",
+    "campeonato",
+    "festival",
+    "feira",
+    "show",
+    "inauguração",
+  ];
+
+  const temFace = palavrasFace.some((p) => texto.includes(p));
+  const temTop = palavrasTop.some((p) => texto.includes(p));
+
+  if (temFace && !temTop) return "cover_face";
+  if (temTop && !temFace) return "cover_top";
+  if (temFace && temTop) return "cover_face"; // pessoas têm prioridade
+  return "cover_center";
+}
+
 export async function analisarNoticiaIA(
   titulo: string,
   conteudo: string
 ): Promise<AnaliseIA> {
-  const prompt = `
-Você é um sistema de curadoria de notícias institucionais municipais.
+  const conteudoLimpo = stripHtml(conteudo).slice(0, 1800);
 
-Retorne APENAS JSON válido:
+  const prompt = `Você é um sistema de curadoria de notícias institucionais do município de Padre Marcos-PI.
+
+Retorne APENAS JSON puro, sem texto antes ou depois, sem markdown:
 
 {
   "relevante": boolean,
@@ -34,48 +139,54 @@ Retorne APENAS JSON válido:
   "imagem_posicao": string
 }
 
-REGRAS:
+═══ REGRAS DE RELEVÂNCIA ═══
+Relevante = notícia sobre Padre Marcos ou Padre Marcus, incluindo:
+- ações da prefeitura, secretarias ou câmara
+- saúde, educação, obras, assistência social
+- esportes, torneios, atletas do município
+- projetos sociais, culturais ou comunitários locais
+NÃO é relevante: crimes, homicídios, roubos, prisões, acidentes fatais
 
-- Relevante se a notícia for sobre o município de Padre Marcos, incluindo:
-  - ações da prefeitura ou secretarias
-  - saúde, educação, obras, assistência social
-  - esportes, torneios, campeonatos e atletas do município
-  - projetos sociais, culturais ou comunitários locais
-  - serviços públicos ou programas municipais
-- NÃO é relevante se envolver: crimes, homicídios, roubos, prisões, acidentes fatais
-
-Categorias possíveis:
+═══ CATEGORIAS PERMITIDAS ═══
 saude, educacao, obras, assistencia, esporte, licitacao
+(pode retornar mais de uma)
 
-Resumo:
-- até 2 frases
-- claro e institucional
+═══ RESUMO ═══
+Máximo 2 frases. Tom institucional e claro.
 
-Posicionamento da imagem (escolha o mais adequado ao contexto):
-- "cover_top"    → notícias de obras, infraestrutura, eventos ao ar livre, paisagens, quadras, ruas
-- "cover_face"   → notícias com pessoas em destaque: autoridades, atletas, crianças, discurso, entrega de prêmio
-- "cover_center" → padrão genérico, use quando não houver elemento claro de foco
+═══ POSICIONAMENTO DA IMAGEM ═══
+Analise o título e conteúdo para escolher ONDE a imagem provavelmente foca:
 
-Se não for relevante:
-{
-  "relevante": false,
-  "categorias": [],
-  "resumo": "",
-  "imagem_posicao": "cover_center"
-}
+"cover_face" → use quando a notícia é sobre PESSOAS em destaque:
+  ✅ Prefeito entrega cestas básicas
+  ✅ Atleta conquista medalha
+  ✅ Formatura de alunos
+  ✅ Secretária visita escola
+  ✅ Posse de servidores
+  ✅ Entrega de prêmio, homenagem, discurso
+
+"cover_top" → use quando a notícia é sobre LUGARES ou OBRAS:
+  ✅ Pavimentação de rua concluída
+  ✅ Reforma da quadra esportiva
+  ✅ Inauguração do posto de saúde
+  ✅ Campeonato de futebol (foco no campo)
+  ✅ Festival ou feira ao ar livre
+  ✅ Construção de escola ou creche
+
+"cover_center" → use apenas para conteúdo genérico sem foco claro:
+  ✅ Comunicado ou aviso
+  ✅ Licitação ou edital
+  ✅ Notícia sem imagem relevante identificada
+
+═══ SE NÃO FOR RELEVANTE ═══
+{ "relevante": false, "categorias": [], "resumo": "", "imagem_posicao": "cover_center" }
 
 Título: ${titulo}
 
-Responda APENAS com JSON puro.
-NÃO escreva frases como "Aqui está o JSON".
-NÃO use markdown.
-
 Conteúdo:
-${conteudo.slice(0, 2000)}
-`;
+${conteudoLimpo}`;
 
   try {
-    console.log("🔑 KEY:", process.env.OPENROUTER_API_KEY);
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
       {
@@ -85,9 +196,9 @@ ${conteudo.slice(0, 2000)}
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "meta-llama/llama-3-8b-instruct",
-          temperature: 0.2,
-          max_tokens: 256,
+          model: "meta-llama/llama-3.1-8b-instruct",
+          temperature: 0.1,
+          max_tokens: 300,
           messages: [
             {
               role: "user",
@@ -99,7 +210,6 @@ ${conteudo.slice(0, 2000)}
     );
 
     const data = await response.json();
-
     const text = data?.choices?.[0]?.message?.content;
 
     if (!text) throw new Error("Resposta vazia da IA");
@@ -120,11 +230,10 @@ ${conteudo.slice(0, 2000)}
         )
       : [];
 
-    const imagem_posicao = POSICOES_VALIDAS.includes(
-      parsed.imagem_posicao
-    )
-      ? parsed.imagem_posicao
-      : "cover_center";
+    // Valida posição — se inválida, usa heurística local
+    const imagem_posicao = POSICOES_VALIDAS.includes(parsed.imagem_posicao)
+      ? (parsed.imagem_posicao as AnaliseIA["imagem_posicao"])
+      : inferirPosicaoHeuristica(titulo, conteudoLimpo);
 
     return {
       relevante: Boolean(parsed.relevante),
@@ -135,11 +244,12 @@ ${conteudo.slice(0, 2000)}
   } catch (error) {
     console.error("❌ Erro na IA:", error);
 
+    // Fallback completo com heurística
     return {
       relevante: false,
       categorias: [],
       resumo: "",
-      imagem_posicao: "cover_center",
+      imagem_posicao: inferirPosicaoHeuristica(titulo, conteudo),
     };
   }
 }

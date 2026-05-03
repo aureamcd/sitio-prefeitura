@@ -173,7 +173,7 @@ export async function runSync() {
       fonte: "Cidades na Net",
       link_original: link,
       destaque: analise.categorias, // ✅ ARRAY
-      status: "pendente",
+      status: "publicado",
       data: item.pubDate
         ? new Date(item.pubDate).toISOString()
         : new Date().toISOString(),
