@@ -63,6 +63,23 @@ export default async function NoticiaPage({ params }: any) {
 
     const tempoLeitura = estimarLeitura(data.conteudo || "");
 
+    const mainCategory = Array.isArray(data.destaque) ? data.destaque[0] : data.destaque;
+    const categoryColors: Record<string, string> = {
+        saude: "bg-green-500",
+        educacao: "bg-blue-500",
+        obras: "bg-orange-500",
+        assistencia: "bg-purple-500",
+        esporte: "bg-red-500",
+    };
+    const categoryLabels: Record<string, string> = {
+        saude: "Saúde",
+        educacao: "Educação",
+        obras: "Obras",
+        assistencia: "Social",
+        esporte: "Esporte",
+    };
+    const topBarColor = categoryColors[mainCategory] || "bg-gray-300";
+
     return (
         <ContentPage
             title=""
@@ -75,52 +92,26 @@ export default async function NoticiaPage({ params }: any) {
             ]}
         >
             <div className="max-w-4xl mx-auto">
-
-                <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
-
-
-                    {/* IMAGEM DENTRO DO CARD */}
-                    {data.imagem && (
-                        <div className="w-full h-[220px] sm:h-[320px] md:h-[420px] bg-gray-100 overflow-hidden">
-                            <img
-                                src={data.imagem}
-                                alt={data.titulo}
-                            className={`w-full h-full object-cover ${
-                                    data.imagem_posicao === "cover_top"
-                                        ? "object-top"
-                                        : data.imagem_posicao === "cover_face"
-                                        ? "object-[center_25%]"
-                                        : "object-center"
-                                }`}
-                            />
-                        </div>
-                    )}
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                    {/* Barra de destaque superior */}
+                    <div className={`h-2.5 w-full ${topBarColor}`} />
 
                     {/* CONTEÚDO */}
-                    <article className="p-6 sm:p-8 md:p-10 space-y-6">
-
+                    <article className="p-6 sm:p-8 md:p-12 space-y-8">
                         {/* CATEGORIAS (BADGES) */}
                         {data.destaque && (
                             <div className="flex flex-wrap gap-2">
                                 {(Array.isArray(data.destaque) ? data.destaque : [data.destaque]).map((cat: string) => {
-                                    // Cores simplificadas para o detalhe
-                                    const colors: Record<string, string> = {
-                                        saude: "bg-green-100 text-green-700",
-                                        educacao: "bg-blue-100 text-blue-700",
-                                        obras: "bg-orange-100 text-orange-700",
-                                        assistencia: "bg-purple-100 text-purple-700",
-                                        esporte: "bg-red-100 text-red-700",
-                                    };
-                                    const labels: Record<string, string> = {
-                                        saude: "Saúde",
-                                        educacao: "Educação",
-                                        obras: "Obras",
-                                        assistencia: "Social",
-                                        esporte: "Esporte",
+                                    const badgeColors: Record<string, string> = {
+                                        saude: "bg-green-50 text-green-700 border-green-100",
+                                        educacao: "bg-blue-50 text-blue-700 border-blue-100",
+                                        obras: "bg-orange-50 text-orange-700 border-orange-100",
+                                        assistencia: "bg-purple-50 text-purple-700 border-purple-100",
+                                        esporte: "bg-red-50 text-red-700 border-red-100",
                                     };
                                     return (
-                                        <span key={cat} className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${colors[cat] || "bg-gray-100 text-gray-600"}`}>
-                                            {labels[cat] || cat}
+                                        <span key={cat} className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${badgeColors[cat] || "bg-gray-50 text-gray-600 border-gray-100"}`}>
+                                            {categoryLabels[cat] || cat}
                                         </span>
                                     );
                                 })}

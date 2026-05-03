@@ -197,4 +197,7 @@ export async function runSync() {
 
 /* ─── EXECUÇÃO ───────────────── */
 
-runSync().catch(console.error);
+// Só executa se for chamado diretamente pelo terminal (ex: npx tsx scripts/...)
+if (typeof require !== "undefined" && require.main === module) {
+  runSync().catch(console.error);
+}
