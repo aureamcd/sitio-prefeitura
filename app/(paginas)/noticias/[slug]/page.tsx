@@ -85,11 +85,11 @@ export default async function NoticiaPage({ params }: any) {
                             <img
                                 src={data.imagem}
                                 alt={data.titulo}
-                                className={`w-full h-full object-cover ${
+                            className={`w-full h-full object-cover ${
                                     data.imagem_posicao === "cover_top"
                                         ? "object-top"
                                         : data.imagem_posicao === "cover_face"
-                                        ? "object-center"
+                                        ? "object-[center_25%]"
                                         : "object-center"
                                 }`}
                             />

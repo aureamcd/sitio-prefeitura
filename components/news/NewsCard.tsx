@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Calendar } from "lucide-react";
+import { useState, useCallback } from "react";
 
 type NewsCardProps = {
   titulo: string;
@@ -45,6 +46,69 @@ function formatarDataRelativa(data: string) {
   return dataNoticia.toLocaleDateString("pt-BR");
 }
 
+/**
+ * Calcula o melhor `object-position` baseado na posição definida pela IA
+ * e nas dimensões reais da imagem carregada.
+ *
+ * Lógica por proporção (ratio = largura / altura):
+ *   - Retrato  (ratio < 0.85):  imagem alta → rosto fica no topo
+ *   - Quadrado (0.85 – 1.3):   rosto ligeiramente acima do centro
+ *   - Paisagem (ratio > 1.3):  foto de grupo → rosto no terço superior
+ */
+function calcularObjectPosition(
+  posicao: string | undefined,
+  naturalWidth: number,
+  naturalHeight: number
+): string {
+  const ratio = naturalWidth / naturalHeight;
+
+  switch (posicao) {
+    case "cover_face":
+      if (ratio < 0.85) return "center 12%"; // retrato: rosto bem acima
+      if (ratio < 1.3) return "center 20%";  // quadrado: ligeiramente acima
+      return "center 28%";                    // paisagem: terço superior
+
+    case "cover_top":
+      // Obras e infraestrutura: mostrar o topo da cena
+      if (ratio < 0.85) return "center 5%";  // retrato: construção/prédio
+      return "center top";                    // paisagem: topo padrão
+
+    default: // cover_center
+      // Retrato numa moldura paisagem tende a cortar embaixo — sobe levemente
+      if (ratio < 0.85) return "center 35%";
+      return "center center";
+  }
+}
+
+/** Posição inicial antes da imagem carregar (evita salto visual) */
+function posicaoInicial(posicao: string | undefined): string {
+  if (posicao === "cover_top") return "center top";
+  if (posicao === "cover_face") return "center 25%";
+  return "center center";
+}
+
+/** Hook que calcula a posição dinâmica ao carregar a imagem */
+function useImagePosition(imagem_posicao: string | undefined) {
+  const [objectPosition, setObjectPosition] = useState<string>(
+    posicaoInicial(imagem_posicao)
+  );
+
+  const onLoad = useCallback(
+    (e: React.SyntheticEvent<HTMLImageElement>) => {
+      const img = e.currentTarget;
+      const pos = calcularObjectPosition(
+        imagem_posicao,
+        img.naturalWidth,
+        img.naturalHeight
+      );
+      setObjectPosition(pos);
+    },
+    [imagem_posicao]
+  );
+
+  return { objectPosition, onLoad };
+}
+
 export default function NewsCard({
   titulo,
   resumo,
@@ -60,6 +124,11 @@ export default function NewsCard({
     Array.isArray(destaque) ? destaque[0] : destaque
   );
 
+  // Posição dinâmica para o card grid
+  const grid = useImagePosition(imagem_posicao);
+  // Posição dinâmica para o card lista (miniaturas quadradas)
+  const list = useImagePosition(imagem_posicao);
+
   // 🟦 GRID
   if (variant === "grid") {
     return (
@@ -72,13 +141,9 @@ export default function NewsCard({
           <img
             src={imagem || "/placeholder.jpg"}
             alt={titulo}
-            className={`w-full h-full object-cover group-hover:scale-105 transition duration-500 ${
-              imagem_posicao === "cover_top"
-                ? "object-top"
-                : imagem_posicao === "cover_face"
-                ? "object-center"
-                : "object-center"
-            }`}
+            onLoad={grid.onLoad}
+            style={{ objectPosition: grid.objectPosition }}
+            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
           />
         </div>
 
@@ -131,7 +196,7 @@ export default function NewsCard({
   return (
     <Link
       href={`/noticias/${slug}`}
-      className=" group flex gap-4 items-center border rounded-xl p-3 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+      className="group flex gap-4 items-center border rounded-xl p-3 bg-white hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
     >
       {/* barra lateral */}
       <div className={`w-1 h-full rounded ${categoriaInfo.color}`} />
@@ -141,13 +206,9 @@ export default function NewsCard({
         <img
           src={imagem || "/placeholder.jpg"}
           alt={titulo}
-          className={`w-full h-full object-cover ${
-            imagem_posicao === "cover_top"
-              ? "object-top"
-              : imagem_posicao === "cover_face"
-              ? "object-center"
-              : "object-center"
-          }`}
+          onLoad={list.onLoad}
+          style={{ objectPosition: list.objectPosition }}
+          className="w-full h-full object-cover"
         />
       </div>
 
@@ -186,8 +247,7 @@ export default function NewsCard({
             {formattedDate}
           </div>
 
-        
-          <span className="text-blue-600 font-medium opacity-0 group-hover:opacity-100 transition ">
+          <span className="text-blue-600 font-medium opacity-0 group-hover:opacity-100 transition">
             Ler mais →
           </span>
         </div>
