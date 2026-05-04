@@ -30,10 +30,10 @@ const institucionalItems: MenuItem[] = [
 
 
 const publicacoesItems: MenuItem[] = [
-  { href: "/atas-reunioes", label: "Atas de Reuniões" },
   { href: "/editais", label: "Editais" },
+  { href: "/atas-reunioes", label: "Atas de Reuniões" },
   { href: "/avisos-comunicados", label: "Avisos / Comunicados" },
-  { href: "/diversas", label: "Publicações Diversas" },
+  { href: "/outras-publicacoes", label: "Outras Publicações" },
 ];
 
 const servicosItems = [

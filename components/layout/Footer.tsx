@@ -174,9 +174,9 @@ export default function TransparencyFooter(): JSX.Element {
           </h3>
           <ul className="space-y-4 text-xs text-gray-200">
             <li>
-              <Link href="/privacidade" className="flex items-center gap-2 hover:text-white transition-colors">
+              <Link href="/lgpd" className="flex items-center gap-2 hover:text-white transition-colors">
                 <ShieldCheck size={14} className="text-white/60" />
-                Política de Privacidade
+                Política de Privacidade (LGPD)
               </Link>
             </li>
             <li className="pt-3 space-y-2 border-t border-white/10">
