@@ -35,7 +35,7 @@ export default async function SecretariaPage({ params }: Props) {
         { label: "Gestão", href: "/info-institucional/gestao" },
         { label: item.nome },
       ]}
-      lastUpdate="04/05/2026"
+      lastUpdate="2026-05-04"
       responsavel={item.nome}
     >
       <div className="space-y-10">
