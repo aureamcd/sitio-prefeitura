@@ -95,6 +95,9 @@ export default function RootLayout({
 
         {/* Ferramentas de Inclusão */}
         <VLibras />
+        
+        {/* Vercel Speed Insights */}
+        <SpeedInsights />
       </body>
     </html>
   );
