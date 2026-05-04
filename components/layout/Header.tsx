@@ -252,25 +252,37 @@ export default function Header(): JSX.Element {
         {/* ESQUERDA: LOGO + NOME */}
         <Link
           href="/"
-          className="flex items-center gap-3"
+          className="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3"
         >
           <Image
-            src="/2.svg"
-            alt="Brasão da Prefeitura Municipal de Padre Marcos"
-            width={65}
-            height={65}
-            className="w-[65px] h-[65px] object-contain shrink-0"
+            src="/logopm.png"
+            alt="Prefeitura Municipal de Padre Marcos"
+            width={60}
+            height={56}
+            style={{ width: "auto", height: "auto" }}
           />
 
-          <div className="py-1">
-            <p className="text-xs sm:text-sm text-gray-500 font-bold uppercase tracking-widest leading-none mb-1">
+          <div className="py-1 text-center sm:text-left">
+            <p className="text-xs sm:text-sm text-gray-500 font-medium tracking-wide">
               Prefeitura Municipal de
             </p>
 
             <h1
-              className="text-2xl sm:text-3xl font-black text-[#173572] leading-none tracking-tight"
+              className="text-xl sm:text-2xl font-bold text-[#173572] leading-tight whitespace-nowrap"
+              style={{
+                textShadow: `
+            -1px -1px 0 #ffffff,
+             1px -1px 0 #ffffff,
+            -1px  1px 0 #ffffff,
+             1px  1px 0 #ffffff,
+            -2px -2px 0 #F7C325,
+             2px -2px 0 #F7C325,
+            -2px  2px 0 #F7C325,
+             2px  2px 0 #F7C325
+          `,
+              }}
             >
-              Padre Marcos <span className="text-blue-500">-</span> PI
+              PADRE MARCOS - PI
             </h1>
           </div>
         </Link>
