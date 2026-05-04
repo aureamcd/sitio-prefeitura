@@ -1,6 +1,7 @@
 "use client";
 
 import ContentPage from "@/components/layout/ContentPage";
+import portalData from "@/lib/data/portal.json";
 
 type Unidade = {
     nome: string;
@@ -10,38 +11,28 @@ type Unidade = {
     horario: string;
 };
 
-const unidades: Unidade[] = [
-    {
+export default function ContatosPage() {
+    
+    // Unidade Sede
+    const sede: Unidade = {
         nome: "Sede da Prefeitura Municipal",
         endereco: "Rua Anfrísio Macedo, 150, Centro - CEP 64.680-000, Padre Marcos - PI",
-        telefone: "(89) 98116-0296",
-        email: "pmpadremarcos@gmail.com",
-        horario: "Segunda a sexta, das 07h às 12h",
-    },
-    {
-        nome: "Secretaria Municipal de Saúde",
-        endereco: "Centro de Saúde, Centro, Padre Marcos - PI",
-        telefone: "(89) 98116-0296",
-        email: "saude@padremarcos.pi.gov.br",
-        horario: "Segunda a sexta, das 07h às 12h",
-    },
-    {
-        nome: "Secretaria Municipal de Educação",
-        endereco: "Rua Anfrísio Macedo, Centro, Padre Marcos - PI",
-        telefone: "(89) 98116-0296",
-        email: "educacao@padremarcos.pi.gov.br",
-        horario: "Segunda a sexta, das 07h às 12h",
-    },
-    {
-        nome: "CRAS",
-        endereco: "Rua Anfrísio Macedo, Centro, Padre Marcos - PI",
-        telefone: "(89) 98116-0296",
-        email: "assistenciasocial@padremarcos.pi.gov.br",
-        horario: "Segunda a sexta, das 07h às 12h",
-    },
-];
+        telefone: portalData.gestao.prefeita.telefone,
+        email: portalData.gestao.prefeita.email,
+        horario: "Segunda a sexta, das 08h às 12h",
+    };
 
-export default function ContatosPage() {
+    // Mapeando secretarias do JSON
+    const secretarias: Unidade[] = portalData.secretarias.map(s => ({
+        nome: s.nome,
+        endereco: s.nome === "Secretaria Municipal de Saúde" ? "Centro de Saúde, Centro, Padre Marcos - PI" : "Rua Anfrísio Macedo, Centro, Padre Marcos - PI",
+        telefone: s.telefone,
+        email: s.email,
+        horario: "Segunda a sexta, das 08h às 12h",
+    }));
+
+    const todasUnidades = [sede, ...secretarias];
+
     return (
         <ContentPage
             title="Contatos e Atendimento"
@@ -50,53 +41,53 @@ export default function ContatosPage() {
                 { label: "Contatos e Atendimento" },
             ]}
             responsavel="Secretaria Municipal de Administração"
-            lastUpdate="30/04/2026"
+            lastUpdate="2026-05-04"
         >
 
             {/* INTRODUÇÃO */}
             <section className="mb-10">
                 <p className="text-gray-700 leading-relaxed">
                     Nesta seção são disponibilizadas as informações de contato e os horários
-                    de atendimento das unidades administrativas da Prefeitura Municipal.
+                    de atendimento das unidades administrativas da Prefeitura Municipal de Padre Marcos - PI.
                 </p>
             </section>
 
             {/* UNIDADES */}
-            <h2 className="text-xl font-bold text-[#173572] mb-6">Unidades de Atendimento</h2>
-            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <h2 className="text-2xl font-bold text-[#173572] mb-6 border-b pb-2">Unidades de Atendimento</h2>
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                {unidades.map((u, idx) => (
+                {todasUnidades.map((u, idx) => (
                     <div
                         key={idx}
-                        className="bg-white border rounded-lg p-4 shadow-sm"
+                        className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col"
                     >
-                        <h3 className="font-semibold text-gray-900">
+                        <h3 className="font-bold text-gray-900 leading-tight mb-4 min-h-[3rem] flex items-center">
                             {u.nome}
                         </h3>
 
-                        <div className="text-sm text-gray-600 mt-3 space-y-1">
+                        <div className="text-sm text-gray-600 space-y-3 flex-grow">
 
-                            <p>
-                                <strong>Endereço:</strong><br />
-                                {u.endereco}
-                            </p>
+                            <div className="flex gap-2">
+                                <span className="font-semibold text-gray-900 shrink-0">Endereço:</span>
+                                <span>{u.endereco}</span>
+                            </div>
 
-                            <p>
-                                <strong>Telefone:</strong><br />
-                                {u.telefone}
-                            </p>
+                            <div className="flex gap-2">
+                                <span className="font-semibold text-gray-900 shrink-0">Telefone:</span>
+                                <span>{u.telefone}</span>
+                            </div>
 
-                            <p>
-                                <strong>E-mail:</strong><br />
-                                <a href={`mailto:${u.email}`} className="text-blue-600 hover:underline">
+                            <div className="flex gap-2">
+                                <span className="font-semibold text-gray-900 shrink-0">E-mail:</span>
+                                <a href={`mailto:${u.email}`} className="text-blue-600 hover:underline break-all">
                                     {u.email}
                                 </a>
-                            </p>
+                            </div>
 
-                            <p className="mt-2">
-                                <strong>Horário de atendimento:</strong><br />
-                                {u.horario}
-                            </p>
+                            <div className="mt-4 pt-4 border-t">
+                                <span className="font-semibold text-gray-900">Horário:</span><br />
+                                <span className="text-xs uppercase tracking-wider">{u.horario}</span>
+                            </div>
 
                         </div>
                     </div>
@@ -105,10 +96,10 @@ export default function ContatosPage() {
             </section>
 
             {/* OBSERVAÇÃO */}
-            <section className="mt-10 bg-gray-50 border rounded-lg p-4">
-                <p className="text-sm text-gray-600">
+            <section className="mt-12 bg-blue-50 border border-blue-100 rounded-2xl p-6">
+                <p className="text-sm text-blue-800">
                     <strong>Observação:</strong> Os horários de atendimento podem sofrer alterações
-                    conforme necessidade administrativa.
+                    conforme necessidade administrativa ou feriados municipais/estaduais.
                 </p>
             </section>
 

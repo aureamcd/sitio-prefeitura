@@ -10,7 +10,7 @@ export default function DiarioOficialPage() {
         { label: "Início", href: "/" },
         { label: "Diário Oficial" },
       ]}
-      lastUpdate="2026-04-30"
+      lastUpdate="2026-05-04"
       responsavel="Setor de Transparência Pública"
     >
       <div className="space-y-6">

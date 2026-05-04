@@ -19,7 +19,7 @@ export default function AvisosPage() {
         { label: "Publicações Oficiais" },
         { label: "Avisos / Comunicados" },
       ]}
-      lastUpdate="2026-04-30"
+      lastUpdate="2026-05-04"
       responsavel="Prefeitura Municipal"
       documentos={documentos}
     />

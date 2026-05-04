@@ -29,7 +29,7 @@ export default function ConcursosPage() {
         { label: "Serviços", href: "/servicos/todos" },
         { label: "Concursos e Seletivos" },
       ]}
-      lastUpdate="30/04/2026"
+      lastUpdate="2026-05-04"
       responsavel="Secretaria Municipal de Administração"
       documentos={documentos}
       showTipoFiltro

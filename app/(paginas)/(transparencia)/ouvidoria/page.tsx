@@ -11,7 +11,7 @@ export default function OuvidoriaPage() {
         { label: "Início", href: "/" },
         { label: "Ouvidoria" },
       ]}
-      lastUpdate="2026-04-30"
+      lastUpdate="2026-05-04"
       responsavel="Prefeitura Municipal"
     >
 

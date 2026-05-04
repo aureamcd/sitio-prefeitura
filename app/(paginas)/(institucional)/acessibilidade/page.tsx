@@ -11,7 +11,7 @@ export default function AcessibilidadePage() {
         { label: "Início", href: "/" },
         { label: "Acessibilidade" },
       ]}
-      lastUpdate="2026-04-07"
+      lastUpdate="2026-05-04"
       responsavel="Prefeitura Municipal"
     >
       {/* DECLARAÇÃO */}

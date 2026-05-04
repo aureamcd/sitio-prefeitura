@@ -71,7 +71,7 @@ export default function FAQPage() {
         { label: "FAQ" },
       ]}
       responsavel="Secretaria Municipal de Administração"
-      lastUpdate="30/04/2026"
+      lastUpdate="2026-05-04"
     >
 
       {/* INTRODUÇÃO */}

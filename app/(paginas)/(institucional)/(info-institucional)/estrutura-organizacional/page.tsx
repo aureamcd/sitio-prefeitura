@@ -3,9 +3,11 @@
 import Link from "next/link";
 import ContentPage from "@/components/layout/ContentPage";
 import { secretariasOrgaos } from "@/lib/institucional/secretariasOrgaos";
+import portalData from "@/lib/data/portal.json";
 
 type Item = {
     nome: string;
+    slug: string;
     tipo: "secretaria" | "orgao";
     responsavel: string;
     cargo: string;
@@ -23,7 +25,7 @@ export default function EstruturaOrganizacionalPage() {
     const orgaos = lista.filter(([_, item]) => item.tipo === "orgao");
 
     const orgaosCentrais: { nome: string; responsavel: string }[] = [
-        { nome: "Gabinete do Prefeito", responsavel: "Em atualização" },
+        { nome: "Gabinete do Prefeito", responsavel: (portalData.gestao as any).gabinete?.nome || "Em atualização" },
         { nome: "Controladoria Geral do Município", responsavel: "Em atualização" },
         { nome: "Procuradoria Geral do Município", responsavel: "Em atualização" },
     ];
@@ -36,7 +38,7 @@ export default function EstruturaOrganizacionalPage() {
                 { label: "Estrutura Organizacional" },
             ]}
             responsavel="Secretaria Municipal de Administração"
-            lastUpdate="30/04/2026"
+            lastUpdate="2026-05-04"
         >
 
             {/* INTRODUÇÃO */}
@@ -52,89 +54,81 @@ export default function EstruturaOrganizacionalPage() {
 
                 <ul className="list-disc ml-5 text-blue-600">
                     <li>
-                        <Link href="/info-institucional/competencias" className="hover:underline">
+                        <Link href="/competencias" className="hover:underline">
                             Competências e atribuições
                         </Link>
                     </li>
                     <li>
-                        <Link href="/info-institucional/gestao" className="hover:underline">
+                        <Link href="/gestao" className="hover:underline">
                             Gestão e responsáveis
                         </Link>
                     </li>
                 </ul>
             </section>
 
-            {/* BASE LEGAL */}
-            <section className="mb-10">
-                <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                    Base Legal da Estrutura Administrativa
-                </h2>
-
-                <p className="text-gray-700">
-                    A organização administrativa do Poder Executivo Municipal está definida pela legislação vigente.
-                </p>
-
-                <p className="text-gray-700 mt-2">
-                    Lei Municipal nº XXX/XXXX.
-                </p>
-            </section>
-
             {/* ORGANOGRAMA */}
             <section className="mb-12">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">
                     Organograma da Administração Municipal
                 </h2>
 
-                <figure className="bg-gray-50 border rounded-lg p-6 text-center">
-                    <img
-                        src="/organograma.png"
-                        alt="Organograma da Prefeitura Municipal com hierarquia administrativa"
-                        className="mx-auto max-w-full h-auto mb-4"
-                    />
+                <div className="bg-white border rounded-3xl p-8 shadow-sm">
+                    <div className="flex flex-col items-center gap-8">
+                        
+                        {/* Nível 1: Prefeita e Vice */}
+                        <div className="flex flex-col sm:flex-row gap-4 items-center">
+                            <div className="bg-blue-600 text-white px-8 py-4 rounded-2xl shadow-lg text-center min-w-[200px]">
+                                <p className="text-xs uppercase font-bold opacity-80">{portalData.gestao.prefeita.cargo}</p>
+                                <h3 className="text-lg font-bold">{portalData.gestao.prefeita.nome}</h3>
+                            </div>
+                            <div className="hidden sm:block w-8 h-px bg-gray-300" />
+                            <div className="bg-blue-500 text-white px-8 py-4 rounded-2xl shadow-lg text-center min-w-[200px]">
+                                <p className="text-xs uppercase font-bold opacity-80">{portalData.gestao.vice_prefeito.cargo}</p>
+                                <h3 className="text-lg font-bold">{portalData.gestao.vice_prefeito.nome}</h3>
+                            </div>
+                        </div>
 
-                    <figcaption className="text-left text-sm text-gray-600 mb-6 border-l-4 border-blue-200 pl-4">
-                        <strong>Descrição do Organograma:</strong> O Poder Executivo é liderado pelo Prefeito Municipal.
-                        Abaixo estão o Gabinete do Prefeito e os Órgãos Centrais (Controladoria e Procuradoria).
-                        Em seguida, a estrutura se divide nas Secretarias Municipais e nos Órgãos Administrativos Vinculados,
-                        conforme detalhado nas seções abaixo.
-                    </figcaption>
+                        <div className="w-px h-8 bg-gray-300" />
 
-                    <div>
-                        <a
-                            href="/arquivos/organograma.pdf"
-                            className="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
-                        >
-                            Baixar organograma (PDF)
-                        </a>
+                        {/* Nível 2: Gabinete */}
+                        <div className="bg-amber-500 text-white px-8 py-4 rounded-2xl shadow-lg text-center min-w-[200px]">
+                            <p className="text-xs uppercase font-bold opacity-80">Gabinete do Prefeito</p>
+                            <h3 className="text-lg font-bold">{(portalData.gestao as any).gabinete?.nome || "Em atualização"}</h3>
+                        </div>
+
+                        <div className="w-px h-8 bg-gray-300" />
+
+                        {/* Nível 3: Secretarias (Resumo) */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full">
+                            {secretarias.slice(0, 8).map(([_, sec], idx) => (
+                                <div key={idx} className="bg-gray-50 border border-gray-200 p-3 rounded-xl text-center text-xs font-medium text-gray-600">
+                                    {sec.nome.replace("Secretaria Municipal de ", "")}
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </figure>
-            </section>
 
-            {/* HIERARQUIA PRINCIPAL */}
-            <section className="mb-12 text-center">
-                <div className="inline-block bg-blue-50 border rounded-xl px-8 py-6">
-                    <h2 className="text-lg font-semibold text-gray-900">
-                        Prefeito(a)
-                    </h2>
-
-                    <p className="text-sm text-gray-600">
-                        Em atualização
-                    </p>
+                    <figcaption className="text-sm text-gray-600 mt-8 border-l-4 border-blue-200 pl-4">
+                        <strong>Descrição do Organograma:</strong> O Poder Executivo é liderado pelo Prefeito Municipal.
+                        Abaixo estão o Gabinete do Prefeito e os Órgãos Centrais.
+                        Em seguida, a estrutura se divide nas Secretarias Municipais.
+                    </figcaption>
                 </div>
             </section>
 
             {/* ÓRGÃOS CENTRAIS */}
             <section className="mb-12">
-                <h2 className="text-xl font-semibold mb-4">
+                <h2 className="text-xl font-bold text-gray-900 mb-6">
                     Órgãos Vinculados ao Gabinete
                 </h2>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {orgaosCentrais.map((orgao, idx) => (
-                        <div key={idx} className="bg-white border rounded-lg p-4 shadow-sm">
-                            <h3 className="font-semibold">{orgao.nome}</h3>
+                        <div key={idx} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+                            <h3 className="font-bold text-gray-900 mb-2">{orgao.nome}</h3>
                             <p className="text-sm text-gray-600">
-                                Responsável: {orgao.responsavel}
+                                <span className="font-semibold">Responsável:</span><br/>
+                                {orgao.responsavel}
                             </p>
                         </div>
                     ))}
@@ -143,7 +137,7 @@ export default function EstruturaOrganizacionalPage() {
 
             {/* SECRETARIAS */}
             <section className="mb-12">
-                <h2 className="text-xl font-semibold mb-4">
+                <h2 className="text-xl font-bold text-gray-900 mb-6">
                     Secretarias Municipais
                 </h2>
 
@@ -151,48 +145,20 @@ export default function EstruturaOrganizacionalPage() {
                     {secretarias.map(([slug, sec], idx) => (
                         <div
                             key={idx}
-                            className="bg-white border rounded-lg p-4 shadow-sm border-l-4 border-blue-500"
+                            className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm border-l-4 border-blue-600 hover:shadow-md transition-all flex flex-col justify-between"
                         >
-                            <h3 className="font-semibold">{sec.nome}</h3>
-
-                            <p className="text-sm text-gray-600 mt-1">
-                                {sec.cargo}: {sec.responsavel || "Em atualização"}
-                            </p>
+                            <div>
+                                <h3 className="font-bold text-gray-900 leading-tight mb-2">{sec.nome}</h3>
+                                <p className="text-sm text-gray-600">
+                                    <span className="font-semibold text-gray-700">{sec.cargo}:</span> {sec.responsavel || "Em atualização"}
+                                </p>
+                            </div>
 
                             <Link
-                                href={`/info-institucional/secretarias-orgaos/${slug}`}
-                                className="text-blue-600 text-sm mt-3 inline-block hover:underline"
+                                href={`/secretarias/${slug}`}
+                                className="text-blue-600 text-sm font-bold mt-4 flex items-center gap-1 hover:gap-2 transition-all"
                             >
-                                Acessar →
-                            </Link>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* ÓRGÃOS */}
-            <section className="mb-12">
-                <h2 className="text-xl font-semibold mb-4">
-                    Órgãos Municipais
-                </h2>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {orgaos.map(([slug, org], idx) => (
-                        <div
-                            key={idx}
-                            className="bg-white border rounded-lg p-4 shadow-sm border-l-4 border-green-500"
-                        >
-                            <h3 className="font-semibold">{org.nome}</h3>
-
-                            <p className="text-sm text-gray-600 mt-1">
-                                {org.cargo}: {org.responsavel || "Em atualização"}
-                            </p>
-
-                            <Link
-                                href={`/info-institucional/secretarias-orgaos/${slug}`}
-                                className="text-green-600 text-sm mt-3 inline-block hover:underline"
-                            >
-                                Acessar →
+                                Ver detalhes →
                             </Link>
                         </div>
                     ))}
@@ -200,9 +166,9 @@ export default function EstruturaOrganizacionalPage() {
             </section>
 
             {/* OBSERVAÇÃO */}
-            <section className="mb-10 bg-gray-50 border rounded-lg p-4">
-                <p className="text-sm text-gray-600">
-                    <strong>Observação:</strong> A estrutura organizacional pode sofrer alterações conforme legislação vigente.
+            <section className="mb-10 bg-gray-50 border border-gray-200 rounded-2xl p-6">
+                <p className="text-sm text-gray-600 italic">
+                    <strong>Observação:</strong> A estrutura organizacional é definida pela Lei Municipal vigente e pode sofrer alterações conforme decretos de reorganização administrativa.
                 </p>
             </section>
 

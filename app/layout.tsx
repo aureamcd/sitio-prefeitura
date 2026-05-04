@@ -22,13 +22,17 @@ const inter = Inter({
 ===================== */
 export const metadata: Metadata = {
   title: {
-    default: "Portal da Transparência | Prefeitura de Padre Marcos",
-    template: "%s | Portal da Transparência",
+    default: "Prefeitura de Padre Marcos - PI | Portal da Transparência",
+    template: "%s | Prefeitura de Padre Marcos - PI",
   },
   description:
-    "Acesso oficial a dados, contas públicas e informações do Município de Padre Marcos (PI), em conformidade com a Lei de Acesso à Informação.",
-  keywords: ["transparência", "Padre Marcos", "Piauí", "gestão pública", "dados abertos", "LAI"],
-  authors: [{ name: "Prefeitura de Padre Marcos" }],
+    "Portal Oficial da Prefeitura Municipal de Padre Marcos (PI). Acesso a notícias, serviços, transparência pública e informações institucionais.",
+  keywords: ["Prefeitura de Padre Marcos", "Padre Marcos PI", "Transparência Padre Marcos", "Portal do Cidadão"],
+  authors: [{ name: "Prefeitura Municipal de Padre Marcos" }],
+  icons: {
+    icon: "/2.svg",
+    apple: "/2.svg",
+  },
   openGraph: {
     title: "Portal da Transparência - Município de Padre Marcos",
     description: "Transparência ativa e acesso à informação pública municipal.",

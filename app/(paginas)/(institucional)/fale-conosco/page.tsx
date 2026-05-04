@@ -18,7 +18,7 @@ export default function AcessoInformacaoPage() {
         { label: "Início", href: "/" },
         { label: "Acesso à Informação" },
       ]}
-      lastUpdate="2026-05-01"
+      lastUpdate="2026-05-04"
       responsavel="Controladoria Geral do Município"
     >
       {/* INTRODUÇÃO */}

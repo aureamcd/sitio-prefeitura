@@ -11,7 +11,7 @@ export default function ESICPage() {
                 { label: "Início", href: "/" },
                 { label: "e-SIC" },
             ]}
-            lastUpdate="2026-04-30"
+            lastUpdate="2026-05-04"
             responsavel="Prefeitura Municipal"
         >
 

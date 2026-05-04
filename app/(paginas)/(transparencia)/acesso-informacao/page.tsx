@@ -22,7 +22,7 @@ export default function AcessoInformacaoPage() {
         { label: "Início", href: "/" },
         { label: "Acesso à Informação" },
       ]}
-      lastUpdate="2025-12-10"
+      lastUpdate="2026-05-04"
       responsavel="Setor de Transparência Pública"
     >
       <div className="space-y-6">

@@ -7,7 +7,7 @@ import { secretariasOrgaos } from "@/lib/institucional/secretariasOrgaos";
 type Item = {
     nome: string;
     tipo: "secretaria" | "orgao";
-    competencia?: string;
+    competencias?: string[];
 };
 
 export default function CompetenciasPage() {
@@ -29,7 +29,7 @@ export default function CompetenciasPage() {
                 { label: "Competências" },
             ]}
             responsavel="Secretaria Municipal de Administração"
-            lastUpdate="30/04/2026"
+            lastUpdate="2026-05-04"
         >
 
             {/* INTRODUÇÃO */}
@@ -45,12 +45,12 @@ export default function CompetenciasPage() {
 
                 <ul className="list-disc ml-5 text-blue-600">
                     <li>
-                        <Link href="/info-institucional/estrutura-organizacional" className="hover:underline">
+                        <Link href="/estrutura-organizacional" className="hover:underline">
                             Estrutura Organizacional
                         </Link>
                     </li>
                     <li>
-                        <Link href="/info-institucional/gestao" className="hover:underline">
+                        <Link href="/gestao" className="hover:underline">
                             Gestão e responsáveis
                         </Link>
                     </li>
@@ -89,9 +89,17 @@ export default function CompetenciasPage() {
                                 {sec.nome}
                             </h3>
 
-                            <p className="text-sm text-gray-600 mt-2">
-                                {sec.competencia || "Competência em atualização."}
-                            </p>
+                            <div className="text-sm text-gray-600 mt-2 space-y-1">
+                                {sec.competencias && sec.competencias.length > 0 ? (
+                                    <ul className="list-disc pl-5">
+                                        {sec.competencias.map((c, i) => (
+                                            <li key={i}>{c}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p>Competências em atualização.</p>
+                                )}
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -113,9 +121,17 @@ export default function CompetenciasPage() {
                                 {org.nome}
                             </h3>
 
-                            <p className="text-sm text-gray-600 mt-2">
-                                {org.competencia || "Competência em atualização."}
-                            </p>
+                            <div className="text-sm text-gray-600 mt-2 space-y-1">
+                                {org.competencias && org.competencias.length > 0 ? (
+                                    <ul className="list-disc pl-5">
+                                        {org.competencias.map((c, i) => (
+                                            <li key={i}>{c}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p>Competências em atualização.</p>
+                                )}
+                            </div>
                         </div>
                     ))}
                 </div>

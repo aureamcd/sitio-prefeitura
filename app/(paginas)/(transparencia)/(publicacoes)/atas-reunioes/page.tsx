@@ -19,7 +19,7 @@ export default function AtasPage() {
         { label: "Publicações Oficiais" },
         { label: "Atas de Reuniões" },
       ]}
-      lastUpdate="2026-04-30"
+      lastUpdate="2026-05-04"
       responsavel="Secretaria de Administração"
       documentos={documentos}
     />

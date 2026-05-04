@@ -19,7 +19,7 @@ export default function PublicacoesDiversasPage() {
         { label: "Publicações Oficiais" },
         { label: "Publicações Diversas" },
       ]}
-      lastUpdate="2026-04-30"
+      lastUpdate="2026-05-04"
       responsavel="Prefeitura Municipal"
       documentos={documentos}
     />

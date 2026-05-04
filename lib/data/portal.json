@@ -1,0 +1,355 @@
+{
+  "servicos": [
+    {
+      "servico": "Emissão de Documentos Diversos",
+      "descricao": "Emissão de RG",
+      "horario": "08:00 às 12:00",
+      "prazo": "30 dias"
+    },
+    {
+      "servico": "Alistamento Militar",
+      "descricao": "Emissão de Carteira de Reservista",
+      "horario": "08:00 às 12:00",
+      "prazo": "-"
+    },
+    {
+      "servico": "Emissão de Contra-Cheque",
+      "descricao": "Serviço online de emissão de holerites",
+      "horario": "08:00 às 12:00",
+      "prazo": "-"
+    },
+    {
+      "servico": "Emissão de Certidões, Alvarás, Declarações, Taxas",
+      "descricao": "Emissão de documentos ao contribuinte",
+      "horario": "08:00 às 12:00",
+      "prazo": "Imediato"
+    },
+    {
+      "servico": "Marcação de Exames, Consultas",
+      "descricao": "Serviços de saúde",
+      "horario": "08:00 às 12:00",
+      "prazo": "-"
+    }
+  ],
+  "gestao": {
+    "prefeita": {
+      "nome": "Wiliane Kelly da Silva",
+      "cargo": "Prefeita",
+      "telefone": "(89) 98116-0296",
+      "email": "pmpadremarcos@gmail.com",
+      "data_nascimento": "22/07/1987",
+      "genero": "Feminino",
+      "estado_civil": "Divorciada",
+      "ocupacao": "Engenheira",
+      "cor_raca": "Parda",
+      "escolaridade": "Superior Completo",
+      "naturalidade": "Padre Marcos - PI"
+    },
+    "vice_prefeito": {
+      "nome": "Adão José da Silva",
+      "cargo": "Vice-Prefeito",
+      "telefone": "(89) 98116-0296",
+      "email": "pmpadremarcos@gmail.com",
+      "data_nascimento": "14/03/1976",
+      "genero": "Masculino",
+      "estado_civil": "Casado",
+      "ocupacao": "Agricultor",
+      "cor_raca": "Parda",
+      "escolaridade": "Ensino Fundamental Completo",
+      "naturalidade": "Padre Marcos - PI"
+    },
+    "gabinete": {
+      "nome": "Valdinar Silva",
+      "cargo": "Chefe de Gabinete"
+    }
+  },
+  "secretarias": [
+    {
+      "slug": "saude",
+      "nome": "Secretaria Municipal de Saúde",
+      "responsavel": "Maria Lúcia da Silva",
+      "email": "smspadremarcospi@hotmail.com",
+      "telefone": "(89) 98117-9124",
+      "horario": "08:00 às 12:00",
+      "endereco": "Rua Anfrísio Macedo, s/n, Centro, Padre Marcos - PI",
+      "competencias": [
+        "Gestão do SUS no município",
+        "Coordenação das unidades de saúde",
+        "Execução de políticas públicas de saúde"
+      ],
+      "servicos": [
+        "Marcação de consultas",
+        "Atendimento básico",
+        "Campanhas de vacinação"
+      ],
+      "planos": [
+        {
+          "nome": "Plano Municipal de Saúde",
+          "link": "#"
+        }
+      ]
+    },
+    {
+      "slug": "administracao",
+      "nome": "Secretaria Municipal de Administração",
+      "responsavel": "Thuanny Mikaella C Silva",
+      "email": "pmpadremarcos@gmail.com",
+      "telefone": "(89) 98112-7771",
+      "horario": "08:00 às 12:00",
+      "endereco": "Rua Anfrísio Macedo, 150, Centro, Padre Marcos - PI",
+      "competencias": [
+        "Gestão de recursos humanos",
+        "Administração de patrimônio",
+        "Coordenação de processos administrativos"
+      ],
+      "servicos": [
+        "Atendimento ao servidor",
+        "Protocolo geral",
+        "Gestão de contratos"
+      ],
+      "planos": []
+    },
+    {
+      "slug": "agricultura",
+      "nome": "Secretaria Municipal de Agricultura",
+      "responsavel": "Adjano Francisco Bento",
+      "email": "pmpadremarcos@gmail.com",
+      "telefone": "(89) 98123-2409",
+      "horario": "08:00 às 12:00",
+      "endereco": "Rua Anfrísio Macedo, 150, Centro, Padre Marcos - PI",
+      "competencias": [
+        "Desenvolvimento rural sustentável",
+        "Apoio ao pequeno produtor",
+        "Gestão de recursos hídricos rurais"
+      ],
+      "servicos": [
+        "Emissão de DAP",
+        "Assistência técnica rural",
+        "Programa de aração de terras"
+      ],
+      "planos": []
+    },
+    {
+      "slug": "assistencia-social",
+      "nome": "Secretaria Municipal de Assistência Social",
+      "responsavel": "Maria Lucicleide da Silva Dias",
+      "email": "semaspm9@gmail.com",
+      "telefone": "(89) 98107-0346",
+      "horario": "08:00 às 12:00",
+      "endereco": "Rua Anfrísio Macedo, Centro, Padre Marcos - PI",
+      "competencias": [
+        "Gestão da política de assistência social",
+        "Coordenação do CRAS e CREAS",
+        "Proteção social básica e especial"
+      ],
+      "servicos": [
+        "Cadastro Único / Bolsa Família",
+        "Atendimento psicossocial",
+        "Programas de convivência"
+      ],
+      "planos": []
+    },
+    {
+      "slug": "cultura",
+      "nome": "Secretaria Municipal de Cultura",
+      "responsavel": "Linnara Emily B. Moura",
+      "email": "culturaeturismopmpi@gmail.com",
+      "telefone": "(89) 98108-7557",
+      "horario": "08:00 às 12:00",
+      "endereco": "Centro Cultural, Padre Marcos - PI",
+      "competencias": [
+        "Preservação do patrimônio histórico",
+        "Incentivo às manifestações culturais",
+        "Organização de eventos municipais"
+      ],
+      "servicos": [
+        "Apoio a artistas locais",
+        "Editais culturais",
+        "Oficinas de arte"
+      ],
+      "planos": []
+    },
+    {
+      "slug": "desenvolvimento",
+      "nome": "Secretaria Municipal de Desenvolvimento e Empreendedorismo",
+      "responsavel": "Phelype Alcantara Barbosa Lima",
+      "email": "pmpadremarcos@gmail.com",
+      "telefone": "(89) 98152-1424",
+      "horario": "08:00 às 12:00",
+      "endereco": "Rua Anfrísio Macedo, 150, Centro, Padre Marcos - PI",
+      "competencias": [
+        "Fomento ao empreendedorismo",
+        "Atração de investimentos",
+        "Qualificação profissional"
+      ],
+      "servicos": [
+        "Sala do Empreendedor",
+        "Orientações para MEI",
+        "Cursos profissionalizantes"
+      ],
+      "planos": []
+    },
+    {
+      "slug": "educacao",
+      "nome": "Secretaria Municipal de Educação",
+      "responsavel": "Eraldo Carvalho Gomes",
+      "email": "semecpmpm@yahoo.com.br",
+      "telefone": "(89) 98119-5668",
+      "horario": "08:00 às 12:00",
+      "endereco": "Rua Anfrísio Macedo, Centro, Padre Marcos - PI",
+      "competencias": [
+        "Gestão do ensino municipal",
+        "Coordenação pedagógica",
+        "Manutenção da rede escolar"
+      ],
+      "servicos": [
+        "Matrículas escolares",
+        "Transporte escolar",
+        "Merenda escolar"
+      ],
+      "planos": []
+    },
+    {
+      "slug": "esporte",
+      "nome": "Secretaria Municipal de Esporte",
+      "responsavel": "Antonio Francisco de Carvalho",
+      "email": "pmpadremarcos@gmail.com",
+      "telefone": "(89) 98107-0953",
+      "horario": "08:00 às 12:00",
+      "endereco": "Ginásio Poliesportivo, Padre Marcos - PI",
+      "competencias": [
+        "Promoção do esporte e lazer",
+        "Gestão de praças esportivas",
+        "Incentivo ao esporte amador"
+      ],
+      "servicos": [
+        "Campeonatos municipais",
+        "Escolinhas de esporte",
+        "Reserva de espaços esportivos"
+      ],
+      "planos": []
+    },
+    {
+      "slug": "financas",
+      "nome": "Secretaria Municipal de Finanças",
+      "responsavel": "Orlandio Jose de Carvalho",
+      "email": "pmpadremarcos@gmail.com",
+      "telefone": "(89) 98107-0953",
+      "horario": "08:00 às 12:00",
+      "endereco": "Rua Anfrísio Macedo, 150, Centro, Padre Marcos - PI",
+      "competencias": [
+        "Gestão financeira e orçamentária",
+        "Arrecadação de tributos",
+        "Controle de gastos públicos"
+      ],
+      "servicos": [
+        "Emissão de nota fiscal",
+        "Consulta de débitos",
+        "Pagamento de fornecedores"
+      ],
+      "planos": []
+    },
+    {
+      "slug": "meio-ambiente",
+      "nome": "Secretaria Municipal de Meio Ambiente",
+      "responsavel": "Geneilsa Ana de Oliveira Sousa",
+      "email": "pmpadremarcos@gmail.com",
+      "telefone": "(89) 98127-2149",
+      "horario": "08:00 às 12:00",
+      "endereco": "Rua Anfrísio Macedo, 150, Centro, Padre Marcos - PI",
+      "competencias": [
+        "Proteção ambiental municipal",
+        "Licenciamento ambiental",
+        "Educação ambiental"
+      ],
+      "servicos": [
+        "Denúncias ambientais",
+        "Autorização para poda",
+        "Coleta seletiva"
+      ],
+      "planos": []
+    },
+    {
+      "slug": "obras",
+      "nome": "Secretaria Municipal de Obras e Serviços Urbanos",
+      "responsavel": "Gerasco Cicero Gomes",
+      "email": "pmpadremarcos@gmail.com",
+      "telefone": "(89) 98105-0292",
+      "horario": "08:00 às 12:00",
+      "endereco": "Rua Anfrísio Macedo, 150, Centro, Padre Marcos - PI",
+      "competencias": [
+        "Execução de obras públicas",
+        "Manutenção de vias urbanas",
+        "Serviços de limpeza urbana"
+      ],
+      "servicos": [
+        "Solicitação de reparo em vias",
+        "Iluminação pública",
+        "Limpeza de entulhos"
+      ],
+      "planos": []
+    },
+    {
+      "slug": "transporte",
+      "nome": "Secretaria Municipal de Transporte",
+      "responsavel": "Erimar de Carvalho Gomes",
+      "email": "pmpadremarcos@gmail.com",
+      "telefone": "(89) 98132-3809",
+      "horario": "08:00 às 12:00",
+      "endereco": "Garagem Municipal, Padre Marcos - PI",
+      "competencias": [
+        "Gestão da frota municipal",
+        "Logística de transportes",
+        "Manutenção preventiva de veículos"
+      ],
+      "servicos": [
+        "Transporte de pacientes",
+        "Transporte escolar",
+        "Manutenção mecânica"
+      ],
+      "planos": []
+    }
+  ],
+  "orgaos": [
+    {
+      "slug": "controladoria",
+      "nome": "Controladoria Geral do Município",
+      "responsavel": "Em atualização",
+      "email": "pmpadremarcos@gmail.com",
+      "telefone": "(89) 98116-0296",
+      "horario": "08:00 às 12:00",
+      "endereco": "Rua Anfrísio Macedo, 150, Centro, Padre Marcos - PI",
+      "competencias": [
+        "Controle interno da administração",
+        "Fiscalização da legalidade dos atos",
+        "Ouvidoria e transparência"
+      ],
+      "servicos": [
+        "Recebimento de denúncias",
+        "Auditorias internas",
+        "Relatórios de transparência"
+      ],
+      "planos": []
+    },
+    {
+      "slug": "procuradoria",
+      "nome": "Procuradoria Geral do Município",
+      "responsavel": "Em atualização",
+      "email": "pmpadremarcos@gmail.com",
+      "telefone": "(89) 98116-0296",
+      "horario": "08:00 às 12:00",
+      "endereco": "Rua Anfrísio Macedo, 150, Centro, Padre Marcos - PI",
+      "competencias": [
+        "Representação jurídica do município",
+        "Assessoria jurídica ao prefeito",
+        "Análise de legalidade de projetos de lei"
+      ],
+      "servicos": [
+        "Pareceres jurídicos",
+        "Defesa em processos judiciais",
+        "Cobrança de dívida ativa"
+      ],
+      "planos": []
+    }
+  ]
+}

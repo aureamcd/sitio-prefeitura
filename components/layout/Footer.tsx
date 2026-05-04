@@ -242,7 +242,7 @@ export default function TransparencyFooter(): JSX.Element {
             Dados disponibilizados conforme Lei de Acesso à Informação (Lei nº 12.527/2011)
           </p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
-            <p>Atualização: <strong className="text-gray-200">10/12/2025</strong></p>
+            <p>Atualização: <strong className="text-gray-200">04/05/2026</strong></p>
             <p>Fonte: <strong className="text-gray-200">Sistema Contábil Municipal</strong></p>
             <p className="hidden md:block">Frequência: diária</p>
           </div>
