@@ -128,7 +128,7 @@ export default function TransparencyFooter(): JSX.Element {
               { href: "https://transparencia.padremarcos.pi.gov.br/transparencia/Default.aspx", label: "Portal", icon: TrendingUp },
               { href: "/receitas", label: "Receitas", icon: DollarSign },
               { href: "/despesas", label: "Despesas", icon: DollarSign },
-              { href: "/licitacoes", label: "Licitações e Contratos", icon: Gavel },
+              { href: "https://transparencia.padremarcos.pi.gov.br/transparencia/?AcessoIndividual=lnkLicitacoes", label: "Licitações e Contratos", icon: Gavel },
               { href: "/rh", label: "Recursos Humanos", icon: Users },
               { href: "/relatorios", label: "Relatórios e Contas", icon: FileBarChart },
               { href: "/obras", label: "Obras", icon: HardHat },

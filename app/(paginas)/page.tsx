@@ -124,7 +124,7 @@ const sections: SectionItem[] = [
       {
         title: "Licitações",
         description: "Acompanhe os processos licitatórios.",
-        href: "/licitacoes",
+        href: "https://transparencia.padremarcos.pi.gov.br/transparencia/?AcessoIndividual=lnkLicitacoes",
         Icon: Gavel,
       },      
       {
@@ -138,7 +138,7 @@ const sections: SectionItem[] = [
       {
         title: "Concursos e Processo Seletivos",
         description: "Informações sobre concursos e seletivos.",
-        href: "/concursos-e-processos",
+        href: "https://transparencia.padremarcos.pi.gov.br/transparencia/?AcessoIndividual=LnkConcursos",
         Icon: Briefcase,
         variant: "highlight",
       },
@@ -160,7 +160,7 @@ const sections: SectionItem[] = [
       {
         title: "Prestação de Contas",
         description: "Relatórios e contas públicas.",
-        href: "/prefeitura/prestacao-contas",
+        href: "",
         Icon: PieChart,
         featured: true,
 
@@ -168,14 +168,14 @@ const sections: SectionItem[] = [
       {
         title: "Contratos",
         description: "Íntegra dos contratos vigentes.",
-        href: "/prefeitura/contratos",
+        href: "https://transparencia.padremarcos.pi.gov.br/transparencia/?AcessoIndividual=lnkContratos",
         Icon: Handshake,
         featured: true,
       },
       {
         title: "Obras Públicas",
         description: "Acompanhamento das obras no município.",
-        href: "/prefeitura/obras-publicas",
+        href: "",
         Icon: HardHat,
         variant: "highlight",
       },

@@ -40,7 +40,7 @@ const servicosItems = [
   { href: "/todos-servicos", label: "Todos os Serviços" },
   { href: "/servicos-online", label: "Serviços Online" },
   { href: "/carta-servicos", label: "Carta de Serviços" },
-  { href: "/concursos-e-processos", label: "Concursos e Processos Seletivos" },
+  { href: "https://transparencia.padremarcos.pi.gov.br/transparencia/?AcessoIndividual=LnkConcursos", label: "Concursos e Processos Seletivos" },
 ];
 
 
