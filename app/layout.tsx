@@ -1,5 +1,7 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 import Header from "@/components/layout/Header";
 import SkipLink from "@/components/acessibilidade/SkipLink";
@@ -94,6 +96,9 @@ export default function RootLayout({
 
         {/* Ferramentas de Inclusão */}
         <VLibras />
+
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
