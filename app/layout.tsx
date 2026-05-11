@@ -3,12 +3,7 @@ import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
-import Header from "@/components/layout/Header";
-import SkipLink from "@/components/acessibilidade/SkipLink";
-import Footer from "@/components/layout/Footer";
-import VLibras from "@/components/acessibilidade/VLibras";
-import SolicitaLai from "@/components/ui/SolicitaLai";
-import KeyboardShortcuts from "@/components/acessibilidade/KeyboardShortcuts";
+import LayoutShell from "@/components/layout/LayoutShell";
 
 import type { Metadata, Viewport } from "next";
 import type { ReactNode, JSX } from "react";
@@ -68,34 +63,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} font-sans min-h-screen flex flex-col transition-colors duration-200`}
       >
-        {/* Camada de acessibilidade prioritária */}
-        <KeyboardShortcuts />
-        <SkipLink />
-
-        {/* Estrutura Principal */}
-        <Header />
-
-        <main
-          id="main-content"
-          tabIndex={-1}
-          aria-label="Conteúdo principal"
-          className="
-            flex-grow
-            focus:outline-none
-            focus-visible:ring-4 focus-visible:ring-blue-500 focus-visible:ring-offset-2
-          "
-        >
-          {/* Dica para a página inicial: Garanta que o primeiro título 
-            da Home seja um <h1> para cumprir a semântica da cartilha.
-          */}
-          {children}
-        </main>
-
-        <SolicitaLai />
-        <Footer />
-
-        {/* Ferramentas de Inclusão */}
-        <VLibras />
+        <LayoutShell>{children}</LayoutShell>
 
         <Analytics />
         <SpeedInsights />

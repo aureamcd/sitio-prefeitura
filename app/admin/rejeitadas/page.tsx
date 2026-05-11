@@ -2,12 +2,10 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
-import AdminNewsTable, {
-  type Noticia,
-} from "@/components/admin/AdminNewsTable";
-import { Clock, Loader2 } from "lucide-react";
+import AdminNewsTable, { type Noticia } from "@/components/admin/AdminNewsTable";
+import { XCircle, Loader2 } from "lucide-react";
 
-export default function AdminPage() {
+export default function RejeitadasPage() {
   const [noticias, setNoticias] = useState<Noticia[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createBrowserClient();
@@ -16,8 +14,8 @@ export default function AdminPage() {
     const { data } = await supabase
       .from("noticias")
       .select("*")
-      .eq("status", "pendente")
-      .order("created_at", { ascending: false });
+      .eq("status", "rejeitado")
+      .order("data", { ascending: false });
     setNoticias(data || []);
     setLoading(false);
   }, [supabase]);
@@ -29,16 +27,16 @@ export default function AdminPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
-          <Clock className="w-5 h-5 text-amber-600" />
+        <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
+          <XCircle className="w-5 h-5 text-red-600" />
         </div>
         <div>
           <h1 className="text-xl font-bold text-gray-900">
-            Notícias Pendentes
+            Notícias Rejeitadas
           </h1>
           <p className="text-sm text-gray-500">
             {noticias.length} notícia{noticias.length !== 1 ? "s" : ""}{" "}
-            aguardando aprovação
+            rejeitada{noticias.length !== 1 ? "s" : ""}
           </p>
         </div>
       </div>
@@ -51,10 +49,10 @@ export default function AdminPage() {
         <AdminNewsTable
           noticias={noticias}
           showApprove
-          showReject
+          showArchive
           showEdit
           onRefresh={fetchNoticias}
-          emptyMessage="Nenhuma notícia pendente. Todas foram moderadas!"
+          emptyMessage="Nenhuma notícia rejeitada."
         />
       )}
     </div>

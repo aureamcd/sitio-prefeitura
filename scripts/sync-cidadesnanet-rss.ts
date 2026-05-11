@@ -14,8 +14,11 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const FEED_URL =
-  "https://cidadesnanet.com/portal/category/municipios/padre-marcus/feed/";
+const FEED_URLS = [
+  "https://cidadesnanet.com/portal/category/municipios/padre-marcus/feed/",
+  "https://cidadesnanet.com/portal/category/municipios/padre-marcus/feed/?paged=2",
+  "https://cidadesnanet.com/portal/category/municipios/padre-marcus/feed/?paged=3",
+];
 
 const parser = new Parser();
 
@@ -92,16 +95,28 @@ async function getImageFromPage(url: string): Promise<string> {
 /* ─── SYNC ───────────────────────── */
 
 export async function runSync() {
-  console.log("🌐 Buscando RSS...");
+  console.log("🌐 Buscando RSS (3 páginas)...");
 
-  const feed = await parser.parseURL(FEED_URL);
+  const allItems: Parser.Item[] = [];
+  for (const url of FEED_URLS) {
+    try {
+      const feed = await parser.parseURL(url);
+      allItems.push(...feed.items);
+      const pagina = url.includes("paged") ? "Página " + url.split("paged=")[1] : "Página 1";
+      console.log(`  📄 ${pagina}: ${feed.items.length} itens`);
+    } catch (err) {
+      console.error(`  ❌ Erro ao buscar ${url}:`, err);
+    }
+  }
+
+  console.log(`📰 Total: ${allItems.length} itens\n`);
 
   let inseridos = 0;
   let ignorados = 0;
   let bloqueados = 0;
   let zonaCinza = 0;
 
-  for (const item of feed.items) {
+  for (const item of allItems) {
     const titulo = item.title?.trim();
     const link = item.link;
 
@@ -222,7 +237,7 @@ export async function runSync() {
       score_positivo: scorePositivo,
       score_risco: scoreRisco,
       prioridade,
-      status: "publicado",
+      status: "pendente",
       data: item.pubDate
         ? new Date(item.pubDate).toISOString()
         : new Date().toISOString(),

@@ -3,7 +3,7 @@
 import { useState, useEffect, JSX } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Hand, ExternalLink, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import { Hand, ExternalLink, ZoomIn, ZoomOut, RotateCcw, UserCog } from "lucide-react";
 import SearchBar from "./SearchBar";
 import Navbar from "./NavBar";
 
@@ -235,6 +235,24 @@ export default function Header(): JSX.Element {
               <span className="hidden sm:inline">Portal da Transparência</span>
               <span className="sr-only">(abre em nova aba)</span>
             </a>
+          </Tooltip>
+
+          <div className="hidden sm:block w-px h-4 bg-white/40 mx-1" />
+
+          {/* Ícone Admin (discreto) */}
+          <Tooltip text="Painel Administrativo" id="tooltip-admin">
+            <Link
+              href="/admin"
+              aria-label="Painel Administrativo"
+              className="flex items-center justify-center min-w-[22px] min-h-[22px]
+                rounded hover:bg-white/10
+                focus:ring-1 focus:ring-white
+                touch-manipulation cursor-pointer
+                active:scale-90 transition-transform
+                opacity-60 hover:opacity-100"
+            >
+              <UserCog size={14} />
+            </Link>
           </Tooltip>
         </div>
 

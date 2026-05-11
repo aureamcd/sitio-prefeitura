@@ -2,17 +2,16 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
-import AdminNewsTable, {
-  type Noticia,
-} from "@/components/admin/AdminNewsTable";
+import AdminNewsTable, { type Noticia } from "@/components/admin/AdminNewsTable";
 import { Clock, Loader2 } from "lucide-react";
 
-export default function AdminPage() {
+export default function PendentesPage() {
   const [noticias, setNoticias] = useState<Noticia[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createBrowserClient();
 
   const fetchNoticias = useCallback(async () => {
+    setLoading(true);
     const { data } = await supabase
       .from("noticias")
       .select("*")

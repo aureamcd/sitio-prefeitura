@@ -37,6 +37,7 @@ export default async function NoticiaPage({
         .from("noticias")
         .select("*")
         .eq("slug", slug)
+        .eq("status", "publicado")
         .single();
 
     if (error || !data) {
