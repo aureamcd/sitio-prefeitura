@@ -1,7 +1,14 @@
 import "dotenv/config";
+import type { TomConteudo, Prioridade } from "./filtro-conteudo";
 
 export type AnaliseIA = {
   relevante: boolean;
+  publicar: boolean;
+  motivo_bloqueio: string | null;
+  tom: TomConteudo;
+  score_positivo: number;
+  score_risco: number;
+  prioridade: Prioridade;
   categorias: string[];
   resumo: string;
   imagem_posicao: "cover_center" | "cover_top" | "cover_face";
@@ -134,6 +141,12 @@ Retorne APENAS JSON puro, sem texto antes ou depois, sem markdown:
 
 {
   "relevante": boolean,
+  "publicar": boolean,
+  "motivo_bloqueio": string | null,
+  "tom": "institucional_positivo" | "institucional_neutro" | "institucional_negativo",
+  "score_positivo": number (0-100),
+  "score_risco": number (0-100),
+  "prioridade": "hero" | "destaque" | "normal" | "baixa",
   "categorias": string[],
   "resumo": string,
   "imagem_posicao": string
@@ -146,6 +159,41 @@ Relevante = notícia sobre Padre Marcos ou Padre Marcus, incluindo:
 - esportes, torneios, atletas do município
 - projetos sociais, culturais ou comunitários locais
 NÃO é relevante: crimes, homicídios, roubos, prisões, acidentes fatais
+
+═══ CONTEXTO IMPORTA (MUITO IMPORTANTE) ═══
+Palavras negativas NÃO significam notícia negativa quando o CONTEXTO é de resolução positiva:
+✅ PUBLICAR: "denúncias ARQUIVADAS" → ex-prefeito inocentado = POSITIVO
+✅ PUBLICAR: "investigação ENCERRADA sem irregularidades" = POSITIVO  
+✅ PUBLICAR: "combate à VIOLÊNCIA" = programa social = POSITIVO
+✅ PUBLICAR: "improbidade REJEITADA" = absolvição = POSITIVO
+✅ PUBLICAR: "cassação NEGADA" = gestor mantido = POSITIVO
+❌ BLOQUEAR: "prefeito DENUNCIADO por corrupção" = crise = NEGATIVO
+❌ BLOQUEAR: "investigação ABERTA contra secretário" = NEGATIVO
+
+REGRA: se o texto contém palavras como "arquivada", "encerrada", "absolvido", "inocentado", "rejeitada", "improcedente", "combate à", "prevenção", o tom é POSITIVO ou NEUTRO, NUNCA negativo.
+
+═══ TOM DA NOTÍCIA ═══
+"institucional_positivo" → gestão positiva, obras, inaugurações, entregas, investimentos, capacitações, convênios, premiações, rankings positivos, arquivamento favorável, aprovação de contas, denúncias arquivadas, absolvição, inocentação
+"institucional_neutro" → anúncios oficiais, comunicados, licitações, editais, visitas, assinaturas de convênio
+"institucional_negativo" → criminalidade ativa, violência em curso, crise administrativa real, denúncia EM ANDAMENTO, investigação ABERTA, corrupção confirmada, tragédia, desastre
+
+═══ PUBLICAR / BLOQUEIO ═══
+publicar = true → conteúdo institucional positivo ou neutro, SEM risco reputacional. INCLUI notícias de arquivamento/absolvição/inocentação.
+publicar = false → conteúdo negativo ATIVO (criminalidade em curso, crise real, violência, risco reputacional)
+motivo_bloqueio = null quando publicar=true, senão usar: "criminalidade", "crise_administrativa", "tragedia", "risco_reputacional"
+
+═══ SCORES ═══
+score_positivo = de 0 a 100. Quanto mais positiva/institucional a notícia, mais alto.
+score_risco = de 0 a 100. Quanto mais risco reputacional, mais alto.
+Exemplo inauguração de escola: score_positivo=85, score_risco=2
+Exemplo comunicado genérico: score_positivo=30, score_risco=0
+Exemplo denúncia arquivada: score_positivo=60, score_risco=25
+
+═══ PRIORIDADE EDITORIAL ═══
+"hero" → notícia de grande impacto positivo (inauguração, prêmio estadual/nacional, investimento alto)
+"destaque" → notícia relevante com bom tom positivo
+"normal" → notícia institucional padrão, informativa
+"baixa" → notícia menor, rotineira, sem destaque especial
 
 ═══ CATEGORIAS PERMITIDAS ═══
 saude, educacao, obras, assistencia, esporte, licitacao
@@ -179,7 +227,7 @@ Analise o título e conteúdo para escolher ONDE a imagem provavelmente foca:
   ✅ Notícia sem imagem relevante identificada
 
 ═══ SE NÃO FOR RELEVANTE ═══
-{ "relevante": false, "categorias": [], "resumo": "", "imagem_posicao": "cover_center" }
+{ "relevante": false, "publicar": false, "motivo_bloqueio": "irrelevante", "tom": "institucional_neutro", "score_positivo": 0, "score_risco": 0, "prioridade": "baixa", "categorias": [], "resumo": "", "imagem_posicao": "cover_center" }
 
 Título: ${titulo}
 
@@ -198,7 +246,7 @@ ${conteudoLimpo}`;
         body: JSON.stringify({
           model: "meta-llama/llama-3.1-8b-instruct",
           temperature: 0.1,
-          max_tokens: 300,
+          max_tokens: 400,
           messages: [
             {
               role: "user",
@@ -235,8 +283,30 @@ ${conteudoLimpo}`;
       ? (parsed.imagem_posicao as AnaliseIA["imagem_posicao"])
       : inferirPosicaoHeuristica(titulo, conteudoLimpo);
 
+    // Valida tom
+    const TOMS_VALIDOS: TomConteudo[] = [
+      "institucional_positivo",
+      "institucional_neutro",
+      "institucional_negativo",
+    ];
+    const tom: TomConteudo = TOMS_VALIDOS.includes(parsed.tom)
+      ? parsed.tom
+      : "institucional_neutro";
+
+    // Valida prioridade
+    const PRIORIDADES_VALIDAS = ["hero", "destaque", "normal", "baixa"];
+    const prioridade = PRIORIDADES_VALIDAS.includes(parsed.prioridade)
+      ? (parsed.prioridade as AnaliseIA["prioridade"])
+      : "normal";
+
     return {
       relevante: Boolean(parsed.relevante),
+      publicar: Boolean(parsed.publicar ?? parsed.relevante),
+      motivo_bloqueio: parsed.motivo_bloqueio || null,
+      tom,
+      score_positivo: Math.min(100, Math.max(0, Number(parsed.score_positivo) || 0)),
+      score_risco: Math.min(100, Math.max(0, Number(parsed.score_risco) || 0)),
+      prioridade,
       categorias,
       resumo: parsed.resumo || "",
       imagem_posicao,
@@ -247,6 +317,12 @@ ${conteudoLimpo}`;
     // Fallback completo com heurística
     return {
       relevante: false,
+      publicar: false,
+      motivo_bloqueio: "erro_ia",
+      tom: "institucional_neutro",
+      score_positivo: 0,
+      score_risco: 0,
+      prioridade: "baixa",
       categorias: [],
       resumo: "",
       imagem_posicao: inferirPosicaoHeuristica(titulo, conteudo),

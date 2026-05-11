@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 import { extractImageFromContent } from "@/scripts/utils/extractImage";
 import { analisarNoticiaIA } from "@/scripts/utils/ai";
+import { filtrarConteudo } from "@/scripts/utils/filtro-conteudo";
 
 dotenv.config();
 
@@ -97,6 +98,8 @@ export async function runSync() {
 
   let inseridos = 0;
   let ignorados = 0;
+  let bloqueados = 0;
+  let zonaCinza = 0;
 
   for (const item of feed.items) {
     const titulo = item.title?.trim();
@@ -110,15 +113,57 @@ export async function runSync() {
     // 🔒 Limite pra IA (MUITO IMPORTANTE)
     const conteudoLimitado = fullContent.slice(0, 2000);
 
-    /* ─── IA ───────────────── */
+    /* ═══ ETAPA 1: FAST FILTER (pré-IA) ═══════════ */
+
+    const filtro = filtrarConteudo(titulo, conteudoLimitado);
+
+    // 🚫 BLOQUEIO DURO — descarta sem gastar token de IA
+    if (filtro.publicar === false) {
+      console.log(
+        `🚫 Bloqueado [${filtro.motivo_bloqueio}]:`,
+        titulo
+      );
+      bloqueados++;
+      continue;
+    }
+
+    /* ═══ ETAPA 2: IA ═════════════════════════════ */
 
     const analise = await analisarNoticiaIA(titulo, conteudoLimitado);
 
-    if (!analise.relevante) {
-      console.log("⛔ IA ignorou:", titulo);
+    // 🟡 ZONA CINZA — IA decide se publica ou não
+    if (filtro.zona_cinza) {
+      zonaCinza++;
+      console.log(
+        `🟡 Zona cinza [${filtro.palavras_encontradas.join(", ")}]:`,
+        titulo
+      );
+
+      if (!analise.publicar) {
+        const motivo = analise.motivo_bloqueio || "risco_reputacional";
+        console.log(`  └─ ⛔ IA bloqueou [${motivo}]`);
+        ignorados++;
+        continue;
+      }
+
+      console.log(`  └─ ✅ IA aprovou [${analise.tom}] score:+${analise.score_positivo}/-${analise.score_risco}`);
+    }
+
+    // IA rejeitou por irrelevância ou negatividade
+    if (!analise.relevante || !analise.publicar) {
+      const motivo = analise.motivo_bloqueio || "irrelevante";
+      console.log(`⛔ IA bloqueou [${motivo}]:`, titulo);
       ignorados++;
       continue;
     }
+
+    // Scores finais: IA tem prioridade, fallback pro filtro
+    const tomFinal = analise.tom || filtro.tom;
+    const scorePositivo = analise.score_positivo || filtro.score_positivo;
+    const scoreRisco = analise.score_risco || filtro.score_risco;
+    const prioridade = analise.prioridade !== "normal"
+      ? analise.prioridade
+      : filtro.prioridade;
 
     const slug = slugify(titulo);
 
@@ -173,6 +218,10 @@ export async function runSync() {
       fonte: "Cidades na Net",
       link_original: link,
       destaque: analise.categorias, // ✅ ARRAY
+      tom: tomFinal,
+      score_positivo: scorePositivo,
+      score_risco: scoreRisco,
+      prioridade,
       status: "publicado",
       data: item.pubDate
         ? new Date(item.pubDate).toISOString()
@@ -185,14 +234,22 @@ export async function runSync() {
     if (error) {
       console.error("❌ Erro:", error.message);
     } else {
-      console.log("✅", titulo, "|", analise.categorias.join(", "));
+      console.log(
+        `✅ ${titulo}`,
+        `| ${analise.categorias.join(", ")}`,
+        `[${tomFinal}]`,
+        `+${scorePositivo}/-${scoreRisco}`,
+        `◆${prioridade}`
+      );
       inseridos++;
     }
   }
 
   console.log("\n📊 RESUMO:");
   console.log("✅ Inseridos:", inseridos);
-  console.log("⛔ Ignorados:", ignorados);
+  console.log("🚫 Bloqueados (palavras):", bloqueados);
+  console.log("🟡 Zona cinza (IA decidiu):", zonaCinza);
+  console.log("⛔ Ignorados (IA):", ignorados);
 }
 
 /* ─── EXECUÇÃO ───────────────── */
