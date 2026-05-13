@@ -34,7 +34,7 @@ export default function SearchBar(): JSX.Element {
         id="search-input"
         name="q"
         type="search"
-        placeholder="O que você procura?..."
+        placeholder="O que você procura?"
         autoComplete="off"
         className="
           w-full px-5 py-2.5 pr-12
