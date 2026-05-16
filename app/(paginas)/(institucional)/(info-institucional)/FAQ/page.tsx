@@ -70,7 +70,6 @@ export default function FAQPage() {
         { label: "Início", href: "/" },
         { label: "FAQ" },
       ]}
-      responsavel="Secretaria Municipal de Administração"
       lastUpdate="2026-05-04"
     >
 

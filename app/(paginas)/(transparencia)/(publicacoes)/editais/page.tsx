@@ -70,7 +70,6 @@ export default function EditaisPage() {
         { label: "Editais" },
       ]}
       lastUpdate="2026-05-04"
-      responsavel="Comissão Permanente de Licitação"
       documentos={documentos}
       showTipoFiltro
       tipos={[

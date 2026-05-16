@@ -26,7 +26,6 @@ type ContentPageProps = {
   icon?: ReactNode;
   children: ReactNode;
   lastUpdate?: string;
-  responsavel?: string;
   showSearch?: boolean;
   hideStripe?: boolean;
 };
@@ -54,7 +53,6 @@ export default function ContentPage({
   icon,
   children,
   lastUpdate,
-  responsavel,
   showSearch = true,
   hideStripe = false,
 }: ContentPageProps): JSX.Element {
@@ -161,23 +159,15 @@ export default function ContentPage({
               {children}
             </div>
 
-            {(responsavel || lastUpdate) && (
+            {lastUpdate && (
               <footer
                 className="mt-10 pt-5 border-t border-gray-100 flex flex-wrap gap-x-6 gap-y-1"
                 aria-label="Metadados da página"
               >
-                {responsavel && (
-                  <p className="text-xs text-gray-500">
-                    <span className="font-medium text-gray-600">Responsável:</span>{" "}
-                    {responsavel}
-                  </p>
-                )}
-                {lastUpdate && (
-                  <p className="text-xs text-gray-500">
-                    <span className="font-medium text-gray-600">Última atualização:</span>{" "}
-                    <time dateTime={lastUpdate}>{formatDate(lastUpdate)}</time>
-                  </p>
-                )}
+                <p className="text-xs text-gray-500">
+                  <span className="font-medium text-gray-600">Última atualização:</span>{" "}
+                  <time dateTime={lastUpdate}>{formatDate(lastUpdate)}</time>
+                </p>
               </footer>
             )}
           </section>

@@ -11,7 +11,6 @@ export default function LGPDPage() {
         { label: "LGPD" },
       ]}
       lastUpdate="2026-05-04"
-      responsavel="Encarregado de Proteção de Dados (DPO)"
     >
       <div className="space-y-6">
 

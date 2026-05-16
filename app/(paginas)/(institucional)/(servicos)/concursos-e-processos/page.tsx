@@ -30,7 +30,6 @@ export default function ConcursosPage() {
         { label: "Concursos e Seletivos" },
       ]}
       lastUpdate="2026-05-04"
-      responsavel="Secretaria Municipal de Administração"
       documentos={documentos}
       showTipoFiltro
       tipos={["Concurso Público", "Processo Seletivo"]}

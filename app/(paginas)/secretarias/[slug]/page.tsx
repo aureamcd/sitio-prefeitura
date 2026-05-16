@@ -36,7 +36,6 @@ export default async function SecretariaPage({ params }: Props) {
         { label: item.nome },
       ]}
       lastUpdate="2026-05-04"
-      responsavel={item.nome}
     >
       <div className="space-y-10">
         

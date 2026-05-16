@@ -33,7 +33,6 @@ export default function CartaDeServicosPage() {
         { label: "Carta de Serviços" },
       ]}
       lastUpdate="2026-05-04"
-      responsavel="Prefeitura Municipal"
       showSearch={false}
     >
 

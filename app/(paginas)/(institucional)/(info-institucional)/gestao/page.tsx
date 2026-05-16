@@ -62,7 +62,6 @@ export default function GestaoPage() {
                 { label: "Início", href: "/" },
                 { label: "Gestão" },
             ]}
-            responsavel="Secretaria Municipal de Administração"
             lastUpdate="2026-05-04"
         >
 

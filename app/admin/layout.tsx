@@ -16,6 +16,8 @@ import {
   Shield,
   Home,
   Newspaper,
+  FileText,
+  MessageCircle,
 } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
@@ -271,6 +273,41 @@ export default function AdminLayout({
             </div>
           )}
 
+          {/* ── e-SIC ── */}
+          <Link
+            href="/admin/esic"
+            onClick={onNavigate}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              pathname.startsWith("/admin/esic")
+                ? "bg-[#0B3D91] text-white font-semibold shadow-md shadow-blue-200"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            <FileText
+              className={`w-5 h-5 ${
+                pathname.startsWith("/admin/esic") ? "text-white" : "text-blue-500"
+              }`}
+            />
+            <span className="flex-1">e-SIC</span>
+          </Link>
+
+          {/* ── Ouvidoria ── */}
+          <Link
+            href="/admin/ouvidoria"
+            onClick={onNavigate}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              pathname.startsWith("/admin/ouvidoria")
+                ? "bg-[#0B3D91] text-white font-semibold shadow-md shadow-blue-200"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            <MessageCircle
+              className={`w-5 h-5 ${
+                pathname.startsWith("/admin/ouvidoria") ? "text-white" : "text-purple-500"
+              }`}
+            />
+            <span className="flex-1">Ouvidoria</span>
+          </Link>
         </nav>
 
         {/* Footer: Home + User + Logout */}

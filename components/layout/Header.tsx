@@ -331,7 +331,7 @@ export default function Header(): JSX.Element {
 
             {/* FALE CONOSCO */}
             <Link
-              href="/fale-conosco"
+              href="/ouvidoria"
               className="
       w-auto
       text-center

@@ -28,7 +28,6 @@ type Props = {
     description: string;
     breadcrumb: { label: string; href?: string }[];
     lastUpdate: string;
-    responsavel: string;
 
     documentos: Documento[];
 
@@ -50,7 +49,6 @@ export default function PublicationPage({
     description,
     breadcrumb,
     lastUpdate,
-    responsavel,
     documentos,
     showTipoFiltro = false,
     tipos = [],
@@ -122,7 +120,6 @@ export default function PublicationPage({
             description={description}
             breadcrumb={breadcrumb}
             lastUpdate={lastUpdate}
-            responsavel={responsavel}
             showSearch={false}
         >
             {/* FILTROS */}
