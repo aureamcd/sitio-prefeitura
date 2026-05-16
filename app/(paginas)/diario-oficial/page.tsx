@@ -11,7 +11,6 @@ export default function DiarioOficialPage() {
         { label: "Diário Oficial" },
       ]}
       lastUpdate="2026-05-04"
-      responsavel="Setor de Transparência Pública"
     >
       <div className="space-y-6">
 

@@ -28,7 +28,6 @@ export default function CompetenciasPage() {
                 { label: "Início", href: "/" },
                 { label: "Competências" },
             ]}
-            responsavel="Secretaria Municipal de Administração"
             lastUpdate="2026-05-04"
         >
 

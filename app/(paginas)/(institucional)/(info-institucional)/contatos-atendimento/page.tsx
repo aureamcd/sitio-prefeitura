@@ -40,7 +40,6 @@ export default function ContatosPage() {
                 { label: "Início", href: "/" },
                 { label: "Contatos e Atendimento" },
             ]}
-            responsavel="Secretaria Municipal de Administração"
             lastUpdate="2026-05-04"
         >
 

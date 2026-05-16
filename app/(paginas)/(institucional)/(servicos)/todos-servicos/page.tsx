@@ -44,7 +44,6 @@ export default function TodosServicosPage() {
                 { label: "Serviços" },
             ]}
             lastUpdate="2026-05-04"
-            responsavel="Prefeitura Municipal"
             showSearch={false}
         >
 

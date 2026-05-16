@@ -154,8 +154,8 @@ export default function TransparencyFooter(): JSX.Element {
               { href: "/acesso-informacao", label: "Acesso à Informação", icon: LibraryBig },
               { href: "/esic", label: "e-SIC (Solicitar Informação)", icon: MessageSquare },
               { href: "/ouvidoria", label: "Ouvidoria", icon: Mail },
-              { href: "/servicos/carta", label: "Carta de Serviços", icon: Info },
-              { href: "/institucional/FAQ", label: "Perguntas Frequentes", icon: HelpCircle },
+              { href: "/carta-servicos", label: "Carta de Serviços", icon: Info },
+              { href: "/FAQ", label: "Perguntas Frequentes", icon: HelpCircle },
             ].map((item) => (
               <li key={item.href}>
                 <Link href={item.href} className="flex items-center gap-2 hover:text-white hover:pl-1 transition-all">

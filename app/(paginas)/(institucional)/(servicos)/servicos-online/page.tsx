@@ -93,7 +93,6 @@ export default function ServicosOnlinePage() {
                 { label: "Serviços Online" },
             ]}
             lastUpdate="2026-05-04"
-            responsavel="Prefeitura Municipal"
             showSearch={false}
         >
 

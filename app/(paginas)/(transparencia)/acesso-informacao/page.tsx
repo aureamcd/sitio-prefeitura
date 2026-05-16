@@ -1,6 +1,7 @@
 "use client";
 
 import ContentPage from "@/components/layout/ContentPage";
+import Link from "next/link";
 import {
   BookOpen,
   Send,
@@ -23,7 +24,6 @@ export default function AcessoInformacaoPage() {
         { label: "Acesso à Informação" },
       ]}
       lastUpdate="2026-05-04"
-      responsavel="Setor de Transparência Pública"
     >
       <div className="space-y-6">
 
@@ -108,20 +108,39 @@ export default function AcessoInformacaoPage() {
             <div className="bg-purple-50 text-purple-600 p-2.5 rounded-xl">
               <Clock size={22} />
             </div>
-            <h2 className="text-lg font-bold text-gray-900">Prazos e recursos</h2>
+            <h2 className="text-lg font-bold text-gray-900">Prazos e Recursos</h2>
           </div>
-          <ul className="space-y-2">
+          <ul className="space-y-4">
             <li className="flex items-start gap-2 text-gray-600">
               <span className="mt-1.5 w-2 h-2 rounded-full bg-purple-400 shrink-0" />
-              Prazo de resposta: até <strong>20 dias</strong>, prorrogáveis por mais 10 dias.
+              <div>
+                <strong>Prazo de Resposta:</strong> até 20 dias, prorrogáveis por mais 10 dias.
+              </div>
             </li>
             <li className="flex items-start gap-2 text-gray-600">
               <span className="mt-1.5 w-2 h-2 rounded-full bg-purple-400 shrink-0" />
-              Em caso de negativa, o cidadão pode apresentar recurso.
-            </li>
-            <li className="flex items-start gap-2 text-gray-600">
-              <span className="mt-1.5 w-2 h-2 rounded-full bg-purple-400 shrink-0" />
-              O recurso será analisado pela autoridade competente.
+              <div className="space-y-2 w-full">
+                <strong>Recurso em caso de negativa:</strong> O cidadão tem <strong>10 dias</strong> para apresentar recurso a partir da ciência da negativa. O recurso segue o seguinte fluxo:
+                <div className="bg-purple-50/50 border border-purple-100 rounded-xl p-4 text-sm mt-2">
+                  <p className="font-semibold text-purple-900 mb-3">Instâncias Julgadoras:</p>
+                  <ul className="space-y-3 ml-1">
+                    <li className="flex items-start gap-3">
+                      <span className="w-5 h-5 rounded-full bg-purple-200 text-purple-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</span>
+                      <div>
+                        <strong>1ª Instância:</strong> Autoridade hierarquicamente superior (Secretário Municipal da pasta).
+                        <p className="text-purple-600/80 mt-0.5 font-medium">Prazo de julgamento: 5 dias.</p>
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="w-5 h-5 rounded-full bg-purple-200 text-purple-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</span>
+                      <div>
+                        <strong>2ª Instância:</strong> Prefeito Municipal (Autoridade máxima).
+                        <p className="text-purple-600/80 mt-0.5 font-medium">Prazo de julgamento: 5 dias.</p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </li>
           </ul>
         </section>
@@ -157,19 +176,18 @@ export default function AcessoInformacaoPage() {
             <div className="bg-amber-50 text-amber-600 p-2.5 rounded-xl">
               <ScrollText size={22} />
             </div>
-            <h2 className="text-lg font-bold text-gray-900">Regulamentação</h2>
+            <h2 className="text-lg font-bold text-gray-900">Regulamentação (Formato HTML)</h2>
           </div>
           <p className="text-gray-600 leading-relaxed">
-            A Lei de Acesso à Informação no município é regulamentada pelo seguinte instrumento:
+            A Lei de Acesso à Informação no município é regulamentada pelo seguinte instrumento, disponibilizado em formato de texto estruturado conforme determinação do PNTP:
           </p>
-          <a
-            href="/docs/decreto-lai.pdf"
-            target="_blank"
+          <Link
+            href="/regulamentacao-lai"
             className="inline-flex items-center gap-2 text-blue-600 font-bold hover:underline"
           >
             <ScrollText size={16} />
-            Decreto Municipal da LAI (PDF)
-          </a>
+            Acessar Decreto Municipal da LAI
+          </Link>
         </section>
 
         {/* 7. RELATÓRIOS */}
@@ -196,16 +214,22 @@ export default function AcessoInformacaoPage() {
             <div className="bg-red-50 text-red-600 p-2.5 rounded-xl">
               <Lock size={22} />
             </div>
-            <h2 className="text-lg font-bold text-gray-900">Informações classificadas</h2>
+            <h2 className="text-lg font-bold text-gray-900">Informações Classificadas e Desclassificadas</h2>
           </div>
-          <p className="text-gray-600 leading-relaxed">
-            No período, nenhuma informação foi classificada com grau de sigilo.
-          </p>
-          <div className="border-t border-gray-100 pt-4">
-            <h3 className="text-sm font-bold text-gray-700 mb-1">Informações desclassificadas</h3>
-            <p className="text-gray-600">
-              Nenhuma informação foi desclassificada nos últimos 12 meses.
+          <div className="bg-gray-50 border border-gray-100 rounded-xl p-5">
+            <p className="text-gray-700 leading-relaxed mb-3">
+              A Prefeitura Municipal informa que <strong>não possui</strong>, nos últimos 3 anos:
             </p>
+            <ul className="space-y-3 text-gray-600 ml-1">
+              <li className="flex items-start gap-2">
+                <span className="mt-2 w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
+                Informações classificadas como reservadas, secretas ou ultrassecretas;
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-2 w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
+                Documentos desclassificados.
+              </li>
+            </ul>
           </div>
         </section>
 

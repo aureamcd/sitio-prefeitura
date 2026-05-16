@@ -1,135 +1,426 @@
+/**
+ * ========================================================
+ * PÁGINA: Ouvidoria Municipal
+ * ========================================================
+ * Estrutura profissional seguindo o padrão e-SIC.
+ * Canal de manifestações (Lei 13.460/2017).
+ *
+ * @module app/(paginas)/(transparencia)/ouvidoria/page
+ */
 import ContentPage from "@/components/layout/ContentPage";
-import { MessageCircle, ExternalLink } from "lucide-react";
+import InstitutionalForm from "@/components/institucional/InstitutionalForm";
+import DashboardStats from "@/components/institucional/DashboardStats";
+import { createServerClient } from "@/lib/supabase/server";
+import type { FieldConfig } from "@/components/institucional/InstitutionalForm";
+import {
+  MessageCircle,
+  Clock,
+  Search,
+  Info,
+  MapPin,
+  Phone,
+  Mail,
+  Shield,
+  FileEdit,
+  CheckCircle,
+  ArrowRight,
+  Lock,
+  Lightbulb,
+  ThumbsUp,
+  MessageSquare,
+  AlertTriangle,
+  Megaphone,
+} from "lucide-react";
+import Link from "next/link";
 
-export default function OuvidoriaPage() {
+/* ── CAMPOS DO FORMULÁRIO ── */
+const OUVIDORIA_FIELDS: FieldConfig[] = [
+  {
+    name: "anonimo",
+    label: "Deseja manter seus dados em sigilo?",
+    type: "checkbox",
+    width: "full",
+    hint: "Ao marcar esta opção, sua identidade será preservada e tratada com restrição de acesso, conforme a LGPD e o sigilo de fonte.",
+  },
+  {
+    name: "tipo",
+    label: "Tipo de manifestação",
+    type: "select",
+    required: true,
+    options: [
+      { value: "sugestao", label: "Sugestão" },
+      { value: "elogio", label: "Elogio" },
+      { value: "solicitacao", label: "Solicitação" },
+      { value: "reclamacao", label: "Reclamação" },
+      { value: "denuncia", label: "Denúncia" },
+    ],
+    width: "full",
+  },
+  {
+    name: "nome",
+    label: "Nome completo",
+    type: "text",
+    required: true,
+    placeholder: "Seu nome completo",
+    width: "full"
+  },
+  {
+    name: "email",
+    label: "E-mail",
+    type: "email",
+    required: true,
+    placeholder: "seu@email.com",
+    hint: "Para envio da resposta e consulta do protocolo"
+  },
+  {
+    name: "cpf",
+    label: "CPF",
+    type: "text",
+    required: false,
+    placeholder: "000.000.000-00",
+    hint: "Opcional"
+  },
+  {
+    name: "telefone",
+    label: "Telefone",
+    type: "tel",
+    required: false,
+    placeholder: "(00) 00000-0000"
+  },
+  {
+    name: "orgao_destinatario",
+    label: "Órgão / Setor destinatário (opcional)",
+    type: "select",
+    required: false,
+    options: [
+      { value: "Gabinete do Prefeito", label: "Gabinete do Prefeito" },
+      { value: "Secretaria de Administração", label: "Secretaria de Administração" },
+      { value: "Secretaria de Saúde", label: "Secretaria de Saúde" },
+      { value: "Secretaria de Educação", label: "Secretaria de Educação" },
+      { value: "Secretaria de Finanças", label: "Secretaria de Finanças" },
+      { value: "Secretaria de Assistência Social", label: "Secretaria de Assistência Social" },
+      { value: "Secretaria de Obras", label: "Secretaria de Obras" },
+      { value: "Outro / Não sei informar", label: "Outro / Não sei informar" }
+    ],
+    hint: "Se não souber, selecione 'Outro'",
+  },
+  {
+    name: "descricao",
+    label: "Descrição da manifestação",
+    type: "textarea",
+    required: true,
+    placeholder: "Descreva detalhadamente sua manifestação (fatos, datas, locais, etc).",
+    rows: 6,
+    width: "full",
+  },
+  {
+    name: "anexo",
+    label: "Anexar arquivo (opcional)",
+    type: "file",
+    required: false,
+    hint: "Formatos aceitos: PDF, JPG, PNG. Tamanho máx: 10MB.",
+    accept: ".pdf,.jpg,.jpeg,.png",
+    width: "full",
+  },
+];
+
+export default async function OuvidoriaPage() {
+  const supabase = createServerClient();
+  const { data } = await supabase
+    .from("ouvidoria_manifestacoes")
+    .select("updated_at")
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  const lastUpdateDate = data?.updated_at
+    ? new Date(data.updated_at).toISOString().split('T')[0]
+    : "2026-05-15";
+
   return (
     <ContentPage
-      title="Ouvidoria"
+      title="Ouvidoria Municipal"
       icon={<MessageCircle size={20} strokeWidth={1.5} />}
-      description="Canal oficial para envio de manifestações sobre os serviços públicos municipais."
+      description="Canal oficial para envio de manifestações, denúncias e reclamações sobre os serviços públicos."
       breadcrumb={[
         { label: "Início", href: "/" },
         { label: "Ouvidoria" },
       ]}
-      lastUpdate="2026-05-04"
-      responsavel="Prefeitura Municipal"
+      lastUpdate={lastUpdateDate}
     >
 
-      {/* INTRO */}
-      <div className="mb-7 flex flex-col gap-4">
-        <p>
-          A Ouvidoria Municipal é a unidade responsável por receber, analisar e encaminhar manifestações da sociedade, atuando como instrumento de participação e controle social.
-        </p>
-        <p>
-          A Ouvidoria é o canal de comunicação entre o cidadão e a Prefeitura,
-          destinado ao recebimento de manifestações relacionadas aos serviços públicos,
-          contribuindo para a melhoria contínua da gestão municipal.
-        </p>
-      </div>
+      {/* 1. TOPO — INFO OBRIGATÓRIAS */}
+      <div className="print:hidden">
+        {/* Destaque legal */}
+        <div className="mb-12">
+          <div className="bg-[#173572] text-white p-4 rounded-xl shadow-sm mb-5 flex items-start sm:items-center gap-3 border-l-4 border-blue-400">
+            <Info size={24} className="shrink-0 text-blue-200 mt-0.5 sm:mt-0" />
+            <p className="font-medium text-[15px] leading-relaxed">
+              A Ouvidoria é o canal de interlocução entre o cidadão e a Administração Pública, conforme a <strong>Lei Federal nº 13.460/2017</strong>.
+            </p>
+          </div>
 
-      {/* 📍 ATENDIMENTO PRESENCIAL (CRITÉRIO 14.1) */}
-      <div className="mb-7">
-        <h2 className="text-lg font-medium text-[#173572] mb-2 border-b border-[#e8edf7] pb-1">
-          Atendimento presencial
-        </h2>
-
-        <ul>
-          <li><strong>Endereço:</strong> Rua Anfrísio Macedo, 150, Centro – CEP 64.680-000</li>
-          <li><strong>Telefone:</strong> (89) 98116-0296</li>
-          <li><strong>Horário de funcionamento:</strong> Segunda a sexta, das 7h às 12h</li>
-        </ul>
-      </div>
-
-      {/* 🧾 TIPOS DE MANIFESTAÇÃO (CRITÉRIO 14.2) */}
-      <div className="mb-7">
-        <h2 className="text-lg font-medium text-[#173572] mb-2 border-b border-[#e8edf7] pb-1">
-          Tipos de manifestação
-        </h2>
-
-        <ul>
-          <li><strong>Denúncia:</strong> comunicação de irregularidades</li>
-          <li><strong>Reclamação:</strong> insatisfação com serviços públicos</li>
-          <li><strong>Solicitação:</strong> pedido de providência em serviços</li>
-          <li><strong>Sugestão:</strong> proposta de melhoria</li>
-          <li><strong>Elogio:</strong> reconhecimento de bom atendimento</li>
-        </ul>
-      </div>
-
-      {/* ⚠️ DIFERENCIAÇÃO DO E-SIC (CRÍTICO) */}
-      <div className="mb-7">
-        <h2 className="text-lg font-medium text-[#173572] mb-2 border-b border-[#e8edf7] pb-1">
-          Diferença entre Ouvidoria e e-SIC
-        </h2>
-
-        <div className="bg-[#f8faff] border border-[#e5e7eb] border-l-[4px] border-l-[#173572] p-4 rounded-r-lg shadow-sm">
-          <p className="text-[#374151] mb-3">
-            A Ouvidoria é destinada ao recebimento de manifestações sobre os serviços públicos,
-            como reclamações, denúncias e sugestões.
+          <p className="text-gray-700 leading-relaxed">
+            Este é o espaço para você apresentar denúncias, reclamações, sugestões, elogios e solicitações de providências. Sua manifestação é essencial para a melhoria contínua dos serviços prestados pela Prefeitura de Padre Marcos.
           </p>
 
-          <p className="text-[#173572] text-[15px] leading-relaxed">
-            Para solicitações de acesso à informação (Lei de Acesso à Informação),
-            utilize o sistema específico do <a href="/esic" className="font-bold underline decoration-2 underline-offset-2 hover:text-[#0f2847] transition-colors">e-SIC</a> disponível no portal.
-          </p>
+          <div className="mt-4 bg-amber-50 border border-amber-200 p-4 rounded-xl text-sm text-amber-800 flex items-center gap-3">
+            <Phone size={18} className="shrink-0" />
+            <p>
+              <strong>Fale Conosco:</strong> Se você deseja apenas um contato direto ou tirar dúvidas rápidas, também pode utilizar este canal de Ouvidoria para ser encaminhado ao setor responsável.
+            </p>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {[
+              { title: "Sugestão", text: "Ideias para melhorar serviços públicos.", icon: Lightbulb, color: "bg-amber-100 text-amber-700 border-amber-200" },
+              { title: "Elogio", text: "Reconhecimento a atendimento ou serviço.", icon: ThumbsUp, color: "bg-green-100 text-green-700 border-green-200" },
+              { title: "Solicitação", text: "Pedido de providência ou serviço.", icon: MessageSquare, color: "bg-blue-100 text-[#173572] border-blue-200" },
+              { title: "Reclamação", text: "Insatisfação com serviço prestado.", icon: AlertTriangle, color: "bg-orange-100 text-orange-700 border-orange-200" },
+              { title: "Denúncia", text: "Comunicação de irregularidade.", icon: Megaphone, color: "bg-red-100 text-red-700 border-red-200" },
+            ].map((item) => (
+              <div key={item.title} className="group rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:-translate-y-1">
+                <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-xl ${item.color} shadow-sm group-hover:scale-110 transition-transform`}>
+                  <item.icon size={20} />
+                </div>
+                <p className="text-sm font-bold text-gray-900">{item.title}</p>
+                <p className="mt-1.5 text-[11px] leading-relaxed text-gray-500">{item.text}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* 💻 CANAL ELETRÔNICO */}
-      <div className="mb-7">
-        <h2 className="text-lg font-medium text-[#173572] mb-2 border-b border-[#e8edf7] pb-1">
-          Registrar manifestação
-        </h2>
+        {/* Atendimento Presencial */}
+        <div className="mb-12">
+          <h2 className="text-lg font-medium text-[#173572] mb-3 border-b border-[#e8edf7] pb-1">
+            Atendimento Presencial (Ouvidoria Física)
+          </h2>
 
-        <p className="mb-4">
-          Você pode registrar denúncias, reclamações, solicitações, sugestões e elogios por meio do sistema eletrônico de Ouvidoria:
-        </p>
-        <p className="mb-4 text-sm text-gray-500">
-          Você será redirecionado para o sistema oficial do Governo Federal (Fala.BR).
-        </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pl-1">
+            <div className="flex items-start gap-3">
+              <MapPin size={18} className="text-[#173572] shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-gray-800">Endereço</p>
+                <p className="text-gray-600 text-sm">Rua Anfrísio Macedo, 150, Centro – CEP 64.680-000, Padre Marcos – PI</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Phone size={18} className="text-[#173572] shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-gray-800">Telefone</p>
+                <p className="text-gray-600 text-sm">(89) 98116-0296</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Mail size={18} className="text-[#173572] shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-gray-800">E-mail</p>
+                <p className="text-gray-600 text-sm">prefeitura@padremarcos.pi.gov.br</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Clock size={18} className="text-[#173572] shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-gray-800">Horário de funcionamento</p>
+                <p className="text-gray-600 text-sm">Segunda a sexta-feira, das 7h às 12h</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <a
-          href="https://falabr.cgu.gov.br/web/home"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#173572] text-white rounded-lg hover:bg-[#0f2847] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#173572]"
-          aria-label="Registrar manifestação no sistema externo Fala.BR"
-        >
-          Registrar manifestação
-          <ExternalLink size={16} aria-hidden="true" />
-        </a>
-      </div>
+        {/* Fluxo do Atendimento */}
+        <div className="mb-12">
+          <h2 className="text-lg font-medium text-[#173572] mb-3 border-b border-[#e8edf7] pb-1">
+            Como funciona o atendimento
+          </h2>
 
+          <div className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8 shadow-sm space-y-6">
+            <div className="grid grid-cols-1 gap-6 relative">
+              {/* Timeline Line (desktop only) */}
+              <div className="hidden sm:block absolute left-5 top-5 bottom-5 w-px bg-blue-100"></div>
 
+              {[
+                { step: 1, title: "Recebimento da manifestação", desc: "Sua manifestação é registrada no sistema e um número de protocolo é gerado imediatamente." },
+                { step: 2, title: "Análise pela Ouvidoria", desc: "A equipe da Ouvidoria analisa o conteúdo para validar se há informações suficientes." },
+                { step: 3, title: "Encaminhamento ao setor responsável", desc: "A manifestação é enviada à secretaria ou órgão competente para apuração dos fatos." },
+                { step: 4, title: "Apuração e resposta", desc: "O setor responsável responde à Ouvidoria, que valida a resposta para garantir clareza ao cidadão." },
+                { step: 5, title: "Encerramento do protocolo", desc: "A resposta final é enviada ao cidadão e o protocolo é encerrado no sistema." },
+              ].map((item, idx) => (
+                <div key={idx} className="flex gap-4 items-start relative z-10">
+                  <div className="w-10 h-10 rounded-full border border-blue-200 bg-white text-[#173572] flex items-center justify-center shrink-0 font-black text-sm shadow-sm ring-4 ring-blue-50">
+                    {item.step}
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="font-bold text-[#173572] text-base">{item.title}</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-      {/* 📄 CARTA DE SERVIÇOS (CRITÉRIO 14.3) */}
-      <div className="mb-7">
-        <h2 className="text-lg font-medium text-[#173572] mb-2 border-b border-[#e8edf7] pb-1">
-          Carta de Serviços ao Usuário
-        </h2>
+            {/* Prazo Card */}
+            <div className="mt-8 bg-blue-50/50 border border-blue-100 rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="bg-white p-3 rounded-xl text-blue-600 shadow-sm shrink-0">
+                <Clock size={24} />
+              </div>
+              <div>
+                <p className="text-[#173572] font-bold text-sm uppercase tracking-wider">Prazo Legal</p>
+                <p className="text-gray-700 text-sm">
+                  O prazo para resposta é de até <strong>30 dias</strong>, prorrogáveis por mais 30 mediante justificativa (Lei 13.460/2017).
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <p className="mb-4">
-          A Carta de Serviços ao Usuário apresenta os serviços prestados pela Prefeitura,
-          formas de acesso e prazos de atendimento.
-        </p>
+        {/* Diferença e-SIC vs Ouvidoria */}
+        <div className="mb-12">
+          <h2 className="text-lg font-medium text-[#173572] mb-2 border-b border-[#e8edf7] pb-1">
+            Diferença entre Ouvidoria e e-SIC
+          </h2>
+          <div className="border-l-[3px] border-[#173572] pl-4 py-1">
+            <p className="text-[#374151] mb-3 text-[15px]">
+              A <strong>Ouvidoria</strong> recebe manifestações de natureza subjetiva (elogios, reclamações, denúncias).
+            </p>
+            <p className="text-[#173572] text-[15px] leading-relaxed">
+              Para pedidos de dados técnicos ou documentos específicos, utilize o <a href="/esic" className="font-bold underline decoration-2 underline-offset-2 hover:text-[#0f2847] transition-colors">e-SIC (Acesso à Informação)</a>.
+            </p>
+          </div>
+        </div>
 
-        <a
-          href="/carta-de-servicos"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 text-[#173572] border border-[#173572] rounded-lg"
-        >
-          Acessar Carta de Serviços
-        </a>
-      </div>
+        <div className="mb-12 rounded-2xl border border-blue-100 bg-blue-50/60 p-5 sm:p-6 shadow-sm">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-[#173572] mb-1">
+                Carta de Serviços ao Usuário
+              </h2>
+              <p className="text-sm leading-relaxed text-gray-600">
+                Consulte os serviços oferecidos pela Prefeitura, documentos necessários, etapas, prazos, formas de atendimento e canais para reclamações.
+              </p>
+            </div>
+            <Link
+              href="/carta-servicos"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#173572] px-4 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#0f2847]"
+            >
+              Acessar Carta
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
 
-      {/* PRAZO */}
-      <div className="mb-7">
-        <h2 className="text-lg font-medium text-[#173572] mb-2 border-b border-[#e8edf7] pb-1">
-          Prazo de resposta
-        </h2>
+        {/* Sigilo e Proteção de Dados */}
+        <div className="mb-12">
+          <h2 className="text-lg font-medium text-[#173572] mb-3 border-b border-[#e8edf7] pb-1">
+            Sigilo e proteção de dados
+          </h2>
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 sm:p-8">
+            <div className="flex flex-col md:flex-row gap-8">
+              <div className="md:w-1/3 flex flex-col items-center justify-center text-center p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                <div className="bg-green-100 p-4 rounded-full text-green-700 mb-4">
+                  <Lock size={32} />
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2">Ambiente Seguro</h3>
+                <p className="text-xs text-gray-500">Seus dados são criptografados e o acesso é restrito apenas aos agentes públicos responsáveis.</p>
+              </div>
+              <div className="md:w-2/3 space-y-4">
+                <div className="flex gap-4">
+                  <CheckCircle size={20} className="text-green-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-bold text-gray-800 text-sm">Denúncias podem ser sigilosas</p>
+                    <p className="text-sm text-gray-600">O denunciante pode solicitar a proteção de sua identity, que será preservada pela Ouvidoria em todos os trâmites.</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <CheckCircle size={20} className="text-green-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-bold text-gray-800 text-sm">Dados pessoais protegidos</p>
+                    <p className="text-sm text-gray-600">Informações como CPF, telefone e e-mail não são divulgadas para os setores denunciados ou reclamados.</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <CheckCircle size={20} className="text-green-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-bold text-gray-800 text-sm">Tratamento conforme LGPD</p>
+                    <p className="text-sm text-gray-600">A Prefeitura Municipal cumpre integralmente a Lei Geral de Proteção de Dados (Lei 13.709/2018) no tratamento de suas informações.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <p>
-          As manifestações registradas serão analisadas e respondidas no prazo de até <strong>30 dias</strong>,
-          podendo ser prorrogado de forma justificada, conforme a legislação vigente.
-        </p>
+        {/* 2. MEIO — FORMULÁRIO ELETRÔNICO */}
+        <div className="mb-12 mt-12 overflow-hidden rounded-2xl border border-blue-100 bg-gradient-to-b from-blue-50/80 to-white px-6 py-10 shadow-sm sm:px-10 sm:pt-14 sm:pb-10">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl sm:text-3xl font-black text-[#173572] mb-4 flex items-center justify-center gap-3">
+              <FileEdit size={32} className="text-[#173572]/80" /> Registrar manifestação online
+            </h2>
+            <p className="text-gray-500 max-w-lg mx-auto text-sm">
+              Preencha os campos abaixo para enviar sua manifestação. Você receberá um <strong>número de protocolo</strong> para acompanhar o andamento.
+            </p>
+          </div>
+
+          <div className="mb-8 flex items-center justify-center">
+            <Link
+              href="/ouvidoria/consultar"
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-[#173572] bg-blue-100/50 border border-blue-200/50 rounded-lg hover:bg-blue-100 transition-colors"
+            >
+              <Search size={16} />
+              Já possui um protocolo? Consulte aqui
+            </Link>
+          </div>
+
+          <div className="bg-white border border-blue-100 p-6 rounded-xl shadow-sm">
+            <InstitutionalForm
+              title="Formulário de Ouvidoria"
+              description="Escolha o tipo e descreva detalhadamente sua manifestação."
+              fields={OUVIDORIA_FIELDS}
+              apiUrl="/api/ouvidoria"
+              canal="ouvidoria"
+              formId="form-ouvidoria"
+            />
+          </div>
+        </div>
+
+        {/* 3. RODAPÉ — DASHBOARD */}
+        <div className="mb-7">
+          <h2 className="text-lg font-medium text-[#173572] mb-2 border-b border-[#e8edf7] pb-1">
+            Estatísticas de Atendimento
+          </h2>
+          <div className="mb-6">
+            <DashboardStats
+              apiUrl="/api/ouvidoria/stats"
+              title="Indicadores da Ouvidoria Municipal"
+              canal="ouvidoria"
+            />
+          </div>
+
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 md:p-6">
+            <h3 className="font-semibold text-[#173572] mb-4 flex items-center gap-2 text-base">
+              <Shield size={20} /> Regulamentação da Ouvidoria
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="bg-white border border-gray-200 p-4 rounded-lg flex items-center gap-3">
+                <div className="bg-blue-50 p-2 rounded-lg text-[#173572]">
+                  <Shield size={18} />
+                </div>
+                <div>
+                  <p className="font-bold text-gray-800 text-sm">Lei Federal 13.460/2017</p>
+                  <p className="text-xs text-gray-500">Dispõe sobre participação, proteção e defesa dos direitos do usuário.</p>
+                </div>
+              </div>
+              <div className="bg-white border border-gray-200 p-4 rounded-lg flex items-center gap-3">
+                <div className="bg-blue-50 p-2 rounded-lg text-[#173572]">
+                  <Shield size={18} />
+                </div>
+                <div>
+                  <p className="font-bold text-gray-800 text-sm">Lei Federal 13.709/2018 (LGPD)</p>
+                  <p className="text-xs text-gray-500">Dispõe sobre o tratamento de dados pessoais.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
     </ContentPage>
