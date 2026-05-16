@@ -139,20 +139,6 @@ export default function EstruturaOrganizacionalPage() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-8 justify-center">
-          <Link href="/competencias" className="group flex items-center gap-2 text-sm font-bold text-[#173572] hover:text-[#0f2847] transition-colors relative pb-1">
-            <ShieldCheck size={18} className="text-blue-500" />
-            <span>Ver Competências e atribuições completas</span>
-            <span className="absolute bottom-0 left-7 right-0 h-0.5 bg-blue-400 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
-            <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-          </Link>
-          <Link href="/gestao" className="group flex items-center gap-2 text-sm font-bold text-[#173572] hover:text-[#0f2847] transition-colors relative pb-1">
-            <Users size={18} className="text-blue-500" />
-            <span>Ver Gestão e responsáveis completos</span>
-            <span className="absolute bottom-0 left-7 right-0 h-0.5 bg-blue-400 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
-            <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-          </Link>
-        </div>
       </div>
 
       {/* 2. BASE LEGAL */}
@@ -698,7 +684,7 @@ export default function EstruturaOrganizacionalPage() {
         <div className="flex-1 text-center sm:text-left">
           <p className="text-gray-900 font-bold mb-1">Informações em constante atualização</p>
           <p className="text-sm text-gray-600 leading-relaxed">
-            A estrutura organizacional é definida por lei e pode sofrer alterações. Para dúvidas específicas sobre as atribuições de cada unidade, consulte a <Link href="/competencias" className="text-blue-600 font-bold relative inline-block group/link transition-colors"><span>Lei de Estrutura Administrativa</span><span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-400 scale-x-0 group-hover/link:scale-x-100 transition-transform origin-left"></span></Link>.
+            A estrutura organizacional é definida por lei e pode sofrer alterações. Para dúvidas específicas sobre as atribuições de cada unidade, consulte a <strong className="text-gray-900 font-bold">Lei de Estrutura Administrativa</strong>.
           </p>
         </div>
       </div>
