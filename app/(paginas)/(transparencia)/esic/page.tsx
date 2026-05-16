@@ -37,6 +37,10 @@ import {
   Shield,
   FileEdit,
   CheckCircle2,
+  Scale,
+  Gavel,
+  ShieldCheck,
+  ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -162,6 +166,67 @@ export default async function ESICPage() {
                 <p className="font-bold text-[#173572] text-sm">{item.title}</p>
                 <p className="mt-1 text-xs leading-relaxed text-gray-600">{item.text}</p>
               </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── SEÇÃO: BASE LEGAL (DESTAQUE) ── */}
+        <div className="mb-12">
+          <h2 className="text-lg font-medium text-[#173572] mb-4 border-b border-[#e8edf7] pb-2 flex items-center gap-2">
+            <Scale size={20} className="text-[#173572]/70" />
+            Base Legal e Regulamentação
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              {
+                title: "Lei 12.527/2011",
+                desc: "Lei de Acesso à Informação (Federal)",
+                href: "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm",
+                icon: FileText,
+                color: "text-blue-600",
+                bg: "bg-blue-50"
+              },
+              {
+                title: "Decreto Municipal LAI",
+                desc: "Regulamentação no Município",
+                href: "/regulamentacao-lai",
+                icon: Gavel,
+                color: "text-indigo-600",
+                bg: "bg-indigo-50"
+              },
+              {
+                title: "Constituição Federal",
+                desc: "Art. 5º, XXXIII - Direito de Acesso",
+                href: "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm#art5",
+                icon: Scale,
+                color: "text-emerald-600",
+                bg: "bg-emerald-50"
+              },
+              {
+                title: "Lei 13.709/2018",
+                desc: "LGPD - Lei Geral de Proteção de Dados",
+                href: "/lgpd",
+                icon: ShieldCheck,
+                color: "text-amber-600",
+                bg: "bg-amber-50"
+              }
+            ].map((item) => (
+              <a
+                key={item.title}
+                href={item.href}
+                target={item.href.startsWith("http") ? "_blank" : undefined}
+                rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                className="group flex flex-col p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md hover:border-[#173572]/30 transition-all duration-300"
+              >
+                <div className={`w-12 h-12 ${item.bg} ${item.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                  <item.icon size={24} />
+                </div>
+                <h3 className="font-bold text-gray-900 group-hover:text-[#173572] transition-colors">{item.title}</h3>
+                <p className="text-xs text-gray-500 mt-1 leading-relaxed">{item.desc}</p>
+                <div className="mt-4 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#173572] opacity-0 group-hover:opacity-100 transition-opacity">
+                  Acessar <ExternalLink size={12} />
+                </div>
+              </a>
             ))}
           </div>
         </div>
@@ -452,23 +517,7 @@ export default async function ESICPage() {
         </div>
 
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 md:p-6 print:hidden">
-          <h3 className="font-semibold text-[#173572] mb-4 flex items-center gap-2 text-base md:text-lg">
-            <FileText size={20} /> Documentos e Arquivos Oficiais
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <Link href="/regulamentacao-lai" className="group flex items-center gap-3 bg-white border border-gray-200 p-3.5 rounded-lg hover:border-[#173572] hover:shadow-sm transition-all">
-              <div className="bg-gray-100 p-2 rounded-md group-hover:bg-blue-50 transition-colors">
-                <FileText size={20} className="text-gray-500 group-hover:text-[#173572]" />
-              </div>
-              <div>
-                <p className="font-medium text-gray-700 group-hover:text-[#173572] text-sm md:text-base">
-                  Decreto de Regulamentação LAI
-                </p>
-                <p className="text-xs text-gray-500 mt-0.5 font-medium">Versão Estruturada (HTML)</p>
-              </div>
-            </Link>
-          </div>
-          <div className="mt-8 pt-6 border-t border-gray-200">
+
             <h3 className="font-semibold text-[#173572] mb-4 flex items-center gap-2 text-base md:text-lg">
               <Shield size={20} /> Informações Classificadas e Desclassificadas
             </h3>
@@ -486,7 +535,6 @@ export default async function ESICPage() {
                 </p>
               </div>
             </div>
-          </div>
         </div>
       </div>
 

@@ -409,7 +409,7 @@ export default function EstruturaOrganizacionalPage() {
         <div className="flex-1 text-center sm:text-left">
           <p className="text-gray-900 font-bold mb-1">Informações em constante atualização</p>
           <p className="text-sm text-gray-600 leading-relaxed">
-            A estrutura organizacional é definida por lei e pode sofrer alterações. Para dúvidas específicas sobre as atribuições de cada unidade, consulte a <Link href="/competencias" className="text-blue-600 font-bold relative inline-block group/link transition-colors"><span>Lei de Estrutura Administrativa</span><div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-400 scale-x-0 group-hover/link:scale-x-100 transition-transform origin-left"></div></Link>.
+            A estrutura organizacional é definida por lei e pode sofrer alterações. Para dúvidas específicas sobre as atribuições de cada unidade, consulte a <Link href="/competencias" className="text-blue-600 font-bold relative inline-block group/link transition-colors"><span>Lei de Estrutura Administrativa</span><span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-400 scale-x-0 group-hover/link:scale-x-100 transition-transform origin-left"></span></Link>.
           </p>
         </div>
       </div>

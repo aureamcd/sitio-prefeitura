@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ========================================================
  * PÁGINA: Ouvidoria Municipal
  * ========================================================
@@ -30,6 +30,12 @@ import {
   MessageSquare,
   AlertTriangle,
   Megaphone,
+  Scale,
+  Gavel,
+  ShieldCheck,
+  ExternalLink,
+  BookOpen,
+  FileText,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -190,6 +196,67 @@ export default async function OuvidoriaPage() {
           </div>
         </div>
 
+        {/* ── SEÇÃO: BASE LEGAL (DESTAQUE) ── */}
+        <div className="mb-12">
+          <h2 className="text-lg font-medium text-[#173572] mb-4 border-b border-[#e8edf7] pb-2 flex items-center gap-2">
+            <Scale size={20} className="text-[#173572]/70" />
+            Base Legal e Regulamentação
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              {
+                title: "Lei 13.460/2017",
+                desc: "Lei de Defesa dos Direitos do Usuário",
+                href: "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2017/lei/l13460.htm",
+                icon: FileText,
+                color: "text-blue-600",
+                bg: "bg-blue-50"
+              },
+              {
+                title: "Carta de Serviços",
+                desc: "Direitos, deveres e etapas de cada serviço",
+                href: "/carta-servicos",
+                icon: BookOpen,
+                color: "text-indigo-600",
+                bg: "bg-indigo-50"
+              },
+              {
+                title: "Constituição Federal",
+                desc: "Art. 37, §3º - Participação e Defesa",
+                href: "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm#art37",
+                icon: Scale,
+                color: "text-emerald-600",
+                bg: "bg-emerald-50"
+              },
+              {
+                title: "Lei 13.709/2018",
+                desc: "LGPD - Proteção de dados e sigilo do denunciante",
+                href: "/lgpd",
+                icon: ShieldCheck,
+                color: "text-amber-600",
+                bg: "bg-amber-50"
+              }
+            ].map((item) => (
+              <a
+                key={item.title}
+                href={item.href}
+                target={item.href.startsWith("http") ? "_blank" : undefined}
+                rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                className="group flex flex-col p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md hover:border-[#173572]/30 transition-all duration-300"
+              >
+                <div className={`w-12 h-12 ${item.bg} ${item.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                  <item.icon size={24} />
+                </div>
+                <h3 className="font-bold text-gray-900 group-hover:text-[#173572] transition-colors">{item.title}</h3>
+                <p className="text-xs text-gray-500 mt-1 leading-relaxed">{item.desc}</p>
+                <div className="mt-4 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#173572] opacity-0 group-hover:opacity-100 transition-opacity">
+                  Acessar <ExternalLink size={12} />
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+
         {/* Atendimento Presencial */}
         <div className="mb-12">
           <h2 className="text-lg font-medium text-[#173572] mb-3 border-b border-[#e8edf7] pb-1">
@@ -288,25 +355,7 @@ export default async function OuvidoriaPage() {
           </div>
         </div>
 
-        <div className="mb-12 rounded-2xl border border-blue-100 bg-blue-50/60 p-5 sm:p-6 shadow-sm">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-lg font-bold text-[#173572] mb-1">
-                Carta de Serviços ao Usuário
-              </h2>
-              <p className="text-sm leading-relaxed text-gray-600">
-                Consulte os serviços oferecidos pela Prefeitura, documentos necessários, etapas, prazos, formas de atendimento e canais para reclamações.
-              </p>
-            </div>
-            <Link
-              href="/carta-servicos"
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#173572] px-4 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#0f2847]"
-            >
-              Acessar Carta
-              <ArrowRight size={16} />
-            </Link>
-          </div>
-        </div>
+
 
         {/* Sigilo e Proteção de Dados */}
         <div className="mb-12">
@@ -327,7 +376,7 @@ export default async function OuvidoriaPage() {
                   <CheckCircle size={20} className="text-green-600 shrink-0 mt-0.5" />
                   <div>
                     <p className="font-bold text-gray-800 text-sm">Denúncias podem ser sigilosas</p>
-                    <p className="text-sm text-gray-600">O denunciante pode solicitar a proteção de sua identity, que será preservada pela Ouvidoria em todos os trâmites.</p>
+                    <p className="text-sm text-gray-600">O denunciante pode solicitar a proteção de sua identidade, que será preservada pela Ouvidoria em todos os trâmites.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -395,31 +444,7 @@ export default async function OuvidoriaPage() {
             />
           </div>
 
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 md:p-6">
-            <h3 className="font-semibold text-[#173572] mb-4 flex items-center gap-2 text-base">
-              <Shield size={20} /> Regulamentação da Ouvidoria
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="bg-white border border-gray-200 p-4 rounded-lg flex items-center gap-3">
-                <div className="bg-blue-50 p-2 rounded-lg text-[#173572]">
-                  <Shield size={18} />
-                </div>
-                <div>
-                  <p className="font-bold text-gray-800 text-sm">Lei Federal 13.460/2017</p>
-                  <p className="text-xs text-gray-500">Dispõe sobre participação, proteção e defesa dos direitos do usuário.</p>
-                </div>
-              </div>
-              <div className="bg-white border border-gray-200 p-4 rounded-lg flex items-center gap-3">
-                <div className="bg-blue-50 p-2 rounded-lg text-[#173572]">
-                  <Shield size={18} />
-                </div>
-                <div>
-                  <p className="font-bold text-gray-800 text-sm">Lei Federal 13.709/2018 (LGPD)</p>
-                  <p className="text-xs text-gray-500">Dispõe sobre o tratamento de dados pessoais.</p>
-                </div>
-              </div>
-            </div>
-          </div>
+
         </div>
       </div>
 
