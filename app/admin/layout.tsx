@@ -25,6 +25,8 @@ type Counts = {
   pendentes: number;
   publicadas: number;
   rejeitadas: number;
+  esic_pendentes: number;
+  ouvidoria_pendentes: number;
 };
 
 export default function AdminLayout({
@@ -40,6 +42,8 @@ export default function AdminLayout({
     pendentes: 0,
     publicadas: 0,
     rejeitadas: 0,
+    esic_pendentes: 0,
+    ouvidoria_pendentes: 0,
   });
   const router = useRouter();
   const pathname = usePathname();
@@ -85,7 +89,7 @@ export default function AdminLayout({
     if (isLoginPage || !user) return;
 
     async function fetchCounts() {
-      const [p, pub, r] = await Promise.all([
+      const [p, pub, r, esic, ouv] = await Promise.all([
         supabase
           .from("noticias")
           .select("id", { count: "exact", head: true })
@@ -98,12 +102,22 @@ export default function AdminLayout({
           .from("noticias")
           .select("id", { count: "exact", head: true })
           .eq("status", "rejeitado"),
+        supabase
+          .from("esic_solicitacoes")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "recebido"),
+        supabase
+          .from("ouvidoria_manifestacoes")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "recebido"),
       ]);
 
       setCounts({
         pendentes: p.count || 0,
         publicadas: pub.count || 0,
         rejeitadas: r.count || 0,
+        esic_pendentes: esic.count || 0,
+        ouvidoria_pendentes: ouv.count || 0,
       });
     }
 
@@ -289,6 +303,11 @@ export default function AdminLayout({
               }`}
             />
             <span className="flex-1">e-SIC</span>
+            {counts.esic_pendentes > 0 && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-100 text-blue-600 animate-pulse">
+                {counts.esic_pendentes} NOVOS
+              </span>
+            )}
           </Link>
 
           {/* ── Ouvidoria ── */}
@@ -307,6 +326,11 @@ export default function AdminLayout({
               }`}
             />
             <span className="flex-1">Ouvidoria</span>
+            {counts.ouvidoria_pendentes > 0 && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-purple-100 text-purple-600 animate-pulse">
+                {counts.ouvidoria_pendentes} NOVOS
+              </span>
+            )}
           </Link>
         </nav>
 
