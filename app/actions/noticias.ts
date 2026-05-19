@@ -2,7 +2,7 @@
 
 import { createServerClient } from "@/lib/supabase/server";
 
-export async function aprovarNoticia(id: string, email: string) {
+export async function aprovarNoticia(id: string) {
   const supabase = createServerClient();
   const { error } = await supabase
     .from("noticias")
@@ -46,7 +46,7 @@ export async function atualizarNoticia(id: string, dados: any) {
   return { success: true };
 }
 
-export async function inserirNoticia(dados: any, email: string) {
+export async function inserirNoticia(dados: any) {
   const supabase = createServerClient();
   
   // Ensures we have an ID and Data

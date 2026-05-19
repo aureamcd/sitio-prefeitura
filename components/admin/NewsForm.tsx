@@ -8,7 +8,21 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export default function NewsForm({ noticia, onSaved }: any) {
+type NoticiaForm = {
+  titulo: string;
+  resumo: string;
+  imagem: string;
+  destaque: string;
+  status: string;
+  id?: string;
+};
+
+type Props = {
+  noticia?: NoticiaForm;
+  onSaved: () => void;
+};
+
+export default function NewsForm({ noticia, onSaved }: Props) {
   const [form, setForm] = useState({
     titulo: "",
     resumo: "",
@@ -21,11 +35,11 @@ export default function NewsForm({ noticia, onSaved }: any) {
     if (noticia) setForm(noticia);
   }, [noticia]);
 
-  function handleChange(e: any) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  async function handleSubmit(e: any) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (noticia) {

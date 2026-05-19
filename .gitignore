@@ -29,6 +29,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.log
+*.err.log
+
+# database backups
+*.sql
+*.dump
 
 # env files (can opt-in for committing if needed)
 .env*
