@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createBrowserClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import {
   Save,
@@ -29,7 +28,6 @@ const STATUS_OPTIONS = [
 
 export default function NovaNoticiaPage() {
   const router = useRouter();
-  const supabase = createBrowserClient();
 
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -88,17 +86,13 @@ export default function NovaNoticiaPage() {
     setError(null);
 
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      await inserirNoticia(form, user?.email || "admin");
+      await inserirNoticia(form);
       
       setSaving(false);
       setSaved(true);
       window.dispatchEvent(new Event("refresh-counts"));
       setTimeout(() => {
-        router.push("/admin"); // Volta para a página inicial do admin
+        router.push("/admin");
       }, 1500);
     } catch (err: any) {
       setError(`Erro ao salvar: ${err.message}`);

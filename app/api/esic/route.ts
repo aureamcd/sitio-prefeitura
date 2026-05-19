@@ -185,8 +185,9 @@ export async function PATCH(request: NextRequest) {
 
       if (uploadError) {
         console.error("[e-SIC] Erro no upload da resposta:", uploadError);
-        const errorMessage = (uploadError as any).status === 413 
-          ? "O arquivo excede o limite de tamanho do servidor (Supabase Storage)." 
+        const uploadStatus = (uploadError as unknown as Record<string, unknown>).status;
+        const errorMessage = uploadStatus === 413
+          ? "O arquivo excede o limite de tamanho do servidor (Supabase Storage)."
           : "Erro ao enviar anexo da resposta.";
         return NextResponse.json(
           { error: errorMessage },
@@ -214,8 +215,6 @@ export async function PATCH(request: NextRequest) {
         { status: 500 }
       );
     }
-
-    /* E-mail automático removido a pedido do usuário */
 
     if (updatedRow?.email && updatedRow?.protocolo) {
       await enviarEmailStatus(

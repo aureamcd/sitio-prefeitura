@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createBrowserClient } from "@/lib/supabase/client";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -80,16 +79,11 @@ export default function AdminNewsTable({
 }: Props) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [removingIds, setRemovingIds] = useState<string[]>([]);
-  const supabase = createBrowserClient();
 
   async function handleApprove(id: string) {
     try {
       setLoadingId(id);
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      await aprovarNoticia(id, user?.email || "admin");
+      await aprovarNoticia(id);
 
       setLoadingId(null);
       setRemovingIds((prev) => [...prev, id]);

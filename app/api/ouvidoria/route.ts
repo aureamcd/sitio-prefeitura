@@ -88,8 +88,9 @@ export async function POST(request: NextRequest) {
 
       if (uploadError) {
         console.error("[Ouvidoria] Erro no upload:", uploadError);
-        const errorMessage = (uploadError as any).status === 413 
-          ? "O arquivo anexado excede o limite de tamanho permitido." 
+        const uploadStatus = (uploadError as unknown as Record<string, unknown>).status;
+        const errorMessage = uploadStatus === 413
+          ? "O arquivo anexado excede o limite de tamanho permitido."
           : "Erro ao enviar anexo.";
         return NextResponse.json({ error: errorMessage }, { status: 500 });
       } else {
@@ -245,8 +246,6 @@ export async function PATCH(request: NextRequest) {
       console.error("[Ouvidoria] Erro:", error);
       return NextResponse.json({ error: "Erro ao atualizar." }, { status: 500 });
     }
-
-    /* E-mail automático removido a pedido do usuário */
 
     if (updatedRow?.email && updatedRow?.protocolo) {
       await enviarEmailStatus(
