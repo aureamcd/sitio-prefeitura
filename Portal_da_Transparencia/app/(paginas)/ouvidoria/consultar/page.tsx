@@ -17,6 +17,7 @@ import {
   MessageSquare, ArrowLeft, AlertCircle, Tag, Paperclip,
 } from "lucide-react";
 import Link from "next/link";
+import { getTodayDate } from '@/lib/utils/date';
 
 function formatarData(iso: string): string {
   return new Date(iso).toLocaleDateString("pt-BR", {
@@ -84,7 +85,7 @@ export default function ConsultarOuvidoriaPage() {
         { label: "Ouvidoria", href: "/ouvidoria" },
         { label: "Consultar" },
       ]}
-      lastUpdate="2026-05-14"
+      lastUpdate={getTodayDate()}
     >
       <div className="mb-6">
         <Link href="/ouvidoria" className="inline-flex items-center gap-2 text-sm text-[#173572] font-medium hover:underline">

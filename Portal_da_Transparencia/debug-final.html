@@ -1,0 +1,884 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1"><link rel="stylesheet" type="text/css" href="/Transparencia/DXR.axd?r=2_2-U4tE2" /><link rel="stylesheet" type="text/css" href="/Transparencia/DXR.axd?r=0_512-V4tE2" /><link rel="stylesheet" type="text/css" href="/Transparencia/DXR.axd?r=0_515-V4tE2" /><link rel="stylesheet" type="text/css" href="/Transparencia/DXR.axd?r=3_1-U4tE2" /><link rel="stylesheet" type="text/css" href="/Transparencia/DXR.axd?r=3_0-U4tE2" /><link rel="stylesheet" type="text/css" href="/Transparencia/DXR.axd?r=2_1-U4tE2" /><link rel="stylesheet" type="text/css" href="/Transparencia/DXR.axd?r=2_0-U4tE2" /><title>
+	Portal da Transparencia
+</title>
+	
+		<script src="JQuery/jquery-1.4.4.min.js" type="text/javascript"></script>
+		<script src="JQuery/jquery-ui-1.8.7.custom.min.js" type="text/javascript"></script>
+        <link id="cssEstiloPrincipal" href="EstiloCss/CorPadrao.css" rel="stylesheet" type="text/css" /><link href="EstiloCss/AjaxLoader.css" rel="stylesheet" type="text/css" /><link rel="stylesheet" href="EstiloCss/bootstrap-grid.css" type="text/css" /><link href="EstiloCss/MostraModalWindow.css" rel="stylesheet" type="text/css" />
+	    <script src="ScriptsJS/AjaxLoader.js" type="text/javascript"></script>
+        <script src="JQuery/jquery-1.11.0.min.js" type="text/javascript"></script> 
+        <script src="ScriptsJS/MostraModalWindow.js" type="text/javascript"></script>
+    	<script src="ScriptsJS/Utilitarios.js" type="text/javascript"></script>
+        <script src="ScriptsJS/clipboard.min.js" type="text/javascript"></script>
+
+		<script type="text/javascript" >
+
+		    $(document).ready(function () {
+		        // do stuff when DOM is ready
+
+		        contraste();
+		        if (getbtnID() == 'lnkReceitaOrcamentaria') {
+		            if ($("#gridReceitas_DX-GST-col1", "#gridReceitas_DX-GST-col2", "#gridReceitas_DX-GST-col3", "#gridReceitas_DX-GST-col7", "#gridReceitas_DX-GST-col8", "#gridReceitas_DX-GST-col11")) {
+		                //alert('Campo Existe');
+		                $("#gridReceitas_DX-GST-col1").attr("itemprop", "budgetRevenueSource"); //Origem da Receita // Nosso: Código
+
+		                $("#gridReceitas_DX-GST-col2").attr("itemprop", "managementUnitID"); //Código da unidade gestora // Nosso: Cód. Unid. Gestora
+		                $("#gridReceitas_DX-GST-col3").attr("itemprop", "managementUnitName"); //Nome da unidade gestora // Nosso: Nome Unid. Gestora
+
+		                $("#gridReceitas_DX-GST-col7").attr("itemprop", "budgetRevenueDescription"); //Descrição //Nosso: Especificação
+		                $("#gridReceitas_DX-GST-col8").attr("itemprop", "predictedAmount"); //Valor Previsto //Nosso: Prev. Inicial
+		                $("#gridReceitas_DX-GST-col11").attr("itemprop", "collectionAmount"); //Valor Arrecadado //Nosso: Arrec. Total
+		            }
+		        }
+		        if (getbtnID() == 'lnkReceitaExtraOrcamentaria') {
+		            if ($("#gridReceitas_DX-GST-col1", "#gridReceitas_DX-GST-col3", "#gridReceitas_DX-GST-col9")) {
+		                //alert('Campo Existe');
+		                $("#gridReceitas_DX-GST-col1").attr("itemprop", "extraBudgetRevenueID"); //Código //Nosso: Extra
+		                $("#gridReceitas_DX-GST-col3").attr("itemprop", "extraBudgetRevenueDescription"); //Descrição //Nosso: Especificação
+
+		                $("#gridReceitas_DX-GST-col6").attr("itemprop", "extraBudgetRevenueSource"); //Origem //Nosso: Origem
+		                $("#gridReceitas_DX-GST-col7").attr("itemprop", "nomenclature"); //Nomenclatura Utilizada //Nosso: Nomenclatura
+		                $("#gridReceitas_DX-GST-col8").attr("itemprop", "extraBudgetRevenueHistory"); //Histórico //Nosso: Histórico
+		                $("#gridReceitas_DX-GST-col4").attr("itemprop", "managementUnitID"); //Código da unidade gestora //Nosso: Cód. Unid. Gestora
+		                $("#gridReceitas_DX-GST-col5").attr("itemprop", "managementUnitName"); //Nome da unidade gestora //Nosso: Nome Unid. gestora
+
+		                $("#gridReceitas_DX-GST-col9").attr("itemprop", "realizedAmount"); //Valor Realizado //Nosso: Arrec. Total
+		            }
+		        }
+		    });
+
+		    new ClipboardJS('.btn');
+
+		    var clipboard = new ClipboardJS('.btn');
+
+		    clipboard.on('success', function (e) {
+		        console.info('Action:', e.action);
+		        console.info('Text:', e.text);
+		        console.info('Trigger:', e.trigger);
+
+		        e.clearSelection();
+		    });
+
+		    clipboard.on('error', function (e) {
+		        console.error('Action:', e.action);
+		        console.error('Trigger:', e.trigger);
+		    });
+
+		    function contraste() {
+		        if (parent.getTema() == 'Padrao') {
+		            $("#cssEstiloPrincipal").attr("href", "EstiloCss/CorPadrao.css");
+		        } else if (parent.getTema() == 'Contraste') {
+		            $("#cssEstiloPrincipal").attr("href", "EstiloCss/CorContraste.css");
+		        }
+
+		    }
+
+		    function AtualizarGrid() {
+		        gridReceitas.PerformCallback("AtualizaGrid");
+		    }
+
+		    function onCellClick(strSubTitulo, strFieldName, strChaveLinha) {
+
+		        // Pegar o dia e mês iniciais e finais nas datas do periodo selecionado				
+		        var strDataInicialAsString = datDataInicial.GetDate().format('dd/MM/yyyy');
+		        var strDataFinalAsString = datDataFinal.GetDate().format('dd/MM/yyyy');
+
+		        var strDiaInicial = strDataInicialAsString.substr(0, 2);
+		        var strMesInicial = strDataInicialAsString.substr(3, 2);
+
+		        var strDiaFinal = strDataFinalAsString.substr(0, 2);
+		        var strMesFinal = strDataFinalAsString.substr(3, 2);
+
+
+		        // var strTipoValor = strFieldName.substr(0, 1);
+
+		        var strFiltro = ''; //
+
+		        if (document.getElementById("gridReceitas_DXFREditorcol2")) {
+		            strFiltro = gridReceitas_DXFREditorcol2.lastChangedValue;
+		        }
+
+		        var strPagina = gridReceitas.pageIndex
+
+		        if (strFiltro == null) {
+		            strFiltro = '';
+		        }
+
+		        var bolMostraDadosConsolidados = false;
+
+		        if (document.getElementById("chkMostrarDadosConsolidados")) {
+		            bolMostraDadosConsolidados = (document.getElementById("chkMostrarDadosConsolidados").checked);
+		        } 
+
+		        MostraAjaxLoader('Processando. Por favor aguarde...');
+		        PageMethods.RecuperarListaReceitas(strDiaInicial, strMesInicial, strDiaFinal, strMesFinal, strChaveLinha, strSubTitulo, strFiltro, strPagina, bolMostraDadosConsolidados, OnDadosRecuperados, onErroPageMethods);
+		        return false;
+
+		    }
+
+		    function OnDadosRecuperados(result, txtresult, methodName) {
+
+		        // Deu certo, mostrar...
+		        FecharLoaderWindow();
+
+		        var bolMostraDadosConsolidados = false;
+
+		        if (document.getElementById("chkMostrarDadosConsolidados")) {
+		            bolMostraDadosConsolidados = (document.getElementById("chkMostrarDadosConsolidados").checked);
+		            if (bolMostraDadosConsolidados) {
+		                window.location.href = 'ReceitasLista.aspx?bolMostraDadosConsolidados=S';
+		            } else {
+		                window.location.href = 'ReceitasLista.aspx?bolMostraDadosConsolidados=N';
+		            }
+		        } else {
+		            window.location.href = 'ReceitasLista.aspx';
+		        }
+
+		        return false;
+		    }
+
+		    function onErroPageMethods(error, userContext, methodName) {
+
+		        // Deu erro, mostra página de erro...
+		        FecharLoaderWindow();
+		        if (error !== null) {
+		            window.location.href = 'Erro.aspx';
+		        }
+		        return false;
+		    }
+		</script>
+</head>
+
+<script type="text/javascript">
+    function getbtnID() {
+        return '';
+    }
+
+    var oldOnload = window.onload;
+    window.onload = myOnLoad;
+    function myOnLoad() {
+        if (oldOnload != null)
+            oldOnload();
+        if (getbtnID() == 'lnkReceitaOrcamentaria') {
+            self.parent.AtualizaLocalizacao("<b>Você está em:</b>&nbsp;");
+            self.parent.AtualizaLocalizacaoLinks("LnkMenuInicio", "<mark class='etiquetaLocalizacaoLink'>Início</mark>");
+            self.parent.AtualizaLocalizacaoMenu("&nbsp;/&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Receitas&nbsp;</mark>/&nbsp;");
+            self.parent.AtualizaLocalizacaoLinks("lnkReceitaOrcamentaria", "<mark class='etiquetaLocalizacaoLink'>Arrecadação Orçamentária - Geral</mark>");
+            self.parent.AtualizaLocalizacaoMenu("&nbsp;- <a href='" + self.parent.window.location.href.replace(/#$/, '') + "?AcessoIndividual=" + getbtnID() + "' target='_blank' title='" + self.parent.window.location.href.replace(/#$/, '') + "?AcessoIndividual=" + getbtnID() + "'>Link da página</a>&nbsp;");
+            //self.parent.AtualizaLocalizacaoMenu("&nbsp;- <button class='btn' data-clipboard-text='" + self.parent.window.location.href + "?AcessoIndividual=" + getbtnID() + "' title='" + self.parent.window.location.href + "?AcessoIndividual=" + getbtnID() + "'>Copiar Link da página</button>&nbsp;");
+            //self.parent.AtualizaLocalizacao("<b>Você está em:</b>&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Início&nbsp;</mark>&nbsp;/&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Receitas&nbsp;</mark>&nbsp;/&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Arrecadação Orçamentária - Geral&nbsp;</mark>");
+        } else if (getbtnID() == 'lnkReceitaUniao') {
+            self.parent.AtualizaLocalizacao("<b>Você está em:</b>&nbsp;");
+            self.parent.AtualizaLocalizacaoLinks("LnkMenuInicio", "<mark class='etiquetaLocalizacaoLink'>Início</mark>");
+            self.parent.AtualizaLocalizacaoMenu("&nbsp;/&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Receitas&nbsp;</mark>/&nbsp;");
+            self.parent.AtualizaLocalizacaoLinks("lnkReceitaUniao", "<mark class='etiquetaLocalizacaoLink'>Arrecadação Orçamentária - Transferências da União</mark>");
+            self.parent.AtualizaLocalizacaoMenu("&nbsp;- <a href='" + self.parent.window.location.href.replace(/#$/, '') + "?AcessoIndividual=" + getbtnID() + "' target='_blank' title='" + self.parent.window.location.href.replace(/#$/, '') + "?AcessoIndividual=" + getbtnID() + "'>Link da página</a>&nbsp;");
+            //self.parent.AtualizaLocalizacao("<b>Você está em:</b>&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Início&nbsp;</mark>&nbsp;/&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Receitas&nbsp;</mark>&nbsp;/&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Arrecadação Orçamentária - Transferências da União&nbsp;</mark>");
+        } else if (getbtnID() == 'lnkReceitaEstado') {
+            self.parent.AtualizaLocalizacao("<b>Você está em:</b>&nbsp;");
+            self.parent.AtualizaLocalizacaoLinks("LnkMenuInicio", "<mark class='etiquetaLocalizacaoLink'>Início</mark>");
+            self.parent.AtualizaLocalizacaoMenu("&nbsp;/&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Receitas&nbsp;</mark>/&nbsp;");
+            self.parent.AtualizaLocalizacaoLinks("lnkReceitaEstado", "<mark class='etiquetaLocalizacaoLink'>Arrecadação Orçamentária - Transferências do Estado</mark>");
+            self.parent.AtualizaLocalizacaoMenu("&nbsp;- <a href='" + self.parent.window.location.href.replace(/#$/, '') + "?AcessoIndividual=" + getbtnID() + "' target='_blank' title='" + self.parent.window.location.href.replace(/#$/, '') + "?AcessoIndividual=" + getbtnID() + "'>Link da página</a>&nbsp;");
+            //self.parent.AtualizaLocalizacao("<b>Você está em:</b>&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Início&nbsp;</mark>&nbsp;/&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Receitas&nbsp;</mark>&nbsp;/&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Arrecadação Orçamentária - Transferências do Estado&nbsp;</mark>");
+        } else if (getbtnID() == 'lnkReceitaExtraOrcamentaria') {
+            self.parent.AtualizaLocalizacao("<b>Você está em:</b>&nbsp;");
+            self.parent.AtualizaLocalizacaoLinks("LnkMenuInicio", "<mark class='etiquetaLocalizacaoLink'>Início</mark>");
+            self.parent.AtualizaLocalizacaoMenu("&nbsp;/&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Receitas&nbsp;</mark>/&nbsp;");
+            self.parent.AtualizaLocalizacaoLinks("lnkReceitaExtraOrcamentaria", "<mark class='etiquetaLocalizacaoLink'>Arrecadação Extra-Orçamentária</mark>");
+            self.parent.AtualizaLocalizacaoMenu("&nbsp;- <a href='" + self.parent.window.location.href.replace(/#$/, '') + "?AcessoIndividual=" + getbtnID() + "' target='_blank' title='" + self.parent.window.location.href.replace(/#$/, '') + "?AcessoIndividual=" + getbtnID() + "'>Link da página</a>&nbsp;");
+            //self.parent.AtualizaLocalizacao("<b>Você está em:</b>&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Início&nbsp;</mark>&nbsp;/&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Receitas&nbsp;</mark>&nbsp;/&nbsp;<mark class='etiquetaLocalizacao'>&nbsp;Arrecadação Extra-Orçamentária&nbsp;</mark>");
+        }
+
+        
+        document.onkeydown = enterKey;
+    }
+    
+    function enterKey(e) {
+        if (!e) e = window.event;
+        if (e['keyCode'] == 13) {
+            return false;
+        }
+    }
+
+    pressedCtrl = false; //variável de controle 
+    $(document).keyup(function (e) {  //O evento Kyeup é acionado quando as teclas são soltas
+        if (e.which == 17) pressedCtrl = false; //Quando qualuer tecla for solta é preciso informar que Crtl não está pressionada
+    })
+    $(document).keydown(function (e) { //Quando uma tecla é pressionada
+        if (e.which == 17) pressedCtrl = true; //Informando que Crtl está acionado
+        if ((e.which == 77 || e.keyCode == 77) && pressedCtrl == true) { //Reconhecendo tecla M
+            self.parent.ChamaAcessoRapido();
+        }
+    });
+
+    function showToast(mensagem, arquivo) {
+        let toastBox = document.getElementById('toastBox');
+        let toast = document.createElement('div');
+
+        toast.classList.add('toast');
+        toast.innerHTML = mensagem;
+        toastBox.appendChild(toast);
+
+        if (arquivo === 'pdf') 
+        {
+            toast.style.borderLeft = '4px solid #FF0000';
+        } 
+        else if (arquivo === 'csv') 
+        {
+            toast.style.borderLeft = '4px solid #333333';
+        } 
+        else if (arquivo === 'xls') 
+        {
+            toast.style.borderLeft = '4px solid #5B9737';
+        } 
+        else if (arquivo === 'jpg') 
+        {
+            toast.style.borderLeft = '4px solid #FFA500';
+        } 
+        else if (arquivo === 'txt') 
+        {
+            toast.style.borderLeft = '4px solid #0000FF';
+        }
+
+        setTimeout(() => {
+            toast.remove();
+        }, 5100);
+    }
+	</script>
+
+<body >
+	<form method="post" action="./ReceitasPorEntidade.aspx" id="form1">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTEyNTI0MTQzODgPZBYCAgEPZBYCAhUPPCsAFgIADxYCHg9EYXRhU291cmNlQm91bmRnZAYPZBAWBmYCAQICAgMCBAIFFgY8KwALAQAWCh4JRmllbGROYW1lBQdFTVBSRVNBHghSZWFkT25seWgeElByb3BlcnRpZXNFZGl0VHlwZQUHVGV4dEJveB4OUnVudGltZUNyZWF0ZWRnHg9Db2xWaXNpYmxlSW5kZXhmPCsACwEAFgofAQUGQ09ESUdPHwJoHwMFB1RleHRCb3gfBGcfBQIBPCsACwEAFgofAQUJREVTQ1JJQ0FPHwJoHwMFB1RleHRCb3gfBGcfBQICPCsACwEAFgofAQUJRU1QRU5IQURPHwJoHwMFB1RleHRCb3gfBGcfBQIDPCsACwEAFgofAQUJTElRVUlEQURPHwJoHwMFB1RleHRCb3gfBGcfBQIEPCsACwEAFgofAQUEUEFHTx8CaB8DBQdUZXh0Qm94HwRnHwUCBQ8WBgIBAgECAQIBAgECARYBBZkBRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3RGF0YVRleHRDb2x1bW4sIERldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy52MTAuMiwgVmVyc2lvbj0xMC4yLjguMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhZBgBBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WCwUSZGF0RGF0YUluaWNpYWwkREREBRhkYXREYXRhSW5pY2lhbCREREQkQyRGTlAFEGRhdERhdGFGaW5hbCREREQFFmRhdERhdGFGaW5hbCREREQkQyRGTlAFG2Noa01vc3RyYXJEYWRvc0NvbnNvbGlkYWRvcwUOYnRuRXhwb3J0YXJQREYFDmJ0bkV4cG9ydGFyQ1NWBQ5idG5FeHBvcnRhclhMUwUOYnRuRXhwb3J0YXJKUEcFDmJ0bkV4cG9ydGFyVFhUBQxncmlkUmVjZWl0YXMN3anOsULo1y/Pj7il4fN7lLuPJpJHpbztIBBbBiZJSA==" />
+
+
+<script src="/Transparencia/ScriptResource.axd?d=8Hwxy37qq3iIex7oh-SZmmIcZmlu-de35lp1L4fqO4pWIfFemD9ltZ0FvcYitEKR-UZhquQIUCi8sUhfeM6JGo0YdHlh3Db2nECDusLA9q4Tdl67qQk1fOWzG5CV0nVNxQvEi2pgILmeUgzH-b8LaStI5b7B4le6av4JjG9rfA81&amp;t=13798092" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+var PageMethods = function() {
+PageMethods.initializeBase(this);
+this._timeout = 0;
+this._userContext = null;
+this._succeeded = null;
+this._failed = null;
+}
+PageMethods.prototype = {
+_get_path:function() {
+ var p = this.get_path();
+ if (p) return p;
+ else return PageMethods._staticInstance.get_path();},
+RecuperarListaReceitas:function(strDiaInicioPeriodo,strMesInicialPeriodo,strDiaFinalPeriodo,strMesFinalPeriodo,strCodigoChave,strSubTitulo,strFiltro,intPagina,bolMostraDadosConsolidados,succeededCallback, failedCallback, userContext) {
+return this._invoke(this._get_path(), 'RecuperarListaReceitas',false,{strDiaInicioPeriodo:strDiaInicioPeriodo,strMesInicialPeriodo:strMesInicialPeriodo,strDiaFinalPeriodo:strDiaFinalPeriodo,strMesFinalPeriodo:strMesFinalPeriodo,strCodigoChave:strCodigoChave,strSubTitulo:strSubTitulo,strFiltro:strFiltro,intPagina:intPagina,bolMostraDadosConsolidados:bolMostraDadosConsolidados},succeededCallback,failedCallback,userContext); }}
+PageMethods.registerClass('PageMethods',Sys.Net.WebServiceProxy);
+PageMethods._staticInstance = new PageMethods();
+PageMethods.set_path = function(value) { PageMethods._staticInstance.set_path(value); }
+PageMethods.get_path = function() { return PageMethods._staticInstance.get_path(); }
+PageMethods.set_timeout = function(value) { PageMethods._staticInstance.set_timeout(value); }
+PageMethods.get_timeout = function() { return PageMethods._staticInstance.get_timeout(); }
+PageMethods.set_defaultUserContext = function(value) { PageMethods._staticInstance.set_defaultUserContext(value); }
+PageMethods.get_defaultUserContext = function() { return PageMethods._staticInstance.get_defaultUserContext(); }
+PageMethods.set_defaultSucceededCallback = function(value) { PageMethods._staticInstance.set_defaultSucceededCallback(value); }
+PageMethods.get_defaultSucceededCallback = function() { return PageMethods._staticInstance.get_defaultSucceededCallback(); }
+PageMethods.set_defaultFailedCallback = function(value) { PageMethods._staticInstance.set_defaultFailedCallback(value); }
+PageMethods.get_defaultFailedCallback = function() { return PageMethods._staticInstance.get_defaultFailedCallback(); }
+PageMethods.set_enableJsonp = function(value) { PageMethods._staticInstance.set_enableJsonp(value); }
+PageMethods.get_enableJsonp = function() { return PageMethods._staticInstance.get_enableJsonp(); }
+PageMethods.set_jsonpCallbackParameter = function(value) { PageMethods._staticInstance.set_jsonpCallbackParameter(value); }
+PageMethods.get_jsonpCallbackParameter = function() { return PageMethods._staticInstance.get_jsonpCallbackParameter(); }
+PageMethods.set_path("ReceitasPorEntidade.aspx");
+PageMethods.RecuperarListaReceitas= function(strDiaInicioPeriodo,strMesInicialPeriodo,strDiaFinalPeriodo,strMesFinalPeriodo,strCodigoChave,strSubTitulo,strFiltro,intPagina,bolMostraDadosConsolidados,onSuccess,onFailed,userContext) {PageMethods._staticInstance.RecuperarListaReceitas(strDiaInicioPeriodo,strMesInicialPeriodo,strDiaFinalPeriodo,strMesFinalPeriodo,strCodigoChave,strSubTitulo,strFiltro,intPagina,bolMostraDadosConsolidados,onSuccess,onFailed,userContext); }
+//]]>
+</script>
+
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="E93991B8" />
+<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAAjFD+k6ZSIP/iN2L3wbLrL9h/v0lR0oXn2+5Dx31xHmzUmwvKCiJgKOD+kMFJyzAo41CBub6lAf2+CchDWLtpOrKNdvDydDXNUd7WYOews/gaDii+F9R9pF9SjpVesXAinrO8VXDiWo9+oHXI2d/YV627KisUJz1njAvRV7f11kWWlzc4Usv31i/RafdZ45GSXw3IJpO+9IJ+CB3O+KOg2P" />
+	    
+        <div>
+            <span id="lblTituloPagina" class="label-titulo-pagina"></span>
+        </div>
+        <div style="margin: 10px 0;">
+            <span id="lblDescricaoInstitucional" class="label-descricao-pagina fonteAcessibilidade"></span>
+        </div>
+        <div class="div-data-filtro">
+            <div>
+				<span id="Label1" class="fonteAcessibilidade">Data Inicial da Pesquisa</span>
+				<input type="hidden" id="datDataInicial_Raw" name="datDataInicial_Raw" value="N" /><script id="dxis_13334256" src="/Transparencia/DXR.axd?r=1_32-U4tE2" type="text/javascript"></script><script id="dxis_1693235800" src="/Transparencia/DXR.axd?r=1_61-U4tE2" type="text/javascript"></script><script id="dxis_1127977158" src="/Transparencia/DXR.axd?r=2_22-U4tE2" type="text/javascript"></script><script id="dxis_1127727837" src="/Transparencia/DXR.axd?r=2_29-U4tE2" type="text/javascript"></script><script id="dxis_1127880033" src="/Transparencia/DXR.axd?r=2_25-U4tE2" type="text/javascript"></script><script id="dxis_13198956" src="/Transparencia/DXR.axd?r=1_36-U4tE2" type="text/javascript"></script><script id="dxis_1497200798" src="/Transparencia/DXR.axd?r=1_41-U4tE2" type="text/javascript"></script><script id="dxis_1128015333" src="/Transparencia/DXR.axd?r=2_21-U4tE2" type="text/javascript"></script><script id="dxis_1092231604" src="/Transparencia/DXR.axd?r=1_54-U4tE2" type="text/javascript"></script><script id="dxis_1092472601" src="/Transparencia/DXR.axd?r=1_51-U4tE2" type="text/javascript"></script><script id="dxis_476901841" src="/Transparencia/DXR.axd?r=2_16-U4tE2" type="text/javascript"></script><script id="dxis_13084935" src="/Transparencia/DXR.axd?r=1_39-U4tE2" type="text/javascript"></script><script id="dxis_1092434426" src="/Transparencia/DXR.axd?r=1_52-U4tE2" type="text/javascript"></script><script id="dxis_382572530" src="/Transparencia/DXR.axd?r=3_7-U4tE2" type="text/javascript"></script><script id="dxss_529164702" type="text/javascript">
+<!--
+window.__aspxServerFormID = 'form1';
+window.__aspxEmptyImageUrl = '/Transparencia/DXR.axd?r=1_3-U4tE2';
+//-->
+</script><script id="dxss_1039991641" type="text/javascript">
+<!--
+(function(){var a = ({'currNegPattern':9,'currGroupSeparator':'.','abbrDayNames':['dom','seg','ter','qua','qui','sex','sáb'],'monthNames':['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro',''],'numGroupSeparator':'.','shortTime':'HH:mm','longTime':'HH:mm:ss','currDecimalPoint':',','currPosPattern':2,'longDate':'dddd, d\' de \'MMMM\' de \'yyyy','abbrMonthNames':['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez',''],'pm':'','numNan':'NaN (Não é um número)','numPosInf':'+Infinito','numNegInf':'-Infinito','am':'','monthDay':'d\' de \'MMMM','currency':'R$','yearMonth':'MMMM\' de \'yyyy','numDecimalPoint':',','percentPattern':1,'dayNames':['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'],'genMonthNames':['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro',''],'shortDate':'dd/MM/yyyy'});for(var b in a) __aspxCultureInfo[b] = a[b];})();
+//-->
+</script><table class="dxeButtonEdit_DevEx fonteAcessibilidade" cellspacing="0" cellpadding="0" id="datDataInicial" style="width:100%;border-collapse:collapse;">
+	<tr>
+		<td class="dxic" onmousedown="return aspxDDCloseUp(&#39;datDataInicial&#39;, event)" width="100%"><input class="dxeEditArea_DevEx dxeEditAreaSys" name="datDataInicial" onkeyup="aspxEKeyUp(&#39;datDataInicial&#39;, event)" id="datDataInicial_I" onchange="aspxETextChanged(&#39;datDataInicial&#39;)" onblur="aspxELostFocus(&#39;datDataInicial&#39;)" onfocus="aspxEGotFocus(&#39;datDataInicial&#39;)" type="text" onkeypress="aspxEKeyPress(&#39;datDataInicial&#39;, event)" onkeydown="aspxEKeyDown(&#39;datDataInicial&#39;, event)" style="margin-left:2px;margin-right:1px;margin-top:0px;margin-bottom:1px;padding-right:1px;" /></td><td id="datDataInicial_B-1" class="dxeButtonEditButton_DevEx" onmousedown="return aspxDDDropDown(&#39;datDataInicial&#39;, event)" width="13"><table class="dxbebt" cellspacing="0" cellpadding="0" width="13" style="border-collapse:separate;">
+			<tr>
+				<td class="dx"><img id="datDataInicial_B-1Img" class="dxEditors_edtDropDown_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt="v" title="" border="0" /></td>
+			</tr>
+		</table></td>
+	</tr>
+</table><input type="hidden" id="datDataInicial_DDDWS" name="datDataInicial_DDDWS" value="0:0:-1:-10000:-10000:0:-10000:-10000:1" /><div id="datDataInicial_DDD_PW-1" style="position:absolute;left:0px;top:0px;z-index:10000;visibility:hidden;display:none;">
+	<table id="datDataInicial_DDD_PWST-1" cellspacing="0" cellpadding="0" style="border-collapse:separate;position:relative;">
+		<tr>
+			<td onmousedown="aspxPWMDown(event,&#39;datDataInicial_DDD&#39;,-1,false)" width="200" style="cursor:default;"><table id="datDataInicial_DDD_CLW-1" cellspacing="0" cellpadding="0" width="200" style="border-collapse:separate;">
+				<tr>
+					<td id="datDataInicial_DDD_PWC-1"><table style="display:none;">
+						<tr>
+							<td id="datDataInicial_DDD_C_EC_D" class="dxeCalendarDay_DevEx"></td><td id="datDataInicial_DDD_C_EC_DS" class="dxeCalendarSelected_DevEx"></td><td id="datDataInicial_DDD_C_EC_DA" class="dxeCalendarOtherMonth_DevEx"></td><td id="datDataInicial_DDD_C_EC_DW" class="dxeCalendarWeekend_DevEx"></td><td id="datDataInicial_DDD_C_EC_DO" class="dxeCalendarOutOfRange_DevEx"></td><td id="datDataInicial_DDD_C_EC_DT" class="dxeCalendarToday_DevEx"></td><td id="datDataInicial_DDD_C_EC_DD" class="dxeDisabled_DevEx"></td><td id="datDataInicial_DDD_C_EC_FNM" class="dxeCalendarFastNavMonth_DevEx"></td><td id="datDataInicial_DDD_C_EC_FNMS" class="dxeCalendarFastNavMonthSelected_DevEx"></td><td id="datDataInicial_DDD_C_EC_FNY" class="dxeCalendarFastNavYear_DevEx"></td><td id="datDataInicial_DDD_C_EC_FNYS" class="dxeCalendarFastNavYearSelected_DevEx"></td>
+						</tr>
+					</table><table class="dxeCalendar_DevEx" cellspacing="0" cellpadding="0" id="datDataInicial_DDD_C">
+						<tr>
+							<td valign="top"><table cellpadding="0" width="100%" style="border-collapse:collapse;">
+								<tr>
+									<td class="dxeCalendarHeader_DevEx" style="border-top:0;"><table cellpadding="0" width="100%" style="border-collapse:collapse;">
+										<tr>
+											<td id="datDataInicial_DDD_C_PYC" class="dxe" onclick="aspxCalShiftMonth(&#39;datDataInicial_DDD_C&#39;, -12);" ondblclick="aspxCalShiftMonth(&#39;datDataInicial_DDD_C&#39;, -12);"><img id="datDataInicial_DDD_C_PYCImg" class="dxEditors_edtCalendarPrevYear_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt="&lt;&lt;" title="" border="0" /></td><td><div style="font-size:0px;">
+
+											</div></td><td id="datDataInicial_DDD_C_PMC" class="dxe" onclick="aspxCalShiftMonth(&#39;datDataInicial_DDD_C&#39;, -1);" ondblclick="aspxCalShiftMonth(&#39;datDataInicial_DDD_C&#39;, -1);"><img id="datDataInicial_DDD_C_PMCImg" class="dxEditors_edtCalendarPrevMonth_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt="&lt;" title="" border="0" /></td><td id="datDataInicial_DDD_C_TC" class="dxe" width="100%" style="cursor:default;"><span id="datDataInicial_DDD_C_T" onclick="aspxCalTitleClick(&#39;datDataInicial_DDD_C&#39;, 0, 0)" style="cursor:pointer;">maio de 2026</span></td><td id="datDataInicial_DDD_C_NMC" class="dxe" onclick="aspxCalShiftMonth(&#39;datDataInicial_DDD_C&#39;, 1);" ondblclick="aspxCalShiftMonth(&#39;datDataInicial_DDD_C&#39;, 1);"><img id="datDataInicial_DDD_C_NMCImg" class="dxEditors_edtCalendarNextMonth_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt=">" title="" border="0" /></td><td><div style="font-size:0px;">
+
+											</div></td><td id="datDataInicial_DDD_C_NYC" class="dxe" onclick="aspxCalShiftMonth(&#39;datDataInicial_DDD_C&#39;, 12);" ondblclick="aspxCalShiftMonth(&#39;datDataInicial_DDD_C&#39;, 12);"><img id="datDataInicial_DDD_C_NYCImg" class="dxEditors_edtCalendarNextYear_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt=">>" title="" border="0" /></td>
+										</tr>
+									</table></td>
+								</tr><tr>
+									<td id="datDataInicial_DDD_C_mc" class="dxMonthGridWithWeekNumbers"><table id="datDataInicial_DDD_C_mt" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:separate;">
+										<tr align="center">
+											<td></td><td class="dxeCalendarDayHeader_DevEx">dom</td><td class="dxeCalendarDayHeader_DevEx">seg</td><td class="dxeCalendarDayHeader_DevEx">ter</td><td class="dxeCalendarDayHeader_DevEx">qua</td><td class="dxeCalendarDayHeader_DevEx">qui</td><td class="dxeCalendarDayHeader_DevEx">sex</td><td class="dxeCalendarDayHeader_DevEx">sáb</td>
+										</tr><tr>
+											<td class="dxeCalendarWeekNumber_DevEx">18</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx dxeCalendarOtherMonth_DevEx">26</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">27</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">28</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">29</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">30</td><td class="dxeCalendarDay_DevEx">1</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">2</td>
+										</tr><tr>
+											<td class="dxeCalendarWeekNumber_DevEx">19</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">3</td><td class="dxeCalendarDay_DevEx">4</td><td class="dxeCalendarDay_DevEx">5</td><td class="dxeCalendarDay_DevEx">6</td><td class="dxeCalendarDay_DevEx">7</td><td class="dxeCalendarDay_DevEx">8</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">9</td>
+										</tr><tr>
+											<td class="dxeCalendarWeekNumber_DevEx">20</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">10</td><td class="dxeCalendarDay_DevEx">11</td><td class="dxeCalendarDay_DevEx">12</td><td class="dxeCalendarDay_DevEx">13</td><td class="dxeCalendarDay_DevEx">14</td><td class="dxeCalendarDay_DevEx">15</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">16</td>
+										</tr><tr>
+											<td class="dxeCalendarWeekNumber_DevEx">21</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">17</td><td class="dxeCalendarDay_DevEx">18</td><td class="dxeCalendarDay_DevEx">19</td><td class="dxeCalendarDay_DevEx">20</td><td class="dxeCalendarDay_DevEx">21</td><td class="dxeCalendarDay_DevEx">22</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">23</td>
+										</tr><tr>
+											<td class="dxeCalendarWeekNumber_DevEx">22</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">24</td><td class="dxeCalendarDay_DevEx dxeCalendarToday_DevEx">25</td><td class="dxeCalendarDay_DevEx">26</td><td class="dxeCalendarDay_DevEx">27</td><td class="dxeCalendarDay_DevEx">28</td><td class="dxeCalendarDay_DevEx">29</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">30</td>
+										</tr><tr>
+											<td class="dxeCalendarWeekNumber_DevEx">23</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">31</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">1</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">2</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">3</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">4</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">5</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx dxeCalendarOtherMonth_DevEx">6</td>
+										</tr>
+									</table></td>
+								</tr>
+							</table></td>
+						</tr>
+					</table><input type="hidden" id="datDataInicial_DDD_C_FNPWS" name="datDataInicial_DDD_C_FNPWS" value="0:0:-1:-10000:-10000:0:0px:-10000:1" /><div id="datDataInicial_DDD_C_FNP_PW-1" style="position:absolute;left:0px;top:0px;z-index:10000;visibility:hidden;display:none;">
+						<table id="datDataInicial_DDD_C_FNP_PWST-1" cellspacing="0" cellpadding="0" style="border-collapse:separate;position:relative;">
+							<tr>
+								<td onmousedown="aspxPWMDown(event,&#39;datDataInicial_DDD_C_FNP&#39;,-1,false)" width="0" style="cursor:default;"><table id="datDataInicial_DDD_C_FNP_CLW-1" cellspacing="0" cellpadding="0" width="0" style="border-collapse:separate;">
+									<tr>
+										<td id="datDataInicial_DDD_C_FNP_PWC-1"><div class="dxeCalendarFastNav_DevEx">
+											<div class="dxeCalendarFastNavMonthArea_DevEx">
+												<table id="datDataInicial_DDD_C_FNP_m" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:separate;">
+													<tr>
+														<td class="dxeCalendarFastNavMonth_DevEx">Jan</td><td class="dxeCalendarFastNavMonth_DevEx">Fev</td><td class="dxeCalendarFastNavMonth_DevEx">Mar</td><td class="dxeCalendarFastNavMonth_DevEx">Abr</td>
+													</tr><tr>
+														<td class="dxeCalendarFastNavMonth_DevEx">Mai</td><td class="dxeCalendarFastNavMonth_DevEx">Jun</td><td class="dxeCalendarFastNavMonth_DevEx">Jul</td><td class="dxeCalendarFastNavMonth_DevEx">Ago</td>
+													</tr><tr>
+														<td class="dxeCalendarFastNavMonth_DevEx">Set</td><td class="dxeCalendarFastNavMonth_DevEx">Out</td><td class="dxeCalendarFastNavMonth_DevEx">Nov</td><td class="dxeCalendarFastNavMonth_DevEx">Dez</td>
+													</tr>
+												</table>
+											</div><div class="dxeCalendarFastNavYearArea_DevEx">
+												<table id="datDataInicial_DDD_C_FNP_y" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:separate;margin-top:8px;">
+													<tr>
+														<td onclick="aspxCalFNYShuffle(&#39;datDataInicial_DDD_C&#39;, -10)" ondblclick="aspxCalFNYShuffle(&#39;datDataInicial_DDD_C&#39;, -10)" rowspan="2" style="padding-right:8px;cursor:pointer;"><img class="dxEditors_edtCalendarFNPrevYear_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt="&lt;" title="" border="0" /></td><td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td><td onclick="aspxCalFNYShuffle(&#39;datDataInicial_DDD_C&#39;, 10)" ondblclick="aspxCalFNYShuffle(&#39;datDataInicial_DDD_C&#39;, 10)" rowspan="2" style="padding-left:8px;cursor:pointer;"><img class="dxEditors_edtCalendarFNNextYear_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt=">" title="" border="0" /></td>
+													</tr><tr>
+														<td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td>
+													</tr>
+												</table>
+											</div>
+										</div><div class="dxeCalendarFastNavFooter_DevEx" style="text-align:center;">
+											<table cellspacing="0" cellpadding="0" align="center">
+												<tr>
+													<td id="datDataInicial_DDD_C_FNP_BO" class="dxeCalendarButton_DevEx" onclick="aspxCalFNBClick(&#39;datDataInicial_DDD_C&#39;, &#39;ok&#39;)"><table class="dxbebt" cellspacing="0" cellpadding="0" style="border-collapse:separate;">
+														<tr>
+															<td class="dx" width="100%">OK</td>
+														</tr>
+													</table></td><td><div>
+
+													</div></td><td id="datDataInicial_DDD_C_FNP_BC" class="dxeCalendarButton_DevEx" onclick="aspxCalFNBClick(&#39;datDataInicial_DDD_C&#39;, &#39;cancel&#39;)"><table class="dxbebt" cellspacing="0" cellpadding="0" style="border-collapse:separate;">
+														<tr>
+															<td class="dx" width="100%">Cancel</td>
+														</tr>
+													</table></td>
+												</tr>
+											</table>
+										</div></td>
+									</tr>
+								</table></td><td id="ail54033653" style="background:url('/Transparencia/DXR.axd?r=1_18-U4tE2') no-repeat left top;//background:none;"><script id="dxss_1207152595" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail54033653", "/Transparencia/DXR.axd?r=1_18-U4tE2");
+
+//-->
+</script></td>
+							</tr><tr>
+								<td id="ail831633795" style="background:url('/Transparencia/DXR.axd?r=1_17-U4tE2') no-repeat left top;//background:none;"><script id="dxss_624337592" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail831633795", "/Transparencia/DXR.axd?r=1_17-U4tE2");
+
+//-->
+</script></td><td id="ail1533226903" style="background:url('/Transparencia/DXR.axd?r=1_19-U4tE2') no-repeat left top;//background:none;"><div>
+
+								</div><script id="dxss_871967853" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail1533226903", "/Transparencia/DXR.axd?r=1_19-U4tE2");
+
+//-->
+</script></td>
+							</tr>
+						</table>
+					</div><iframe id="datDataInicial_DDD_C_FNP_DXPWIF-1" src="javascript:false" scrolling="no" frameborder="0" style="position:absolute;display:none;z-index:9999;filter:progid:DXImageTransform.Microsoft.Alpha(Style=0, Opacity=0);">
+
+					</iframe><script id="dxss_240311493" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientPopupControl('datDataInicial_DDD_C_FNP');
+window['datDataInicial_DDD_C_FNP'] = dxo;
+dxo.uniqueID = 'datDataInicial$DDD$C$FNP';
+dxo.renderIFrameForPopupElements = true;
+dxo.adjustInnerControlsSizeOnShow=false;
+dxo.height=0;
+dxo.InlineInitialize();
+
+//-->
+</script><input id="datDataInicial_DDD_C_STATE" name="datDataInicial$DDD$C" type="hidden" /><script id="dxss_258334517" type="text/javascript">
+<!--
+aspxAddHoverItems('datDataInicial_DDD_C',[[['dxeCalendarButtonHover_DevEx'],[''],['FNP_BO','FNP_BC']],[['dxeCalendarFastNavMonthHover_DevEx'],[''],['FNP_M0','FNP_M1','FNP_M2','FNP_M3','FNP_M4','FNP_M5','FNP_M6','FNP_M7','FNP_M8','FNP_M9','FNP_M10','FNP_M11']],[['dxeCalendarFastNavYearHover_DevEx'],[''],['FNP_Y0','FNP_Y1','FNP_Y2','FNP_Y3','FNP_Y4','FNP_Y5','FNP_Y6','FNP_Y7','FNP_Y8','FNP_Y9']]]);
+
+var dxo = new ASPxClientCalendar('datDataInicial_DDD_C');
+window['datDataInicial_DDD_C'] = dxo;
+dxo.uniqueID = 'datDataInicial$DDD$C';
+dxo.renderIFrameForPopupElements = true;
+dxo.RequireStyleDecoration();
+dxo.styleDecoration.AddStyle('F','dxeFocused_DevEx','');
+dxo.visibleDate = new Date(2026,4,25);
+dxo.isDateEditCalendar = true;
+dxo.InlineInitialize();
+
+//-->
+</script></td>
+				</tr>
+			</table></td><td id="ail1023824666" style="background:url('/Transparencia/DXR.axd?r=1_18-U4tE2') no-repeat left top;//background:none;"><script id="dxss_1642119288" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail1023824666", "/Transparencia/DXR.axd?r=1_18-U4tE2");
+
+//-->
+</script></td>
+		</tr><tr>
+			<td id="ail189910467" style="background:url('/Transparencia/DXR.axd?r=1_17-U4tE2') no-repeat left top;//background:none;"><script id="dxss_1255239230" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail189910467", "/Transparencia/DXR.axd?r=1_17-U4tE2");
+
+//-->
+</script></td><td id="ail1049623910" style="background:url('/Transparencia/DXR.axd?r=1_19-U4tE2') no-repeat left top;//background:none;"><div>
+
+			</div><script id="dxss_1314336172" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail1049623910", "/Transparencia/DXR.axd?r=1_19-U4tE2");
+
+//-->
+</script></td>
+		</tr>
+	</table>
+</div><iframe id="datDataInicial_DDD_DXPWIF-1" src="javascript:false" scrolling="no" frameborder="0" style="position:absolute;display:none;z-index:9999;filter:progid:DXImageTransform.Microsoft.Alpha(Style=0, Opacity=0);">
+
+</iframe><script id="dxss_173760963" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientPopupControl('datDataInicial_DDD');
+window['datDataInicial_DDD'] = dxo;
+dxo.uniqueID = 'datDataInicial$DDD';
+dxo.renderIFrameForPopupElements = true;
+dxo.Shown.AddHandler(function (s, e) { aspxDDBPCShown('datDataInicial', e); });
+dxo.adjustInnerControlsSizeOnShow=false;
+dxo.closeAction='CloseButton';
+dxo.popupHorizontalAlign='LeftSides';
+dxo.popupVerticalAlign='Below';
+dxo.width=0;
+dxo.height=0;
+dxo.InlineInitialize();
+
+//-->
+</script><script id="dxss_216063549" type="text/javascript">
+<!--
+aspxAddHoverItems('datDataInicial',[[['dxeButtonEditButtonHover_DevEx'],[''],['B-1'],,[['']],['Img']]]);
+aspxAddPressedItems('datDataInicial',[[['dxeButtonEditButtonPressed_DevEx'],[''],['B-1'],,[['']],['Img']]]);
+aspxAddDisabledItems('datDataInicial',[[['dxeDisabled_DevEx'],[''],['','I']],[['dxeDisabled_DevEx dxeButtonDisabled_DevEx'],[''],['B-1'],,[[{'spriteCssClass':'dxEditors_edtDropDownDisabled_DevEx'}]],['Img']]]);
+document.getElementById("datDataInicial_I").setAttribute("autocomplete", "off");
+
+var dxo = new ASPxClientDateEdit('datDataInicial');
+window['datDataInicial'] = dxo;
+dxo.renderIFrameForPopupElements = true;
+dxo.DateChanged.AddHandler(function(s, e) { AtualizarGrid(); });
+dxo.widthCorrectionRequired = true;
+dxo.RequireStyleDecoration();
+dxo.styleDecoration.AddStyle('F','dxeFocused_DevEx','');
+dxo.maskInfo = _aspxMaskInfo.Create('dd/MM/yyyy',true);
+dxo.displayFormat='{0:dd/MM/yyyy}';
+dxo.InlineInitialize();
+
+//-->
+</script>
+			</div>
+		    <div>
+				<span id="Label2" class="fonteAcessibilidade">Data Final da Pesquisa</span>
+				<input type="hidden" id="datDataFinal_Raw" name="datDataFinal_Raw" value="N" /><table class="dxeButtonEdit_DevEx fonteAcessibilidade" cellspacing="0" cellpadding="0" id="datDataFinal" style="width:100%;border-collapse:collapse;">
+	<tr>
+		<td class="dxic" onmousedown="return aspxDDCloseUp(&#39;datDataFinal&#39;, event)" width="100%"><input class="dxeEditArea_DevEx dxeEditAreaSys" name="datDataFinal" onkeyup="aspxEKeyUp(&#39;datDataFinal&#39;, event)" id="datDataFinal_I" onchange="aspxETextChanged(&#39;datDataFinal&#39;)" onblur="aspxELostFocus(&#39;datDataFinal&#39;)" onfocus="aspxEGotFocus(&#39;datDataFinal&#39;)" type="text" onkeypress="aspxEKeyPress(&#39;datDataFinal&#39;, event)" onkeydown="aspxEKeyDown(&#39;datDataFinal&#39;, event)" style="margin-left:2px;margin-right:1px;margin-top:0px;margin-bottom:1px;padding-right:1px;" /></td><td id="datDataFinal_B-1" class="dxeButtonEditButton_DevEx" onmousedown="return aspxDDDropDown(&#39;datDataFinal&#39;, event)" width="13"><table class="dxbebt" cellspacing="0" cellpadding="0" width="13" style="border-collapse:separate;">
+			<tr>
+				<td class="dx"><img id="datDataFinal_B-1Img" class="dxEditors_edtDropDown_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt="v" title="" border="0" /></td>
+			</tr>
+		</table></td>
+	</tr>
+</table><input type="hidden" id="datDataFinal_DDDWS" name="datDataFinal_DDDWS" value="0:0:-1:-10000:-10000:0:-10000:-10000:1" /><div id="datDataFinal_DDD_PW-1" style="position:absolute;left:0px;top:0px;z-index:10000;visibility:hidden;display:none;">
+	<table id="datDataFinal_DDD_PWST-1" cellspacing="0" cellpadding="0" style="border-collapse:separate;position:relative;">
+		<tr>
+			<td onmousedown="aspxPWMDown(event,&#39;datDataFinal_DDD&#39;,-1,false)" width="200" style="cursor:default;"><table id="datDataFinal_DDD_CLW-1" cellspacing="0" cellpadding="0" width="200" style="border-collapse:separate;">
+				<tr>
+					<td id="datDataFinal_DDD_PWC-1"><table style="display:none;">
+						<tr>
+							<td id="datDataFinal_DDD_C_EC_D" class="dxeCalendarDay_DevEx"></td><td id="datDataFinal_DDD_C_EC_DS" class="dxeCalendarSelected_DevEx"></td><td id="datDataFinal_DDD_C_EC_DA" class="dxeCalendarOtherMonth_DevEx"></td><td id="datDataFinal_DDD_C_EC_DW" class="dxeCalendarWeekend_DevEx"></td><td id="datDataFinal_DDD_C_EC_DO" class="dxeCalendarOutOfRange_DevEx"></td><td id="datDataFinal_DDD_C_EC_DT" class="dxeCalendarToday_DevEx"></td><td id="datDataFinal_DDD_C_EC_DD" class="dxeDisabled_DevEx"></td><td id="datDataFinal_DDD_C_EC_FNM" class="dxeCalendarFastNavMonth_DevEx"></td><td id="datDataFinal_DDD_C_EC_FNMS" class="dxeCalendarFastNavMonthSelected_DevEx"></td><td id="datDataFinal_DDD_C_EC_FNY" class="dxeCalendarFastNavYear_DevEx"></td><td id="datDataFinal_DDD_C_EC_FNYS" class="dxeCalendarFastNavYearSelected_DevEx"></td>
+						</tr>
+					</table><table class="dxeCalendar_DevEx" cellspacing="0" cellpadding="0" id="datDataFinal_DDD_C">
+						<tr>
+							<td valign="top"><table cellpadding="0" width="100%" style="border-collapse:collapse;">
+								<tr>
+									<td class="dxeCalendarHeader_DevEx" style="border-top:0;"><table cellpadding="0" width="100%" style="border-collapse:collapse;">
+										<tr>
+											<td id="datDataFinal_DDD_C_PYC" class="dxe" onclick="aspxCalShiftMonth(&#39;datDataFinal_DDD_C&#39;, -12);" ondblclick="aspxCalShiftMonth(&#39;datDataFinal_DDD_C&#39;, -12);"><img id="datDataFinal_DDD_C_PYCImg" class="dxEditors_edtCalendarPrevYear_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt="&lt;&lt;" title="" border="0" /></td><td><div style="font-size:0px;">
+
+											</div></td><td id="datDataFinal_DDD_C_PMC" class="dxe" onclick="aspxCalShiftMonth(&#39;datDataFinal_DDD_C&#39;, -1);" ondblclick="aspxCalShiftMonth(&#39;datDataFinal_DDD_C&#39;, -1);"><img id="datDataFinal_DDD_C_PMCImg" class="dxEditors_edtCalendarPrevMonth_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt="&lt;" title="" border="0" /></td><td id="datDataFinal_DDD_C_TC" class="dxe" width="100%" style="cursor:default;"><span id="datDataFinal_DDD_C_T" onclick="aspxCalTitleClick(&#39;datDataFinal_DDD_C&#39;, 0, 0)" style="cursor:pointer;">maio de 2026</span></td><td id="datDataFinal_DDD_C_NMC" class="dxe" onclick="aspxCalShiftMonth(&#39;datDataFinal_DDD_C&#39;, 1);" ondblclick="aspxCalShiftMonth(&#39;datDataFinal_DDD_C&#39;, 1);"><img id="datDataFinal_DDD_C_NMCImg" class="dxEditors_edtCalendarNextMonth_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt=">" title="" border="0" /></td><td><div style="font-size:0px;">
+
+											</div></td><td id="datDataFinal_DDD_C_NYC" class="dxe" onclick="aspxCalShiftMonth(&#39;datDataFinal_DDD_C&#39;, 12);" ondblclick="aspxCalShiftMonth(&#39;datDataFinal_DDD_C&#39;, 12);"><img id="datDataFinal_DDD_C_NYCImg" class="dxEditors_edtCalendarNextYear_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt=">>" title="" border="0" /></td>
+										</tr>
+									</table></td>
+								</tr><tr>
+									<td id="datDataFinal_DDD_C_mc" class="dxMonthGridWithWeekNumbers"><table id="datDataFinal_DDD_C_mt" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:separate;">
+										<tr align="center">
+											<td></td><td class="dxeCalendarDayHeader_DevEx">dom</td><td class="dxeCalendarDayHeader_DevEx">seg</td><td class="dxeCalendarDayHeader_DevEx">ter</td><td class="dxeCalendarDayHeader_DevEx">qua</td><td class="dxeCalendarDayHeader_DevEx">qui</td><td class="dxeCalendarDayHeader_DevEx">sex</td><td class="dxeCalendarDayHeader_DevEx">sáb</td>
+										</tr><tr>
+											<td class="dxeCalendarWeekNumber_DevEx">18</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx dxeCalendarOtherMonth_DevEx">26</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">27</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">28</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">29</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">30</td><td class="dxeCalendarDay_DevEx">1</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">2</td>
+										</tr><tr>
+											<td class="dxeCalendarWeekNumber_DevEx">19</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">3</td><td class="dxeCalendarDay_DevEx">4</td><td class="dxeCalendarDay_DevEx">5</td><td class="dxeCalendarDay_DevEx">6</td><td class="dxeCalendarDay_DevEx">7</td><td class="dxeCalendarDay_DevEx">8</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">9</td>
+										</tr><tr>
+											<td class="dxeCalendarWeekNumber_DevEx">20</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">10</td><td class="dxeCalendarDay_DevEx">11</td><td class="dxeCalendarDay_DevEx">12</td><td class="dxeCalendarDay_DevEx">13</td><td class="dxeCalendarDay_DevEx">14</td><td class="dxeCalendarDay_DevEx">15</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">16</td>
+										</tr><tr>
+											<td class="dxeCalendarWeekNumber_DevEx">21</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">17</td><td class="dxeCalendarDay_DevEx">18</td><td class="dxeCalendarDay_DevEx">19</td><td class="dxeCalendarDay_DevEx">20</td><td class="dxeCalendarDay_DevEx">21</td><td class="dxeCalendarDay_DevEx">22</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">23</td>
+										</tr><tr>
+											<td class="dxeCalendarWeekNumber_DevEx">22</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">24</td><td class="dxeCalendarDay_DevEx dxeCalendarToday_DevEx">25</td><td class="dxeCalendarDay_DevEx">26</td><td class="dxeCalendarDay_DevEx">27</td><td class="dxeCalendarDay_DevEx">28</td><td class="dxeCalendarDay_DevEx">29</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">30</td>
+										</tr><tr>
+											<td class="dxeCalendarWeekNumber_DevEx">23</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx">31</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">1</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">2</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">3</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">4</td><td class="dxeCalendarDay_DevEx dxeCalendarOtherMonth_DevEx">5</td><td class="dxeCalendarDay_DevEx dxeCalendarWeekend_DevEx dxeCalendarOtherMonth_DevEx">6</td>
+										</tr>
+									</table></td>
+								</tr>
+							</table></td>
+						</tr>
+					</table><input type="hidden" id="datDataFinal_DDD_C_FNPWS" name="datDataFinal_DDD_C_FNPWS" value="0:0:-1:-10000:-10000:0:0px:-10000:1" /><div id="datDataFinal_DDD_C_FNP_PW-1" style="position:absolute;left:0px;top:0px;z-index:10000;visibility:hidden;display:none;">
+						<table id="datDataFinal_DDD_C_FNP_PWST-1" cellspacing="0" cellpadding="0" style="border-collapse:separate;position:relative;">
+							<tr>
+								<td onmousedown="aspxPWMDown(event,&#39;datDataFinal_DDD_C_FNP&#39;,-1,false)" width="0" style="cursor:default;"><table id="datDataFinal_DDD_C_FNP_CLW-1" cellspacing="0" cellpadding="0" width="0" style="border-collapse:separate;">
+									<tr>
+										<td id="datDataFinal_DDD_C_FNP_PWC-1"><div class="dxeCalendarFastNav_DevEx">
+											<div class="dxeCalendarFastNavMonthArea_DevEx">
+												<table id="datDataFinal_DDD_C_FNP_m" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:separate;">
+													<tr>
+														<td class="dxeCalendarFastNavMonth_DevEx">Jan</td><td class="dxeCalendarFastNavMonth_DevEx">Fev</td><td class="dxeCalendarFastNavMonth_DevEx">Mar</td><td class="dxeCalendarFastNavMonth_DevEx">Abr</td>
+													</tr><tr>
+														<td class="dxeCalendarFastNavMonth_DevEx">Mai</td><td class="dxeCalendarFastNavMonth_DevEx">Jun</td><td class="dxeCalendarFastNavMonth_DevEx">Jul</td><td class="dxeCalendarFastNavMonth_DevEx">Ago</td>
+													</tr><tr>
+														<td class="dxeCalendarFastNavMonth_DevEx">Set</td><td class="dxeCalendarFastNavMonth_DevEx">Out</td><td class="dxeCalendarFastNavMonth_DevEx">Nov</td><td class="dxeCalendarFastNavMonth_DevEx">Dez</td>
+													</tr>
+												</table>
+											</div><div class="dxeCalendarFastNavYearArea_DevEx">
+												<table id="datDataFinal_DDD_C_FNP_y" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:separate;margin-top:8px;">
+													<tr>
+														<td onclick="aspxCalFNYShuffle(&#39;datDataFinal_DDD_C&#39;, -10)" ondblclick="aspxCalFNYShuffle(&#39;datDataFinal_DDD_C&#39;, -10)" rowspan="2" style="padding-right:8px;cursor:pointer;"><img class="dxEditors_edtCalendarFNPrevYear_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt="&lt;" title="" border="0" /></td><td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td><td onclick="aspxCalFNYShuffle(&#39;datDataFinal_DDD_C&#39;, 10)" ondblclick="aspxCalFNYShuffle(&#39;datDataFinal_DDD_C&#39;, 10)" rowspan="2" style="padding-left:8px;cursor:pointer;"><img class="dxEditors_edtCalendarFNNextYear_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt=">" title="" border="0" /></td>
+													</tr><tr>
+														<td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td><td class="dxeCalendarFastNavYear_DevEx"></td>
+													</tr>
+												</table>
+											</div>
+										</div><div class="dxeCalendarFastNavFooter_DevEx" style="text-align:center;">
+											<table cellspacing="0" cellpadding="0" align="center">
+												<tr>
+													<td id="datDataFinal_DDD_C_FNP_BO" class="dxeCalendarButton_DevEx" onclick="aspxCalFNBClick(&#39;datDataFinal_DDD_C&#39;, &#39;ok&#39;)"><table class="dxbebt" cellspacing="0" cellpadding="0" style="border-collapse:separate;">
+														<tr>
+															<td class="dx" width="100%">OK</td>
+														</tr>
+													</table></td><td><div>
+
+													</div></td><td id="datDataFinal_DDD_C_FNP_BC" class="dxeCalendarButton_DevEx" onclick="aspxCalFNBClick(&#39;datDataFinal_DDD_C&#39;, &#39;cancel&#39;)"><table class="dxbebt" cellspacing="0" cellpadding="0" style="border-collapse:separate;">
+														<tr>
+															<td class="dx" width="100%">Cancel</td>
+														</tr>
+													</table></td>
+												</tr>
+											</table>
+										</div></td>
+									</tr>
+								</table></td><td id="ail1094974142" style="background:url('/Transparencia/DXR.axd?r=1_18-U4tE2') no-repeat left top;//background:none;"><script id="dxss_1272804235" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail1094974142", "/Transparencia/DXR.axd?r=1_18-U4tE2");
+
+//-->
+</script></td>
+							</tr><tr>
+								<td id="ail1843022664" style="background:url('/Transparencia/DXR.axd?r=1_17-U4tE2') no-repeat left top;//background:none;"><script id="dxss_408193667" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail1843022664", "/Transparencia/DXR.axd?r=1_17-U4tE2");
+
+//-->
+</script></td><td id="ail496716863" style="background:url('/Transparencia/DXR.axd?r=1_19-U4tE2') no-repeat left top;//background:none;"><div>
+
+								</div><script id="dxss_1203089829" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail496716863", "/Transparencia/DXR.axd?r=1_19-U4tE2");
+
+//-->
+</script></td>
+							</tr>
+						</table>
+					</div><iframe id="datDataFinal_DDD_C_FNP_DXPWIF-1" src="javascript:false" scrolling="no" frameborder="0" style="position:absolute;display:none;z-index:9999;filter:progid:DXImageTransform.Microsoft.Alpha(Style=0, Opacity=0);">
+
+					</iframe><script id="dxss_1050784336" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientPopupControl('datDataFinal_DDD_C_FNP');
+window['datDataFinal_DDD_C_FNP'] = dxo;
+dxo.uniqueID = 'datDataFinal$DDD$C$FNP';
+dxo.renderIFrameForPopupElements = true;
+dxo.adjustInnerControlsSizeOnShow=false;
+dxo.height=0;
+dxo.InlineInitialize();
+
+//-->
+</script><input id="datDataFinal_DDD_C_STATE" name="datDataFinal$DDD$C" type="hidden" /><script id="dxss_514294037" type="text/javascript">
+<!--
+aspxAddHoverItems('datDataFinal_DDD_C',[[['dxeCalendarButtonHover_DevEx'],[''],['FNP_BO','FNP_BC']],[['dxeCalendarFastNavMonthHover_DevEx'],[''],['FNP_M0','FNP_M1','FNP_M2','FNP_M3','FNP_M4','FNP_M5','FNP_M6','FNP_M7','FNP_M8','FNP_M9','FNP_M10','FNP_M11']],[['dxeCalendarFastNavYearHover_DevEx'],[''],['FNP_Y0','FNP_Y1','FNP_Y2','FNP_Y3','FNP_Y4','FNP_Y5','FNP_Y6','FNP_Y7','FNP_Y8','FNP_Y9']]]);
+
+var dxo = new ASPxClientCalendar('datDataFinal_DDD_C');
+window['datDataFinal_DDD_C'] = dxo;
+dxo.uniqueID = 'datDataFinal$DDD$C';
+dxo.renderIFrameForPopupElements = true;
+dxo.RequireStyleDecoration();
+dxo.styleDecoration.AddStyle('F','dxeFocused_DevEx','');
+dxo.visibleDate = new Date(2026,4,25);
+dxo.isDateEditCalendar = true;
+dxo.InlineInitialize();
+
+//-->
+</script></td>
+				</tr>
+			</table></td><td id="ail1847252638" style="background:url('/Transparencia/DXR.axd?r=1_18-U4tE2') no-repeat left top;//background:none;"><script id="dxss_1321124176" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail1847252638", "/Transparencia/DXR.axd?r=1_18-U4tE2");
+
+//-->
+</script></td>
+		</tr><tr>
+			<td id="ail1463245041" style="background:url('/Transparencia/DXR.axd?r=1_17-U4tE2') no-repeat left top;//background:none;"><script id="dxss_849798379" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail1463245041", "/Transparencia/DXR.axd?r=1_17-U4tE2");
+
+//-->
+</script></td><td id="ail695786950" style="background:url('/Transparencia/DXR.axd?r=1_19-U4tE2') no-repeat left top;//background:none;"><div>
+
+			</div><script id="dxss_1401247390" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail695786950", "/Transparencia/DXR.axd?r=1_19-U4tE2");
+
+//-->
+</script></td>
+		</tr>
+	</table>
+</div><iframe id="datDataFinal_DDD_DXPWIF-1" src="javascript:false" scrolling="no" frameborder="0" style="position:absolute;display:none;z-index:9999;filter:progid:DXImageTransform.Microsoft.Alpha(Style=0, Opacity=0);">
+
+</iframe><script id="dxss_1132084663" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientPopupControl('datDataFinal_DDD');
+window['datDataFinal_DDD'] = dxo;
+dxo.uniqueID = 'datDataFinal$DDD';
+dxo.renderIFrameForPopupElements = true;
+dxo.Shown.AddHandler(function (s, e) { aspxDDBPCShown('datDataFinal', e); });
+dxo.adjustInnerControlsSizeOnShow=false;
+dxo.closeAction='CloseButton';
+dxo.popupHorizontalAlign='LeftSides';
+dxo.popupVerticalAlign='Below';
+dxo.width=0;
+dxo.height=0;
+dxo.InlineInitialize();
+
+//-->
+</script><script id="dxss_867216273" type="text/javascript">
+<!--
+aspxAddHoverItems('datDataFinal',[[['dxeButtonEditButtonHover_DevEx'],[''],['B-1'],,[['']],['Img']]]);
+aspxAddPressedItems('datDataFinal',[[['dxeButtonEditButtonPressed_DevEx'],[''],['B-1'],,[['']],['Img']]]);
+aspxAddDisabledItems('datDataFinal',[[['dxeDisabled_DevEx'],[''],['','I']],[['dxeDisabled_DevEx dxeButtonDisabled_DevEx'],[''],['B-1'],,[[{'spriteCssClass':'dxEditors_edtDropDownDisabled_DevEx'}]],['Img']]]);
+document.getElementById("datDataFinal_I").setAttribute("autocomplete", "off");
+
+var dxo = new ASPxClientDateEdit('datDataFinal');
+window['datDataFinal'] = dxo;
+dxo.renderIFrameForPopupElements = true;
+dxo.DateChanged.AddHandler(function(s, e) { AtualizarGrid(); });
+dxo.widthCorrectionRequired = true;
+dxo.RequireStyleDecoration();
+dxo.styleDecoration.AddStyle('F','dxeFocused_DevEx','');
+dxo.maskInfo = _aspxMaskInfo.Create('dd/MM/yyyy',true);
+dxo.displayFormat='{0:dd/MM/yyyy}';
+dxo.InlineInitialize();
+
+//-->
+</script>
+            </div>
+		</div>
+        <div class="label-dados-consolidados" style="margin: 10px 0;">
+            <span class="fonteAcessibilidade"><input id="chkMostrarDadosConsolidados" type="checkbox" name="chkMostrarDadosConsolidados" onclick="AtualizarGrid();" /><label for="chkMostrarDadosConsolidados">Mostrar Dados Consolidados considerando todas as entidades</label></span>
+        </div>
+        <div>
+            
+        </div>
+        <div id="divOrientacoesLinkDiv" class="grid-orientacoes-div">
+            <div class="grid-orientacoes-clique-div" >
+                <img id="imgLinkOrientacoes" src="AppImagens/imgLink.png" />
+                <span id="lblOrientacoesLink" class="fonteAcessibilidade">Clique nos <u>links</u> na coluna Especificação para maiores informações.</span>
+            </div>
+            <div class="div-exportar-dados"> 
+                <div>
+                    <span id="lblExportar" class="exportar-dados-label fonteAcessibilidade">Exportar dados para:</span>
+                </div>
+                <div class="div-exportar-dados-buttons">
+                    <input type="image" name="btnExportarPDF" id="btnExportarPDF" title="Exportar Dados para formato .PDF" src="AppImagens/btnPDF.png" onclick="showToast(&#39;Download PDF iniciado, aguarde.&#39;, &#39;pdf&#39;);" />
+                    <input type="image" name="btnExportarCSV" id="btnExportarCSV" title="Exportar Dados para formato .CSV" src="AppImagens/btnCSV.png" onclick="showToast(&#39;Download CSV iniciado, aguarde.&#39;, &#39;csv&#39;);" />
+                    <input type="image" name="btnExportarXLS" id="btnExportarXLS" title="Exportar Dados para formato .XLS" src="AppImagens/btnXLS.png" onclick="showToast(&#39;Download XLS iniciado, aguarde.&#39;, &#39;xls&#39;);" />
+                    <input type="image" name="btnExportarJPG" id="btnExportarJPG" title="Exportar Dados para formato .JPG (apenas conteúdo da paginação atual)" src="AppImagens/btnJPG.png" onclick="showToast(&#39;Download JPG iniciado, aguarde.&#39;, &#39;jpg&#39;);" />
+                    <input type="image" name="btnExportarTXT" id="btnExportarTXT" title="Exportar Dados para formato .TXT" src="AppImagens/btnTXT.png" onclick="showToast(&#39;Download TXT iniciado, aguarde.&#39;, &#39;txt&#39;);" /> 
+                </div>
+            </div>
+        </div>
+	    <div class="grid-view" style="margin-bottom: 20px;">
+		    <table class="dxgvControl" cellspacing="0" cellpadding="0" id="gridReceitas" width="99%" style="border-collapse:separate;">
+	<tr>
+		<td><table id="gridReceitas_DXMainTable" class="dxgvTable" cellspacing="0" cellpadding="0" width="100%" style="empty-cells:show;">
+			<tr id="gridReceitas_DXHeadersRow">
+				<td id="gridReceitas_DX-GSDT-col0" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;gridReceitas&#39;, this, event);" style="border-top-width:0px;border-left-width:0px;"><table cellspacing="0" cellpadding="0" width="100%">
+					<tr>
+						<td>EMPRESA</td>
+					</tr>
+				</table></td><td id="gridReceitas_DX-GSDT-col1" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;gridReceitas&#39;, this, event);" style="border-top-width:0px;border-left-width:0px;"><table cellspacing="0" cellpadding="0" width="100%">
+					<tr>
+						<td>CODIGO</td>
+					</tr>
+				</table></td><td id="gridReceitas_DX-GSDT-col2" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;gridReceitas&#39;, this, event);" style="border-top-width:0px;border-left-width:0px;"><table cellspacing="0" cellpadding="0" width="100%">
+					<tr>
+						<td>DESCRICAO</td>
+					</tr>
+				</table></td><td id="gridReceitas_DX-GSDT-col3" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;gridReceitas&#39;, this, event);" style="border-top-width:0px;border-left-width:0px;"><table cellspacing="0" cellpadding="0" width="100%">
+					<tr>
+						<td>EMPENHADO</td>
+					</tr>
+				</table></td><td id="gridReceitas_DX-GSDT-col4" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;gridReceitas&#39;, this, event);" style="border-top-width:0px;border-left-width:0px;"><table cellspacing="0" cellpadding="0" width="100%">
+					<tr>
+						<td>LIQUIDADO</td>
+					</tr>
+				</table></td><td id="gridReceitas_DX-GSDT-col5" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;gridReceitas&#39;, this, event);" style="border-top-width:0px;border-left-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" width="100%">
+					<tr>
+						<td>PAGO</td>
+					</tr>
+				</table></td>
+			</tr><tr class="dxgvEmptyDataRow">
+				<td class="dxgv" colspan="6" style="border-bottom-width:0px;"><div>
+					No data to display
+				</div></td>
+			</tr>
+		</table><img id="gridReceitas_IADD" class="dxGridView_gvDragAndDropArrowDown" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt="|" title="" border="0" style="position:absolute;visibility:hidden;top:-100px;" /><img id="gridReceitas_IADU" class="dxGridView_gvDragAndDropArrowUp" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt="|" title="" border="0" style="position:absolute;visibility:hidden;top:-100px;" /><img id="gridReceitas_IDHF" class="dxGridView_gvDragAndDropHideColumn" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt="Hide" title="" border="0" style="position:absolute;visibility:hidden;top:-100px;" /><table id="gridReceitas_LP" class="dxgvLoadingPanel" cellspacing="0" cellpadding="0" style="left:0px;top:0px;z-index:30000;display:none;">
+			<tr>
+				<td class="dx"><img src="/Transparencia/DXR.axd?r=3_3-U4tE2" alt="" align="middle" border="0" /></td><td class="dx" style="padding-left:0px;">Carregando&hellip;</td>
+			</tr>
+		</table><div id="gridReceitas_LD" class="dxgvLoadingDiv" style="display:none;z-index:29999;position:absolute;">
+
+		</div><input type="hidden" name="gridReceitas$DXSelInput" id="gridReceitas_DXSelInput" /><table id="gridReceitas_DXStyleTable" style="display:none;">
+			<tr>
+				<td></td>
+			</tr><tr class="dxgvEditingErrorRow">
+				<td class="dxgv" colspan="6" style="border-right-width:0px;"></td>
+			</tr><tr class="dxgvSelectedRow">
+				<td></td>
+			</tr><tr class="dxgvFocusedRow">
+				<td></td>
+			</tr><tr class="dxgvFocusedGroupRow">
+				<td></td>
+			</tr>
+		</table><input type="hidden" name="gridReceitas$CallbackState" id="gridReceitas_CallbackState" value="/wEWBB4ERGF0YQXMAUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFCZ0FBQUFkRlRWQlNSVk5CQjBWTlVGSkZVMEVEQUFBR1EwOUVTVWRQQmtOUFJFbEhUd2NBQUFsRVJWTkRVa2xEUVU4SlJFVlRRMUpKUTBGUEJ3QUFDVVZOVUVWT1NFRkVUd2xGVFZCRlRraEJSRThHQUFBSlRFbFJWVWxFUVVSUENVeEpVVlZKUkVGRVR3WUFBQVJRUVVkUEJGQkJSMDhHQUFBQUFBQUFCd0FIQUE9PR4FU3RhdGUFYEJ3WUhBQUlCQndFQ0FRY0NBZ0VIQXdJQkJ3UUNBUWNGQWdFSEFBY0FCd0FIQUFVQUFBQ0FDUUlHUTA5RVNVZFBDUUlBQWdBREJ3UUNBQWNBQWdFSEFBY0FBZ0VIQUFjQQ==" /></td>
+	</tr>
+</table><script id="dxss_1295364862" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('gridReceitas');
+window['gridReceitas'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('gridReceitas',arg,aspxCallback,'gridReceitas',aspxCallbackError,true); };
+dxo.renderIFrameForPopupElements = true;
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=0;
+dxo.pageRowSize=10;
+dxo.pageIndex=0;
+dxo.pageCount=0;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isHorizontalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=false;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('',0,'EMPRESA',1,'');
+dxo.CreateColumn('',1,'CODIGO',1,'');
+dxo.CreateColumn('',2,'DESCRICAO',1,'');
+dxo.CreateColumn('',3,'EMPENHADO',1,'');
+dxo.CreateColumn('',4,'LIQUIDADO',1,'');
+dxo.CreateColumn('',5,'PAGO',1,'');
+dxo.keys=[];
+dxo.editState=0;
+dxo.InlineInitialize();
+
+//-->
+</script>
+            
+	    </div>
+        <div id="toastBox"></div>
+	</form>
+</body>
+</html>

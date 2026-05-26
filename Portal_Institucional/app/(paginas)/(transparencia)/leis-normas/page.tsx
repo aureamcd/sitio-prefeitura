@@ -74,9 +74,15 @@ export default async function LeisNormasPage() {
         descricao: leg.descricao ?? undefined,
         orgao: leg.orgao ?? undefined,
         data: leg.data_publicacao
-            ? new Date(leg.data_publicacao).toLocaleDateString("pt-BR", { timeZone: "UTC" })
+            ? (leg.data_publicacao.includes("/")
+                ? leg.data_publicacao
+                : new Date(leg.data_publicacao).toLocaleDateString("pt-BR", { timeZone: "UTC" }))
             : leg.ano.toString(),
-        dataISO: leg.data_publicacao ?? undefined,
+        dataISO: leg.data_publicacao
+            ? (leg.data_publicacao.includes("/")
+                ? leg.data_publicacao.split("/").reverse().join("-")
+                : leg.data_publicacao)
+            : undefined,
         arquivo: leg.arquivo_r2_url ?? leg.arquivo_url ?? "#",
         arquivo_r2_url: leg.arquivo_r2_url ?? undefined,
     }));

@@ -6,8 +6,10 @@ import { JSX } from "react";
 import {
   MapPin, Phone, Mail, Building2, TrendingUp, DollarSign,
   Gavel, Users, FileBarChart, HardHat, Handshake, Info,
-  MessageSquare, HelpCircle, ShieldCheck, Scale, LibraryBig
+  MessageSquare, HelpCircle, ShieldCheck, Scale, LibraryBig, FileText
 } from "lucide-react";
+
+import { FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa";
 
 export default function TransparencyFooter(): JSX.Element {
   const linkListClass = "space-y-2 text-xs text-gray-200";
@@ -58,7 +60,13 @@ export default function TransparencyFooter(): JSX.Element {
             </li>
             <li className="flex items-start gap-2">
               <Phone size={14} className="text-white/60 mt-0.5 shrink-0" />
-              <span>Seg a Sex, 8h às 12h<br />(89) 98116-0296</span>
+              <span>(89) 98116-0296</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <Building2 size={14} className="text-white/60 mt-0.5 shrink-0" />
+              <span>
+                Atendimento ao público: Seg a Sex, 8h às 12h
+              </span>
             </li>
             <li>
               <a
@@ -70,6 +78,42 @@ export default function TransparencyFooter(): JSX.Element {
               </a>
             </li>
           </ul>
+
+          {/* REDES SOCIAIS */}
+          <div className="pt-6 border-t border-white/10">
+            <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-3 font-bold">
+              Acompanhe a Prefeitura nas redes sociais
+            </p>
+            <div className="flex gap-3">
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram oficial da Prefeitura de Padre Marcos"
+                className="p-2 bg-white/5 rounded-lg hover:bg-[#FFE066] hover:text-[#173572] transition-all duration-300"
+              >
+                <FaInstagram size={18} />
+              </a>
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook da Prefeitura"
+                className="p-2 bg-white/5 rounded-lg hover:bg-[#FFE066] hover:text-[#173572] transition-all duration-300"
+              >
+                <FaFacebook size={18} />
+              </a>
+              <a
+                href="https://youtube.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="YouTube da Prefeitura"
+                className="p-2 bg-white/5 rounded-lg hover:bg-[#FFE066] hover:text-[#173572] transition-all duration-300"
+              >
+                <FaYoutube size={18} />
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* 2️⃣ TRANSPARÊNCIA */}
@@ -108,7 +152,7 @@ export default function TransparencyFooter(): JSX.Element {
               { href: "/lai", label: "Lei de Acesso à Informação", icon: LibraryBig },
               { href: "/esic", label: "e-SIC (Solicitar LAI)", icon: MessageSquare },
               { href: "/ouvidoria", label: "Ouvidoria", icon: Mail },
-              { href: "/servicos", label: "Carta de Serviços", icon: Info },
+              { href: "/carta-servicos", label: "Carta de Serviços", icon: Info },
               { href: "/faq", label: "Perguntas Frequentes", icon: HelpCircle },
             ].map((item) => (
               <li key={item.href}>
@@ -128,9 +172,9 @@ export default function TransparencyFooter(): JSX.Element {
           </h3>
           <ul className="space-y-4 text-xs text-gray-200">
             <li>
-              <Link href="/privacidade" className="flex items-center gap-2 hover:text-white transition-colors">
+              <Link href="/lgpd" className="flex items-center gap-2 hover:text-white transition-colors">
                 <ShieldCheck size={14} className="text-white/60" />
-                Política de Privacidade
+                Política de Privacidade (LGPD)
               </Link>
             </li>
             <li className="pt-3 space-y-2 border-t border-white/10">
@@ -147,17 +191,36 @@ export default function TransparencyFooter(): JSX.Element {
                 lgpd@padremarcos.pi.gov.br
               </a>
             </li>
+            <li>
+              <Link href="/mapa-do-site" className="flex items-center gap-2 hover:text-white transition-colors">
+                <FileText size={14} className="text-white/60" />
+                Mapa do Site
+              </Link>
+            </li>
+            <li>
+              <Link href="/acessibilidade" className="flex items-center gap-2 hover:text-white transition-colors">
+                <ShieldCheck size={14} className="text-white/60" />
+                Acessibilidade
+              </Link>
+            </li>
           </ul>
 
           {/* Radar PNTP */}
           <div className="mt-6 flex items-center gap-3 border-t border-white/10 pt-4">
-            <Image
-              src="/LOGO RADAR.png"
-              alt="Logo do Radar da Transparência Pública"
-              width={36}
-              height={36}
-              className="rounded opacity-75"
-            />
+            <a
+              href="https://radardatransparencia.atricon.org.br"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Acessar Radar da Transparência Pública"
+            >
+              <Image
+                src="/LOGO RADAR.png"
+                alt="Logo do Radar da Transparência Pública"
+                width={36}
+                height={36}
+                className="rounded opacity-75"
+              />
+            </a>
             <p className="text-[11px] text-gray-400 leading-snug">
               Portal avaliado pelo Radar da<br />Transparência Pública – PNTP.
             </p>
@@ -169,7 +232,10 @@ export default function TransparencyFooter(): JSX.Element {
       <div className="bg-[#122a5a] py-4 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-[10px] text-gray-400 gap-3">
           <p className="uppercase tracking-tight text-center md:text-left">
-            Responsável: <span className="text-gray-300">Prefeitura Municipal de Padre Marcos (institucional)</span>
+            Responsável: <span className="text-gray-300">Setor de Transparência Pública</span>
+          </p>
+          <p className="text-[10px] text-gray-400 text-center">
+            Dados disponibilizados conforme Lei de Acesso à Informação (Lei nº 12.527/2011)
           </p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
             <p>Atualização: <strong className="text-gray-200">10/12/2025</strong></p>

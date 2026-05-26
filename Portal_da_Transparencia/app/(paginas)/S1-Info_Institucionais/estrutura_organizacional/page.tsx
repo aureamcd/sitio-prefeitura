@@ -1,6 +1,7 @@
 import ContentPage from "@/components/layout/ContentPage";
 import { Building2 } from "lucide-react";
 import type { Metadata } from "next";
+import { getTodayDate } from '@/lib/utils/date';
 
 export const metadata: Metadata = {
   title: "Estrutura Organizacional",
@@ -49,8 +50,7 @@ export default function EstruturaOrganizacionalPage() {
         { label: "Informações Institucionais" },
         { label: "Estrutura Organizacional" },
       ]}
-      lastUpdate="24/05/2026"
-      responsavel="Gabinete do Prefeito"
+      lastUpdate={getTodayDate()}
     >
       <div className="space-y-8 mt-6">
         {/* Organograma Simulado */}

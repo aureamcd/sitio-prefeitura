@@ -2,18 +2,19 @@
 
 import { FormEvent, JSX } from "react";
 import { Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function SearchBar(): JSX.Element {
+  const router = useRouter();
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const query = formData.get("search");
+    const query = String(formData.get("q") ?? "").trim();
 
     if (!query) return;
 
-    console.log("Buscar:", query);
-    // Ex: router.push(`/transparencia/busca?q=${query}`)
+    router.push(`/busca?q=${encodeURIComponent(query)}`);
   }
 
   return (
@@ -31,7 +32,7 @@ export default function SearchBar(): JSX.Element {
       {/* Input com cantos arredondados (Full) para um visual mais moderno */}
       <input
         id="search-input"
-        name="search"
+        name="q"
         type="search"
         placeholder="O que você procura?..."
         autoComplete="off"

@@ -18,6 +18,7 @@ import {
   Phone,
   X,
   ChevronDown,
+  Users,
 } from "lucide-react";
 
 type MenuKey = "atividades" | null;
@@ -47,6 +48,7 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
   const fixedItems: FixedItem[] = [
     { href: "/page", label: "Transparência", icon: <FileText size={18} aria-hidden="true" /> },
+    { href: "/transparencia/conselhos-municipais", label: "Conselhos Municipais", icon: <Users size={18} aria-hidden="true" /> },
     { href: "/esic", label: "E-SIC", icon: <MessageSquare size={18} aria-hidden="true" /> },
     { href: "/ouvidoria", label: "Ouvidoria", icon: <MessageSquare size={18} aria-hidden="true" /> },
     { href: "/contato", label: "Contato", icon: <Phone size={18} aria-hidden="true" /> },

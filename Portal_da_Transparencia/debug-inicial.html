@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Erro no tempo de execução</title>
+        <meta name="viewport" content="width=device-width" />
+        <style>
+         body {font-family:"Verdana";font-weight:normal;font-size: .7em;color:black;} 
+         p {font-family:"Verdana";font-weight:normal;color:black;margin-top: -5px}
+         b {font-family:"Verdana";font-weight:bold;color:black;margin-top: -5px}
+         H1 { font-family:"Verdana";font-weight:normal;font-size:18pt;color:red }
+         H2 { font-family:"Verdana";font-weight:normal;font-size:14pt;color:maroon }
+         pre {font-family:"Consolas","Lucida Console",Monospace;font-size:11pt;margin:0;padding:0.5em;line-height:14pt}
+         .marker {font-weight: bold; color: black;text-decoration: none;}
+         .version {color: gray;}
+         .error {margin-bottom: 10px;}
+         .expandable { text-decoration:underline; font-weight:bold; color:navy; cursor:pointer; }
+         @media screen and (max-width: 639px) {
+          pre { width: 440px; overflow: auto; white-space: pre-wrap; word-wrap: break-word; }
+         }
+         @media screen and (max-width: 479px) {
+          pre { width: 280px; }
+         }
+        </style>
+    </head>
+
+    <body bgcolor="white">
+
+            <span><H1>Erro de Servidor no Aplicativo '/Transparencia'.<hr width=100% size=1 color=silver></H1>
+
+            <h2> <i>Erro no tempo de execução</i> </h2></span>
+
+            <font face="Arial, Helvetica, Geneva, SunSans-Regular, sans-serif ">
+
+            <b> Descrição: </b>Erro de um aplicativo no servidor. As atuais configurações de erro personalizadas para esse aplicativo impedem a exibição remota dos detalhes do erro do aplicativo (por motivos de segurança). No entanto, eles poderiam ser exibidos por navegadores em execução no servidor local.
+            <br><br>
+
+            <b>Detalhes:</b> Para ativar os detalhes desta mensagem de erro espec&#237;fica para exibi&#231;&#227;o em computadores remotos, crie uma marca &lt;customErrors&gt; dentro de um arquivo de configura&#231;&#227;o &quot;web.config&quot; localizado no diret&#243;rio raiz do aplicativo de web atual. Essa marca &lt;customErrors&gt; deve ter o atributo &quot;mode&quot; definido como &quot;Off&quot;.<br><br>
+
+            <table width=100% bgcolor="#ffffcc">
+               <tr>
+                  <td>
+                      <code><pre>
+
+&lt;!-- Arquivo de Configura&#231;&#227;o Web.Config --&gt;
+
+&lt;configuration&gt;
+    &lt;system.web&gt;
+        &lt;customErrors mode=&quot;Off&quot;/&gt;
+    &lt;/system.web&gt;
+&lt;/configuration&gt;</pre>                      </code>
+
+                  </td>
+               </tr>
+            </table>
+
+            <br>
+
+            <b>Observações:</b> A p&#225;gina de erro atual que voc&#234; est&#225; vendo pode ser substitu&#237;da por uma p&#225;gina de erro personalizada modificando o atributo &quot;defaultRedirect&quot; da marca de configura&#231;&#227;o &lt;customErrors&gt; do aplicativo para apontar para um URL de p&#225;gina de erro personalizada.<br><br>
+
+            <table width=100% bgcolor="#ffffcc">
+               <tr>
+                  <td>
+                      <code><pre>
+
+&lt;!-- Arquivo de Configura&#231;&#227;o Web.Config --&gt;
+
+&lt;configuration&gt;
+    &lt;system.web&gt;
+        &lt;customErrors mode=&quot;RemoteOnly&quot; defaultRedirect=&quot;mycustompage.htm&quot;/&gt;
+    &lt;/system.web&gt;
+&lt;/configuration&gt;</pre>                      </code>
+
+                  </td>
+               </tr>
+            </table>
+
+            <br>
+
+            </font>
+
+    </body>
+</html>

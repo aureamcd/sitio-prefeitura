@@ -136,11 +136,28 @@ export default function AdminPublicacoesPage() {
   async function handleBulkUpload(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files || e.target.files.length === 0) return;
     const files = Array.from(e.target.files);
+
+    // ── Validação prévia: tipo e tamanho ──
+    const MAX_BYTES = 50 * 1_000_000; // 50 MB
+    const invalidFiles = files.filter(f => !f.name.toLowerCase().endsWith('.pdf'));
+    const oversizedFiles = files.filter(f => f.size > MAX_BYTES);
+    if (invalidFiles.length > 0) {
+      setShowBulkModal(false);
+      showToast("error", `Apenas arquivos PDF são aceitos. ${invalidFiles.length} arquivo(s) ignorado(s): ${invalidFiles.map(f => f.name).join(', ')}`);
+      return;
+    }
+    if (oversizedFiles.length > 0) {
+      setShowBulkModal(false);
+      showToast("error", `Arquivos acima de 50 MB não são suportados em lote. ${oversizedFiles.map(f => f.name).join(', ')}`);
+      return;
+    }
+
     setShowBulkModal(false);
     setUploadingFiles(true);
     setUploadProgress({ current: 0, total: files.length });
 
     let successCount = 0;
+    const errors: string[] = [];
     
     for (let i = 0; i < files.length; i++) {
       setUploadProgress({ current: i + 1, total: files.length });
@@ -155,10 +172,12 @@ export default function AdminPublicacoesPage() {
           method: "POST",
           body: formData,
         });
-        if (!res.ok) throw new Error("Falha no upload do arquivo " + file.name);
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || `HTTP ${res.status}: ${res.statusText}`);
+        }
         const data = await res.json();
 
-        // Salvar no banco
         const { error } = await supabase.from("publicacoes").insert([{
           titulo: "Documento pendente (" + file.name + ")",
           tipo: bulkTipo,
@@ -166,14 +185,30 @@ export default function AdminPublicacoesPage() {
           arquivo_r2_url: data.url,
         }]);
         
-        if (!error) successCount++;
+        if (error) {
+          errors.push(`${file.name}: erro ao salvar no banco - ${error.message}`);
+        } else {
+          successCount++;
+        }
       } catch (err: any) {
-        console.error(err);
+        errors.push(`${file.name}: ${err.message}`);
       }
     }
 
     setUploadingFiles(false);
-    showToast("success", successCount + " de " + files.length + " arquivos enviados com sucesso!");
+
+    // ── Toast conforme resultado ──
+    if (successCount === files.length) {
+      showToast("success", `${successCount} arquivo(s) enviados com sucesso!`);
+    } else if (successCount > 0) {
+      showToast("success", `${successCount} de ${files.length} arquivos enviados.`);
+      setTimeout(() => {
+        showToast("error", `Falha em ${files.length - successCount} arquivo(s):\n${errors.slice(0, 3).join('\n')}${errors.length > 3 ? `\n... e mais ${errors.length - 3} erro(s).` : ''}`);
+      }, 3500);
+    } else {
+      showToast("error", `Nenhum arquivo enviado. ${errors.length} erro(s) encontrados:\n${errors.slice(0, 3).join('\n')}${errors.length > 3 ? `\n... e mais ${errors.length - 3} erro(s).` : ''}`);
+    }
+
     fetchAll(); // Recarregar lista
   }
 

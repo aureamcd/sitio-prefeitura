@@ -128,7 +128,9 @@ export default async function LeiNormaPage({
                                             <Calendar size={14} /> Data de Publicação
                                         </span>
                                         <span className="text-base font-bold text-gray-800">
-                                            {new Date(norma.data_publicacao).toLocaleDateString("pt-BR", { timeZone: "UTC" })}
+                                            {norma.data_publicacao.includes("/")
+                                                ? norma.data_publicacao
+                                                : new Date(norma.data_publicacao).toLocaleDateString("pt-BR", { timeZone: "UTC" })}
                                         </span>
                                     </li>
                                 )}

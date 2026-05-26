@@ -1,6 +1,7 @@
 "use client";
 
 import ContentPage from "@/components/layout/ContentPage";
+import { getTodayDate } from '@/lib/utils/date';
 
 export default function AcessibilidadePage() {
     return (
@@ -11,8 +12,8 @@ export default function AcessibilidadePage() {
                 { label: "Início", href: "/" },
                 { label: "Acessibilidade" },
             ]}
-            lastUpdate="2026-04-07"
-            responsavel="Prefeitura Municipal"
+            lastUpdate={getTodayDate()}
+            responsible="Prefeitura Municipal"
         >
             {/* INTRODUÇÃO */}
             <section className="space-y-4">

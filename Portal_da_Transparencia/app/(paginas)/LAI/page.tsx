@@ -2,6 +2,7 @@
 
 import ContentPage from "@/components/layout/ContentPage";
 import Link from "next/link";
+import { useTodayDate } from '@/lib/hooks/useTodayDate';
 import {
   BookOpen,
   Send,
@@ -15,6 +16,7 @@ import {
 } from "lucide-react";
 
 export default function AcessoInformacaoPage() {
+  const today = useTodayDate();
   return (
     <ContentPage
       title="Acesso à Informação"
@@ -23,7 +25,7 @@ export default function AcessoInformacaoPage() {
         { label: "Início", href: "/" },
         { label: "Acesso à Informação" },
       ]}
-      lastUpdate="2026-05-04"
+      lastUpdate={today}
     >
       <div className="space-y-6">
 

@@ -34,7 +34,7 @@ export default function Breadcrumb({ items }: BreadcrumbProps): JSX.Element {
               {!isLast ? (
                 <>
                   <a
-                    href={item.href}
+                    href={item.href ?? '/'}
                     className="text-blue-700 underline hover:text-blue-900 focus:outline-2 focus:outline-blue-700 flex items-center gap-1"
                   >
                     {isFirst && (

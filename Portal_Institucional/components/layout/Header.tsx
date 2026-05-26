@@ -210,7 +210,6 @@ export default function Header(): JSX.Element {
           </Tooltip>
 
           <div className="hidden sm:block w-px h-4 bg-white/40 mx-1" />
-
           <Tooltip text="Ir para página de acessibilidade" id="tooltip-acess">
             <Link
               href="/acessibilidade"

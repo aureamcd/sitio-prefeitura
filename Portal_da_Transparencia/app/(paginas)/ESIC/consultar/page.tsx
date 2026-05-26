@@ -19,6 +19,7 @@ import {
   Clock, MessageSquare, ArrowLeft, AlertCircle, Shield, Paperclip,
 } from "lucide-react";
 import Link from "next/link";
+import { getTodayDate } from '@/lib/utils/date';
 
 function formatarData(iso: string): string {
   return new Date(iso).toLocaleDateString("pt-BR", {
@@ -86,7 +87,7 @@ export default function ConsultarEsicPage() {
         { label: "e-SIC", href: "/esic" },
         { label: "Consultar" },
       ]}
-      lastUpdate="2026-05-14"
+      lastUpdate={getTodayDate()}
     >
       <div className="mb-6">
         <Link href="/esic" className="inline-flex items-center gap-2 text-sm text-[#173572] font-medium hover:underline">

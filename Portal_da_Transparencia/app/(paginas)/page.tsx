@@ -1,12 +1,10 @@
-import TransparencyCard from "../components/ui/Card";
-import TransparencySection from "../components/transparencia/Section";
-import DashboardResumo from "../components/transparencia/DashboardResumo";
+import TransparencyCard from "@/components/ui/Card";
+import TransparencySection from "@/components/transparencia/Section";
+import DashboardResumo from "@/components/transparencia/DashboardResumo";
 
 import {
   Building2,
-  ClipboardList,
   Scale,
-  Phone,
   Banknote,
   Receipt,
   AlertTriangle,
@@ -53,30 +51,22 @@ const sections: SectionItem[] = [
         title: "Estrutura Organizacional",
         description:
           "Estrutura organizacional (organograma) com a relação hierárquica entre as unidades administrativas (Gabinete, Secretarias e equivalentes), incluindo a identificação nominal dos atuais responsáveis pela gestão (Prefeito, Secretários e demais gestores).",
-        href: "/S1-Info_Institucionais/estrutura_organizacional",
+        href: "https://padremarcos.pi.gov.br/estrutura-organizacional",
         Icon: Building2,
         variant: "highlight",
       },
       {
-        title: "Competências e Atribuições",
-        description:
-          "Competências legais do município e atribuições de cada secretaria e órgão.",
-        href: "/S1-Info_Institucionais/competencias_atribuicoes",
-        Icon: ClipboardList,
-      },
-      {
         title: "Legislação e Atos Normativos",
         description: "Leis, decretos, portarias e demais atos normativos municipais.",
-        href: "/transparencia/legislacao",
+        href: "https://www.padremarcos.pi.gov.br/leis-normas",
         Icon: Scale,
       },
       {
-        title: "Contatos Institucionais e Horários",
+        title: "Perguntas Frequentes (FAQ)",
         description:
-          "Endereços físicos, telefones, e-mails institucionais e horários de atendimento da sede da prefeitura e de suas secretarias.",
-        href: "/transparencia/contatos",
-        Icon: Phone,
-        variant: "highlight",
+          "Respostas para as dúvidas mais comuns dos cidadãos sobre as atividades e serviços oferecidos pela prefeitura.",
+        href: "https://padremarcos.pi.gov.br/FAQ",
+        Icon: HelpCircle,
       },
     ],
   },
@@ -230,6 +220,14 @@ const sections: SectionItem[] = [
     title: "Acesso à Informação e Controle Social",
     cards: [
       {
+        title: "Conselhos Municipais",
+        description:
+          "Composição, atas, resoluções e calendário dos Conselhos Municipais de Saúde (CMS), Assistência Social (CMAS) e Educação/FUNDEB, em atendimento ao PNTP 2026.",
+        href: "/transparencia/conselhos-municipais",
+        Icon: Users,
+        variant: "highlight",
+      },
+      {
         title: "e-SIC (Serviço de Informação ao Cidadão)",
         description:
           "Sistema eletrônico para solicitar informações com base na LAI, prazos de resposta, autoridades competentes e relatórios estatísticos anuais.",
@@ -260,13 +258,6 @@ const sections: SectionItem[] = [
         href: "/ouvidoria",
         Icon: FileText,
         variant: "highlight",
-      },
-      {
-        title: "Perguntas Frequentes (FAQ)",
-        description:
-          "Respostas para as dúvidas mais comuns dos cidadãos sobre as atividades e serviços oferecidos pela prefeitura.",
-        href: "/faq",
-        Icon: HelpCircle,
       },
       {
         title: "LGPD e Governo Digital",
