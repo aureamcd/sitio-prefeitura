@@ -27,7 +27,6 @@ import {
   Truck,
   Scale
 } from "lucide-react";
-import { secretariasOrgaos } from "@/lib/institucional/secretariasOrgaos";
 import portalData from "@/lib/data/portal.json";
 import Link from "next/link";
 
@@ -54,8 +53,9 @@ export default function EstruturaOrganizacionalPage() {
      DADOS DINÂMICOS
   ====================== */
 
-  const lista = Object.entries(secretariasOrgaos as Record<string, Item>);
-  const secretarias = lista.filter(([_, item]) => item.tipo === "secretaria");
+  const secretarias = portalData.secretarias.filter((item) => item.tipo === "secretaria");
+  const controladoria = portalData.orgaos.find((item) => item.slug === "controladoria");
+  const procuradoria = portalData.orgaos.find((item) => item.slug === "procuradoria");
 
   const getSecretariaIcon = (nome: string) => {
     const n = nome.toLowerCase();
@@ -141,35 +141,7 @@ export default function EstruturaOrganizacionalPage() {
 
       </div>
 
-      {/* 2. BASE LEGAL */}
-      <div className="mb-12">
-        <div className="bg-linear-to-br from-white to-blue-50/40 border border-blue-100 rounded-2xl p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-            <div className="max-w-xl">
-              <h2 className="text-lg font-bold text-[#173572] mb-2 flex items-center gap-2">
-                <FileText size={20} /> Base Legal da Estrutura
-              </h2>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                A estrutura administrativa do Poder Executivo Municipal está organizada conforme a Lei Municipal nº XXX/2025, que dispõe sobre a organização administrativa da Prefeitura Municipal de Padre Marcos.
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <Link
-                href="/legislacao/lei-estrutura-administrativa.pdf"
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#173572] text-white rounded-xl text-sm font-bold hover:bg-[#0f2847] transition-all shadow-md hover:shadow-lg"
-              >
-                Lei em PDF
-              </Link>
-              <Link
-                href="/legislacao/estrutura-administrativa"
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-blue-100 text-[#173572] rounded-xl text-sm font-bold hover:bg-blue-50 transition-all"
-              >
-                Versão HTML
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+
 
       {/* 3. ORGANOGRAMA VISUAL (COMPACTO & PREMIUM) */}
       <div className="mb-20 px-4">
@@ -196,11 +168,11 @@ export default function EstruturaOrganizacionalPage() {
               </div>
               <div className="text-left">
                 <p className="text-[10px] uppercase font-black tracking-[0.2em] text-blue-500 mb-0.5">{portalData.gestao.prefeita.cargo}</p>
-                <h3 className="text-lg font-black text-[#173572] leading-tight mb-2">{portalData.gestao.prefeita.nome}</h3>
+                <h3 className="text-lg font-black text-[#484b52] leading-tight mb-2">{portalData.gestao.prefeita.nome}</h3>
                 <div className="text-[11px] text-gray-500 space-y-1 border-t border-gray-100 pt-2">
-                  <p><span className="font-bold text-gray-700">Ocupação:</span> Engenheira</p>
-                  <p><span className="font-bold text-gray-700">Escolaridade:</span> Superior Completo</p>
-                  <p><span className="font-bold text-gray-700">Naturalidade:</span> Padre Marcos - PI</p>
+                  <p><span className="font-bold text-gray-700">Naturalidade:</span> {portalData.gestao.prefeita.naturalidade}</p>
+                  <p><span className="font-bold text-gray-700">Email:</span> {portalData.gestao.prefeita.email}</p>
+                  <p><span className="font-bold text-gray-700">Telefone:</span> {portalData.gestao.prefeita.telefone}</p>
                 </div>
               </div>
             </div>
@@ -222,9 +194,10 @@ export default function EstruturaOrganizacionalPage() {
                 <p className="text-[10px] uppercase font-black tracking-[0.2em] text-blue-500 mb-0.5">{portalData.gestao.vice_prefeito.cargo}</p>
                 <h3 className="text-lg font-black text-[#173572] leading-tight mb-2">{portalData.gestao.vice_prefeito.nome}</h3>
                 <div className="text-[11px] text-gray-500 space-y-1 border-t border-gray-100 pt-2">
-                  <p><span className="font-bold text-gray-700">Ocupação:</span> Agricultor</p>
-                  <p><span className="font-bold text-gray-700">Escolaridade:</span> Ensino Fundamental Completo</p>
-                  <p><span className="font-bold text-gray-700">Naturalidade:</span> Padre Marcos - PI</p>
+                  <p><span className="font-bold text-gray-700">Naturalidade:</span> {portalData.gestao.vice_prefeito.naturalidade}</p>
+                  <p><span className="font-bold text-gray-700">Email:</span> {portalData.gestao.vice_prefeito.email}</p>
+                  <p><span className="font-bold text-gray-700">Telefone:</span> {portalData.gestao.vice_prefeito.telefone}</p>
+
                 </div>
               </div>
             </div>
@@ -298,11 +271,11 @@ export default function EstruturaOrganizacionalPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Mail size={16} className="text-gray-400 shrink-0" />
-                    <p className="text-xs text-blue-600 font-medium truncate">gabinete.pmpadremarcos@gmail.com</p>
+                    <p className="text-xs text-blue-600 font-medium truncate">{portalData.gestao.gabinete.email}</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <Phone size={16} className="text-gray-400 shrink-0" />
-                    <p className="text-xs text-gray-600 font-medium">(89) 98116-0296</p>
+                    <p className="text-xs text-gray-600 font-medium">{portalData.gestao.gabinete.telefone}</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock size={16} className="text-gray-400 shrink-0" />
@@ -313,21 +286,20 @@ export default function EstruturaOrganizacionalPage() {
             </div>
           </div>
 
-            {/* Nível 3: Órgãos de Assessoria e Controle Técnico */}
-            <div className="relative w-full flex flex-col items-center mb-16">
+          {/* Nível 3: Órgãos de Assessoria e Controle Técnico */}
+          <div className="relative w-full flex flex-col items-center mb-16">
             <div className="w-px h-12 bg-blue-200/60 mb-6" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full max-w-3xl relative z-10 px-2 items-start">
 
               {/* Card 1: Controladoria Geral */}
-              <div 
+              <div
                 onClick={() => {
                   setControladoriaOpen(!controladoriaOpen);
                   setProcuradoriaOpen(false);
                 }}
-                className={`bg-white border-2 rounded-[2rem] shadow-lg hover:shadow-xl transition-all duration-300 relative cursor-pointer group overflow-hidden ${
-                  controladoriaOpen ? "border-[#173572] ring-4 ring-blue-50/50" : "border-amber-100"
-                }`}
+                className={`bg-white border-2 rounded-[2rem] shadow-lg hover:shadow-xl transition-all duration-300 relative cursor-pointer group overflow-hidden ${controladoriaOpen ? "border-[#173572] ring-4 ring-blue-50/50" : "border-amber-100"
+                  }`}
               >
                 <div className="absolute top-0 left-0 w-1.5 h-full bg-[#173572] rounded-l-[2rem]" />
                 <div className="p-5">
@@ -348,25 +320,24 @@ export default function EstruturaOrganizacionalPage() {
                     </div>
                     <div>
                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Controlador Geral</p>
-                      <p className="text-sm font-bold text-gray-700">{portalData.orgaos[0]?.responsavel || "Em atualização"}</p>
+                      <p className="text-sm font-bold text-gray-700">{controladoria?.responsavel || "Em atualização"}</p>
                     </div>
                   </div>
                 </div>
 
-                <div 
+                <div
                   id="controladoria-content"
-                  className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                    controladoriaOpen ? 'max-h-[800px] opacity-100 px-5 pb-6 border-t border-gray-100 pt-5 mt-5' : 'max-h-0 opacity-0 pointer-events-none'
-                  }`}
+                  className={`overflow-hidden transition-all duration-500 ease-in-out ${controladoriaOpen ? 'max-h-[800px] opacity-100 px-5 pb-6 border-t border-gray-100 pt-5 mt-5' : 'max-h-0 opacity-0 pointer-events-none'
+                    }`}
                 >
                   <div className="space-y-6 pt-1">
                     {/* Competências */}
                     <div className="bg-amber-50/30 border border-amber-100 rounded-2xl p-4 text-left">
                       <h4 className="text-xs font-black text-[#d97706] uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <ShieldCheck size={14} /> Competências
+                        <ShieldCheck size={14} /> Competências e Atribuições
                       </h4>
                       <ul className="space-y-2">
-                        {(portalData.orgaos[0]?.competencias || []).map((item, i) => (
+                        {(controladoria?.competencias || []).map((item, i) => (
                           <li key={i} className="flex items-start gap-2 text-xs text-gray-600 leading-relaxed">
                             <span className="w-1 h-1 rounded-full bg-amber-400 mt-1.5 shrink-0" />
                             {item}
@@ -377,36 +348,36 @@ export default function EstruturaOrganizacionalPage() {
 
                     {/* Contatos */}
                     <div className="space-y-3 px-1 text-left">
-                      {portalData.orgaos[0]?.endereco && (
+                      {controladoria?.endereco && (
                         <div className="flex gap-3">
                           <MapPin size={16} className="text-gray-400 shrink-0" />
-                          <p className="text-xs text-gray-600 leading-relaxed">{portalData.orgaos[0].endereco}</p>
+                          <p className="text-xs text-gray-600 leading-relaxed">{controladoria.endereco}</p>
                         </div>
                       )}
-                      {portalData.orgaos[0]?.email && (
+                      {controladoria?.email && (
                         <div className="flex items-center gap-3">
                           <Mail size={16} className="text-gray-400 shrink-0" />
-                          <p className="text-xs text-blue-600 font-medium truncate">{portalData.orgaos[0].email}</p>
+                          <p className="text-xs text-blue-600 font-medium truncate">{controladoria.email}</p>
                         </div>
                       )}
-                      {portalData.orgaos[0]?.telefone && (
+                      {controladoria?.telefone && (
                         <div className="flex items-center gap-3">
                           <Phone size={16} className="text-gray-400 shrink-0" />
-                          <p className="text-xs text-gray-600 font-medium">{portalData.orgaos[0].telefone}</p>
+                          <p className="text-xs text-gray-600 font-medium">{controladoria.telefone}</p>
                         </div>
                       )}
-                      {portalData.orgaos[0]?.horario && (
+                      {controladoria?.horario && (
                         <div className="flex items-center gap-3">
                           <Clock size={16} className="text-gray-400 shrink-0" />
-                          <p className="text-xs text-gray-600">{portalData.orgaos[0].horario}</p>
+                          <p className="text-xs text-gray-600">{controladoria.horario}</p>
                         </div>
                       )}
                     </div>
 
                     {/* Link para Página Completa */}
                     <div className="pt-4 border-t border-gray-100 flex justify-center">
-                      <Link 
-                        href="/ouvidoria" 
+                      <Link
+                        href="/ouvidoria"
                         onClick={(e) => e.stopPropagation()}
                         className="group/link flex items-center gap-2 text-xs font-black text-[#173572] hover:text-blue-600 transition-colors relative pb-1"
                       >
@@ -420,14 +391,13 @@ export default function EstruturaOrganizacionalPage() {
               </div>
 
               {/* Card 2: Procuradoria Geral */}
-              <div 
+              <div
                 onClick={() => {
                   setProcuradoriaOpen(!procuradoriaOpen);
                   setControladoriaOpen(false);
                 }}
-                className={`bg-white border-2 rounded-[2rem] shadow-lg hover:shadow-xl transition-all duration-300 relative cursor-pointer group overflow-hidden ${
-                  procuradoriaOpen ? "border-[#173572] ring-4 ring-blue-50/50" : "border-purple-100"
-                }`}
+                className={`bg-white border-2 rounded-[2rem] shadow-lg hover:shadow-xl transition-all duration-300 relative cursor-pointer group overflow-hidden ${procuradoriaOpen ? "border-[#173572] ring-4 ring-blue-50/50" : "border-purple-100"
+                  }`}
               >
                 <div className="absolute top-0 left-0 w-1.5 h-full bg-[#173572] rounded-l-[2rem]" />
                 <div className="p-5">
@@ -448,25 +418,24 @@ export default function EstruturaOrganizacionalPage() {
                     </div>
                     <div>
                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Procurador Geral</p>
-                      <p className="text-sm font-bold text-gray-700">{portalData.orgaos[1]?.responsavel || "Em atualização"}</p>
+                      <p className="text-sm font-bold text-gray-700">{procuradoria?.responsavel || "Em atualização"}</p>
                     </div>
                   </div>
                 </div>
 
-                <div 
+                <div
                   id="procuradoria-content"
-                  className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                    procuradoriaOpen ? 'max-h-[800px] opacity-100 px-5 pb-6 border-t border-gray-100 pt-5 mt-5' : 'max-h-0 opacity-0 pointer-events-none'
-                  }`}
+                  className={`overflow-hidden transition-all duration-500 ease-in-out ${procuradoriaOpen ? 'max-h-[800px] opacity-100 px-5 pb-6 border-t border-gray-100 pt-5 mt-5' : 'max-h-0 opacity-0 pointer-events-none'
+                    }`}
                 >
                   <div className="space-y-6 pt-1">
                     {/* Competências */}
                     <div className="bg-purple-50/30 border border-purple-100 rounded-2xl p-4 text-left">
                       <h4 className="text-xs font-black text-purple-600 uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <Scale size={14} /> Competências
+                        <Scale size={14} /> Competências e Atribuições
                       </h4>
                       <ul className="space-y-2">
-                        {(portalData.orgaos[1]?.competencias || []).map((item, i) => (
+                        {(procuradoria?.competencias || []).map((item, i) => (
                           <li key={i} className="flex items-start gap-2 text-xs text-gray-600 leading-relaxed">
                             <span className="w-1 h-1 rounded-full bg-purple-400 mt-1.5 shrink-0" />
                             {item}
@@ -477,28 +446,28 @@ export default function EstruturaOrganizacionalPage() {
 
                     {/* Contatos */}
                     <div className="space-y-3 px-1 text-left">
-                      {portalData.orgaos[1]?.endereco && (
+                      {procuradoria?.endereco && (
                         <div className="flex gap-3">
                           <MapPin size={16} className="text-gray-400 shrink-0" />
-                          <p className="text-xs text-gray-600 leading-relaxed">{portalData.orgaos[1].endereco}</p>
+                          <p className="text-xs text-gray-600 leading-relaxed">{procuradoria.endereco}</p>
                         </div>
                       )}
-                      {portalData.orgaos[1]?.email && (
+                      {procuradoria?.email && (
                         <div className="flex items-center gap-3">
                           <Mail size={16} className="text-gray-400 shrink-0" />
-                          <p className="text-xs text-blue-600 font-medium truncate">{portalData.orgaos[1].email}</p>
+                          <p className="text-xs text-blue-600 font-medium truncate">{procuradoria.email}</p>
                         </div>
                       )}
-                      {portalData.orgaos[1]?.telefone && (
+                      {procuradoria?.telefone && (
                         <div className="flex items-center gap-3">
                           <Phone size={16} className="text-gray-400 shrink-0" />
-                          <p className="text-xs text-gray-600 font-medium">{portalData.orgaos[1].telefone}</p>
+                          <p className="text-xs text-gray-600 font-medium">{procuradoria.telefone}</p>
                         </div>
                       )}
-                      {portalData.orgaos[1]?.horario && (
+                      {procuradoria?.horario && (
                         <div className="flex items-center gap-3">
                           <Clock size={16} className="text-gray-400 shrink-0" />
-                          <p className="text-xs text-gray-600">{portalData.orgaos[1].horario}</p>
+                          <p className="text-xs text-gray-600">{procuradoria.horario}</p>
                         </div>
                       )}
                     </div>
@@ -525,7 +494,7 @@ export default function EstruturaOrganizacionalPage() {
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-start">
-              {secretarias.map(([_, sec], idx) => (
+              {secretarias.map((sec, idx) => (
                 <div key={idx} className="bg-white border border-gray-50 p-4 rounded-2xl flex items-center gap-4 hover:border-blue-100 hover:shadow-md transition-all group">
                   <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center shrink-0 group-hover:bg-[#173572] group-hover:text-white transition-colors">
                     {getSecretariaIcon(sec.nome)}
@@ -547,12 +516,12 @@ export default function EstruturaOrganizacionalPage() {
           <Building2 size={24} /> Estrutura Administrativa Detalhada
         </h2>
 
-        <div className="columns-1 md:columns-2 gap-8 space-y-8">
-          {secretarias.map(([slug, sec], idx) => {
-            const isOpen = expandedSlug === slug;
+        <div className="space-y-8">
+          {secretarias.map((sec, idx) => {
+            const isOpen = expandedSlug === sec.slug;
 
             const toggleExpand = () => {
-              setExpandedSlug(isOpen ? null : slug);
+              setExpandedSlug(isOpen ? null : sec.slug);
             };
 
             return (
@@ -602,28 +571,6 @@ export default function EstruturaOrganizacionalPage() {
                 <div className={`px-6 overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[1200px] pb-12 opacity-100' : 'max-h-0 opacity-0'}`}>
                   <div className="space-y-6 pt-2 border-t border-gray-100">
 
-                    {/* Competências */}
-                    <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 text-left">
-                      <h4 className="text-xs font-black text-[#173572] uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <ShieldCheck size={14} /> Competências
-                      </h4>
-                      {sec.competencias?.length ? (
-                        <ul className="space-y-2">
-                          {sec.competencias.slice(0, 5).map((item, i) => (
-                            <li key={i} className="flex items-start gap-2 text-xs text-gray-600 leading-relaxed">
-                              <span className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 shrink-0" />
-                              {item}
-                            </li>
-                          ))}
-                          {sec.competencias.length > 5 && (
-                            <li className="text-[10px] text-blue-600 font-bold italic pt-1">Ver mais competências na versão completa...</li>
-                          )}
-                        </ul>
-                      ) : (
-                        <p className="text-xs text-gray-500 italic">Informações em atualização no sistema.</p>
-                      )}
-                    </div>
-
                     {/* Contatos */}
                     <div className="space-y-3 px-1 text-left">
                       {sec.endereco && (
@@ -651,6 +598,28 @@ export default function EstruturaOrganizacionalPage() {
                         </div>
                       )}
                     </div>
+
+                    {/* Competências */}
+                    {sec.competencias && sec.competencias.length > 0 && (
+                      <div className="bg-blue-50/30 border border-blue-100 rounded-2xl p-4 text-left">
+                        <h4 className="text-xs font-black text-[#173572] uppercase tracking-wider mb-3 flex items-center gap-2">
+                          <FileText size={14} />
+                          Competências e Atribuições
+                        </h4>
+
+                        <ul className="space-y-2">
+                          {sec.competencias.map((item, i) => (
+                            <li
+                              key={i}
+                              className="flex items-start gap-2 text-xs text-gray-600 leading-relaxed"
+                            >
+                              <span className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 shrink-0" />
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
 
 
                   </div>

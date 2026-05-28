@@ -41,6 +41,8 @@ type Props = {
     tipos?: string[];
     tiposMap?: Record<string, string[]>;
     showSearch?: boolean;
+    /** Anos disponíveis vindos diretamente do banco (distinct). Se não informado, extrai dos documentos. */
+    availableYears?: string[];
 };
 
 /* =========================
@@ -77,6 +79,7 @@ export default function PublicationPage({
     tipos = [],
     tiposMap,
     showSearch = true,
+    availableYears,
 }: Props) {
     const [busca, setBusca] = useState("");
     const [tipo, setTipo] = useState("Todos");
@@ -84,9 +87,12 @@ export default function PublicationPage({
     const [pagina, setPagina] = useState(1);
 
     const anosDisponiveis = useMemo(() => {
+        if (availableYears && availableYears.length > 0) {
+            return ["Todos", ...availableYears];
+        }
         const anos = documentos.map(extrairAno).filter(Boolean);
         return ["Todos", ...Array.from(new Set(anos)).sort((a, b) => b.localeCompare(a))];
-    }, [documentos]);
+    }, [documentos, availableYears]);
 
     const filtrados = useMemo(() => {
         const termo = busca.trim().toLowerCase();

@@ -20,7 +20,7 @@ const CATEGORIA_MAP: Record<string, string[]> = {
 export default async function PublicacoesOficiaisPage() {
     const supabase = createServerClient();
 
-    const [{ data: rows }, { data: latest }] = await Promise.all([
+    const [{ data: rows }, { data: latest }, { data: anosData }] = await Promise.all([
         supabase
             .from("publicacoes")
             .select("id, titulo, tipo, numero, ano, descricao, data_publicacao, arquivo_url, arquivo_r2_url, created_at")
@@ -33,7 +33,17 @@ export default async function PublicacoesOficiaisPage() {
             .order("created_at", { ascending: false })
             .limit(1)
             .single(),
+
+        supabase
+            .from("publicacoes")
+            .select("ano")
+            .not("ano", "is", null)
+            .order("ano", { ascending: false }),
     ]);
+
+    const availableYears = [
+        ...new Set((anosData ?? []).map((r: any) => String(r.ano)).filter(Boolean)),
+    ] as string[];
 
     const documentos = (rows ?? []).map((pub) => ({
         id: pub.id,
@@ -66,6 +76,7 @@ export default async function PublicacoesOficiaisPage() {
             showTipoFiltro={true}
             tipos={CATEGORIAS}
             tiposMap={CATEGORIA_MAP}
+            availableYears={availableYears}
         />
     );
 }

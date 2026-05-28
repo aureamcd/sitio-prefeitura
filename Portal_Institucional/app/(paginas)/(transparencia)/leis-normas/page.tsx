@@ -48,7 +48,7 @@ function normalizarTipo(tipo: string | null): string | undefined {
 export default async function LeisNormasPage() {
     const supabase = createServerClient();
 
-    const [{ data: rows }, { data: latest }] = await Promise.all([
+    const [{ data: rows }, { data: latest }, { data: anosData }] = await Promise.all([
         supabase
             .from("legislacoes")
             .select("id, titulo, tipo, numero, ano, descricao, orgao, data_publicacao, arquivo_url, arquivo_r2_url, slug")
@@ -63,7 +63,18 @@ export default async function LeisNormasPage() {
             .order("updated_at", { ascending: false })
             .limit(1)
             .single(),
+
+        supabase
+            .from("legislacoes")
+            .select("ano")
+            .or("publicado.eq.true,publicado.is.null")
+            .not("ano", "is", null)
+            .order("ano", { ascending: false }),
     ]);
+
+    const availableYears = [
+        ...new Set((anosData ?? []).map((r: any) => String(r.ano)).filter(Boolean)),
+    ] as string[];
 
     const documentos = (rows ?? []).map((leg) => ({
         id: leg.id,
@@ -100,6 +111,7 @@ export default async function LeisNormasPage() {
             showTipoFiltro={true}
             tipos={TIPOS}
             tiposMap={TIPOS_MAP}
+            availableYears={availableYears}
         />
     );
 }

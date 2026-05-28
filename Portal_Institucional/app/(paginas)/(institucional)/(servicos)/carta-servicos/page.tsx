@@ -10,7 +10,7 @@ import portalData from "@/lib/data/portal.json";
 export default function CartaDeServicosPage() {
   
   // Transformando os dados do JSON para o formato esperado pelo ServiceDetail
-  const services = portalData.servicos.map(s => ({
+  const services = ((portalData as any).servicos || []).map((s: any) => ({
     nome: s.servico,
     descricao: s.descricao,
     quemPode: "Cidadão em geral",
@@ -52,7 +52,7 @@ export default function CartaDeServicosPage() {
 
       {/* LISTA DE SERVIÇOS */}
       <section className="space-y-8">
-        {services.map((service, index) => (
+        {services.map((service: any, index: number) => (
           <ServiceDetail key={index} service={service} />
         ))}
       </section>
