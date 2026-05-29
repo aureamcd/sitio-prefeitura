@@ -192,40 +192,42 @@ async function main() {
             // 2. Definir o exercício (ano) POR CLIQUE REAL NO DROPDOWN DO DEVEXPRESS
             console.log(`  📆 Selecionando o ano ${ano}...`);
             try {
-                // Abre o dropdown clicando na setinha ou no input
-                await page.click('#cmbExercicio_B-1').catch(() => page.click('#cmbExercicio_I'));
+                // Abre o dropdown clicando na setinha fisicamente
+                await page.click('#cmbExercicio_B-1');
                 
-                // Aguarda a lista suspensa aparecer
-                await new Promise((r) => setTimeout(r, 1000));
+                // Aguarda a lista suspensa aparecer visível na tela
+                await page.waitForSelector('#cmbExercicio_DDD_L_D', { visible: true, timeout: 5000 });
+                await new Promise((r) => setTimeout(r, 500));
                 
-                // Procura a opção do ano clicando na tabela do DevExpress
-                const clicouAno = await page.evaluate((anoStr: string) => {
+                // Encontra o ID do elemento TD que contém o ano que queremos
+                const tdId = await page.evaluate((anoStr: string) => {
                     const dropdownList = document.getElementById('cmbExercicio_DDD_L_D');
                     if (dropdownList) {
-                        const tds = dropdownList.querySelectorAll('td');
+                        const tds = dropdownList.querySelectorAll('td.dxeListBoxItem_DevEx');
                         for (let i = 0; i < tds.length; i++) {
                             if (tds[i].textContent && tds[i].textContent!.trim() === anoStr) {
-                                tds[i].click();
-                                return true;
+                                return tds[i].id;
                             }
                         }
                     }
-                    
-                    // Fallback nativo
-                    // @ts-ignore
-                    if (typeof cmbExercicio !== "undefined") {
-                        // @ts-ignore
-                        cmbExercicio.SetValue(anoStr);
-                        // @ts-ignore
-                        if (cmbExercicio.SelectedIndexChanged) cmbExercicio.SelectedIndexChanged.FireEvent(cmbExercicio, {});
-                        return true;
-                    }
-                    
-                    return false;
+                    return null;
                 }, String(ano));
                 
-                if (clicouAno) {
-                    console.log(`  ✅ Ano ${ano} selecionado com sucesso na lista.`);
+                if (tdId) {
+                    // Clica FISICAMENTE no TD usando o Puppeteer (simula o ponteiro do mouse real)
+                    await page.click(`#${tdId}`);
+                    console.log(`  ✅ Ano ${ano} clicado com o mouse físico na lista.`);
+                } else {
+                    console.log(`  ⚠️ Não encontrou o TD para o ano ${ano}. Tentando fallback...`);
+                    await page.evaluate((anoStr) => {
+                        // @ts-ignore
+                        if (typeof cmbExercicio !== "undefined") {
+                            // @ts-ignore
+                            cmbExercicio.SetValue(anoStr);
+                            // @ts-ignore
+                            if (cmbExercicio.SelectedIndexChanged) cmbExercicio.SelectedIndexChanged.FireEvent(cmbExercicio, {});
+                        }
+                    }, String(ano));
                 }
             } catch (e) {
                 console.log(`  ⚠️ Erro ao tentar abrir dropdown e selecionar o ano...`);
