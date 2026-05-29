@@ -224,7 +224,7 @@ export default function Header(): JSX.Element {
 
           <Tooltip text="Ir para Portal da Transparência" id="tooltip-transparencia">
             <a
-              href="https://transparencia.padremarcos.pi.gov.br/transparencia/"
+              href="https://transparencia.padremarcos.pi.gov.br/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Portal da Transparência (abre em nova aba)"

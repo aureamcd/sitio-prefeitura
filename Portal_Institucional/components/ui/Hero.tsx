@@ -37,7 +37,7 @@ export default function DashboardResumo() {
           {/* BOTÃO E LINHA DECORATIVA */}
           <div className="mt-5 md:mt-8 flex flex-col items-end gap-5">
             <a 
-              href="https://transparencia.padremarcos.pi.gov.br/transparencia/"
+              href="https://transparencia.padremarcos.pi.gov.br/"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center bg-[#FFD84D] hover:bg-[#e6c245] text-blue-900 font-bold py-2 sm:py-3 px-6 sm:px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg text-sm sm:text-base"

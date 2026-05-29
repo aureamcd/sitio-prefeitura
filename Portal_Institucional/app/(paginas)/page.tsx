@@ -103,7 +103,7 @@ const sections: SectionItem[] = [
       {
         title: "Portal da Transparência",
         description: "Acompanhe as receitas e despesas do município.",
-        href: "https://transparencia.padremarcos.pi.gov.br/transparencia/",
+        href: "https://transparencia.padremarcos.pi.gov.br/",
         Icon: Eye,
         variant: "highlight",
         featured: true,

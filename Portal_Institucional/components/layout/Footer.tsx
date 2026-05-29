@@ -125,7 +125,7 @@ export default function TransparencyFooter(): JSX.Element {
           </h3>
           <ul className={linkListClass}>
             {[
-              { href: "https://transparencia.padremarcos.pi.gov.br/transparencia/Default.aspx", label: "Portal", icon: TrendingUp },
+              { href: "https://transparencia.padremarcos.pi.gov.br/", label: "Portal", icon: TrendingUp },
               { href: "/receitas", label: "Receitas", icon: DollarSign },
               { href: "/despesas", label: "Despesas", icon: DollarSign },
               { href: "https://transparencia.padremarcos.pi.gov.br/transparencia/?AcessoIndividual=lnkLicitacoes", label: "Licitações e Contratos", icon: Gavel },

@@ -20,7 +20,7 @@ const sections = [
       { href: "/leis-normas", label: "Leis e Normas" },
       { href: "/publicacoes-oficiais", label: "Publicações Oficiais" },
       { href: "/diario-oficial", label: "Diário Oficial" },
-      { href: "https://transparencia.padremarcos.pi.gov.br/transparencia/", label: "Portal da Transparência", external: true },
+      { href: "https://transparencia.padremarcos.pi.gov.br/", label: "Portal da Transparência", external: true },
     ],
   },
   {
