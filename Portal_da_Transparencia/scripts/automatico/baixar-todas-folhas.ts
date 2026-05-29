@@ -189,28 +189,46 @@ async function main() {
             });
             await waitForNetworkIdle(page);
 
-            // 2. Definir o exercício (ano) POR CLIQUE E DIGITAÇÃO (como um humano)
+            // 2. Definir o exercício (ano) POR CLIQUE REAL NO DROPDOWN DO DEVEXPRESS
             console.log(`  📆 Selecionando o ano ${ano}...`);
             try {
-                // Tenta interagir nativamente com DevExpress
-                await page.evaluate((anoStr: string) => {
+                // Abre o dropdown clicando na setinha ou no input
+                await page.click('#cmbExercicio_B-1').catch(() => page.click('#cmbExercicio_I'));
+                
+                // Aguarda a lista suspensa aparecer
+                await new Promise((r) => setTimeout(r, 1000));
+                
+                // Procura a opção do ano clicando na tabela do DevExpress
+                const clicouAno = await page.evaluate((anoStr: string) => {
+                    const dropdownList = document.getElementById('cmbExercicio_DDD_L_D');
+                    if (dropdownList) {
+                        const tds = dropdownList.querySelectorAll('td');
+                        for (let i = 0; i < tds.length; i++) {
+                            if (tds[i].textContent && tds[i].textContent!.trim() === anoStr) {
+                                tds[i].click();
+                                return true;
+                            }
+                        }
+                    }
+                    
+                    // Fallback nativo
                     // @ts-ignore
                     if (typeof cmbExercicio !== "undefined") {
                         // @ts-ignore
                         cmbExercicio.SetValue(anoStr);
                         // @ts-ignore
                         if (cmbExercicio.SelectedIndexChanged) cmbExercicio.SelectedIndexChanged.FireEvent(cmbExercicio, {});
+                        return true;
                     }
+                    
+                    return false;
                 }, String(ano));
                 
-                await new Promise((r) => setTimeout(r, 2000));
-                
-                // Clica 3 vezes para selecionar todo o texto que já está na caixa e digita
-                await page.click('#cmbExercicio_I', { clickCount: 3 });
-                await page.keyboard.type(String(ano));
-                await page.keyboard.press('Enter');
+                if (clicouAno) {
+                    console.log(`  ✅ Ano ${ano} selecionado com sucesso na lista.`);
+                }
             } catch (e) {
-                console.log(`  ⚠️ Erro ao tentar digitar o ano...`);
+                console.log(`  ⚠️ Erro ao tentar abrir dropdown e selecionar o ano...`);
             }
             
             // Aguarda um tempo maior pois a troca de ano sempre dispara um postback no DevExpress

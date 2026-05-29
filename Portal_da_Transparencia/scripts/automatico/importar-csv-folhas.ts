@@ -463,12 +463,13 @@ async function importarArquivo(
   // 9. Apagar o CSV apenas se não houve erros
   const totalErros = erros + servidoresErro;
   if (totalErros === 0) {
-    try {
-      fs.unlinkSync(caminhoArquivo);
-      console.log(`   🗑️  CSV apagado: ${path.basename(caminhoArquivo)}`);
-    } catch (unlinkErr: any) {
-      console.error(`   ⚠️  Erro ao apagar CSV: ${unlinkErr.message}`);
-    }
+    // try {
+    //   fs.unlinkSync(caminhoArquivo);
+    //   console.log(`   🗑️  CSV apagado: ${path.basename(caminhoArquivo)}`);
+    // } catch (unlinkErr: any) {
+    //   console.error(`   ⚠️  Erro ao apagar CSV: ${unlinkErr.message}`);
+    // }
+    console.log(`   📝  (Exclusão temporariamente desativada) CSV preservado: ${path.basename(caminhoArquivo)}`);
   } else {
     console.log(`   ⚠️  CSV preservado para re-tentativa (${totalErros} erro(s)).`);
   }
