@@ -337,27 +337,6 @@ function buildColumns() {
 // ---------------------------------------------------------------------------
 // Alerta de 2025: PDF Pesquisável
 // ---------------------------------------------------------------------------
-function AlertaPdfPesquisavel() {
-  return (
-    <div className="mb-4 rounded-xl border-2 border-red-200 bg-red-50/80 px-6 py-4">
-      <div className="flex items-start gap-3">
-        <AlertTriangle size={20} className="text-red-500 shrink-0 mt-0.5" />
-        <div>
-          <p className="text-sm font-bold text-red-800 mb-1">
-            🚨 Atenção! Erro de 2025 — PDFs Pesquisáveis Obrigatórios
-          </p>
-          <p className="text-sm text-red-700/80 leading-relaxed">
-            Na avaliação do PNTP 2025, a Prefeitura foi <strong className="text-red-800">reprovada</strong> porque
-            publicou PDFs escaneados como imagem (não pesquisáveis). A regra é <strong className="text-red-800">rígida</strong>:
-            todos os arquivos de Balanço Geral e Relatório de Gestão devem ser <strong className="text-red-800">PDFs
-            pesquisáveis</strong> — aqueles em que é possível selecionar e copiar o texto com o mouse.
-            PDFs escaneados como imagem serão automaticamente zerados na avaliação de 2026.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Aba 1: Peças de Planejamento Orçamentário
@@ -471,24 +450,7 @@ function LrfTab({
 
   return (
     <div id="panel-lrf" role="tabpanel" aria-labelledby="tab-lrf">
-      {/* Alerta sobre RGF */}
-      <div className="mt-4 mb-4 rounded-xl border-2 border-red-200 bg-red-50/80 px-6 py-4">
-        <div className="flex items-start gap-3">
-          <AlertTriangle size={20} className="text-red-500 shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-bold text-red-800 mb-1">
-              🚨 Erro de 2025 — Seção Específica do RGF
-            </p>
-            <p className="text-sm text-red-700/80 leading-relaxed">
-              Na avaliação do PNTP 2025, a Prefeitura foi <strong className="text-red-800">reprovada</strong> no
-              item do RGF. O Relatório de Gestão Fiscal <strong className="text-red-800">deve ter uma seção
-              específica</strong> no portal (podendo estar em "publicações" ou "demonstrativos fiscais"),
-              mas <strong className="text-red-800">não pode</strong> ficar escondido no meio de outras informações
-              contábeis genéricas. Esta aba atende a esse requisito.
-            </p>
-          </div>
-        </div>
-      </div>
+      
 
       {/* Totalizer */}
       <div className="bg-white border border-gray-100 rounded-2xl px-6 py-4 flex flex-wrap gap-6 items-center shadow-sm mb-4">
