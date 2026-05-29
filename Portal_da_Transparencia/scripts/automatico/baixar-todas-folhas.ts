@@ -258,10 +258,23 @@ async function main() {
                     console.log(`\n────────────────────────────────────────`);
                     console.log(`${progresso} 📋 Processando: ${label}`);
 
-                    // 4. Definir o mês via API do DevExpress com FireEvent ou Select Nativo
+                    // A página principal carrega as telas em um iframe
+                    let frame = page.frames().find(f => f.name() === 'frmPaginaAspx' || f.url().includes('Servidores.aspx'));
+                    if (!frame) {
+                        // Tentar pegar o primeiro child frame
+                        frame = page.mainFrame().childFrames()[0];
+                    }
+                    
+                    if (!frame) {
+                        console.log(`  ⚠️ Iframe não encontrado, a navegação falhou.`);
+                        totalErro++;
+                        continue;
+                    }
+
+                    // 4. Definir o mês via API do DevExpress com FireEvent ou Select Nativo dentro do IFRAME
                     const mesStr = String(mes).padStart(2, "0");
                     console.log(`  📅 Definindo mês: ${mesStr}...`);
-                    await page.evaluate((str: string, mesNum: number) => {
+                    await frame.evaluate((str: string, mesNum: number) => {
                         // Tentar DevExpress primeiro
                         // @ts-ignore
                         if (typeof cmbMes !== "undefined") {
@@ -297,17 +310,63 @@ async function main() {
 
                     // 5. Clicar em Pesquisar
                     console.log(`  🔍 Clicando em Pesquisar...`);
-                    const btnPesquisar = await page.$("#btnPesquisar");
-                    if (!btnPesquisar) {
-                        console.log(`  ⚠️ Botão Pesquisar não encontrado, pulando.`);
+                    const clicouPesquisar = await frame.evaluate(() => {
+                        const btn = document.getElementById("btnPesquisar");
+                        if (btn) { btn.click(); return true; }
+                        
+                        const inputs = document.querySelectorAll('input[type="submit"], input[type="button"]');
+                        for (let i = 0; i < inputs.length; i++) {
+                            const input = inputs[i] as HTMLInputElement;
+                            if (input.value && input.value.toLowerCase().includes("pesquisar")) {
+                                input.click();
+                                return true;
+                            }
+                        }
+                        
+                        const elements = document.querySelectorAll('button, a, span, div, td');
+                        for (let i = 0; i < elements.length; i++) {
+                            const el = elements[i] as HTMLElement;
+                            const text = el.textContent ? el.textContent.toLowerCase().replace(/\s+/g, ' ') : '';
+                            if (text.includes("pesquisar")) {
+                                // Evitar clicar no body inteiro se div for muito genérica
+                                if (el.tagName === 'DIV' && el.children.length > 5) continue;
+                                el.click();
+                                return true;
+                            }
+                        }
+                        
+                        // Tentar procurar imagens com alt ou title pesquisar
+                        const imgs = document.querySelectorAll('img');
+                        for (let i = 0; i < imgs.length; i++) {
+                            const img = imgs[i] as HTMLImageElement;
+                            if ((img.title && img.title.toLowerCase().includes("pesquisar")) || (img.alt && img.alt.toLowerCase().includes("pesquisar"))) {
+                                img.click();
+                                return true;
+                            }
+                        }
+                        
+                        // Fallback: tentar invocar API client do DevExpress se o botão for btnPesquisar
+                        // @ts-ignore
+                        if (typeof btnPesquisar !== "undefined" && btnPesquisar.Click) {
+                            // @ts-ignore
+                            btnPesquisar.Click.FireEvent(btnPesquisar, {});
+                            return true;
+                        }
+                        
+                        return false;
+                    });
+
+                    if (!clicouPesquisar) {
+                        console.log(`  ⚠️ Botão Pesquisar não encontrado, gerando dump HTML para debug...`);
+                        const html = await frame.content();
+                        fs.writeFileSync(path.join(DIR_DOWNLOAD, `frame_debug_${ano}_${mes}.html`), html);
                         totalPulado++;
                         continue;
                     }
-                    await btnPesquisar.click();
 
                     // Aguardar o grid carregar (AJAX callback do DevExpress)
                     try {
-                        await page.waitForSelector("#gridPessoal", {
+                        await frame.waitForSelector("#gridPessoal, table.dxgvTable", {
                             timeout: 15_000,
                         });
                         // Dá mais 2 segundinhos pro grid estabilizar
@@ -317,38 +376,52 @@ async function main() {
                     }
                     await waitForNetworkIdle(page);
 
-                    // 6. Verificar se o botão Exportar CSV está visível
-                    const btnExportar = await page.$("#btnExportarCSV");
-                    if (!btnExportar) {
-                        console.log(`  ⚠️ Botão Exportar CSV não encontrado, pulando.`);
-                        totalPulado++;
-                        continue;
-                    }
-
-                    const isVisible = await page.evaluate(
-                        (el: Element) => {
-                            const style = window.getComputedStyle(el);
-                            return (
-                                style.display !== "none" &&
-                                style.visibility !== "hidden" &&
-                                style.opacity !== "0"
-                            );
-                        },
-                        btnExportar
-                    );
-
-                    if (!isVisible) {
-                        console.log(`  ⚠️ Botão Exportar CSV não visível, pulando.`);
-                        totalPulado++;
-                        continue;
-                    }
-
-                    // 7. Registrar arquivos antes do download
+                    // 6. Verificar se o botão Exportar CSV está visível e clicar
+                    console.log(`  💾 Exportando CSV...`);
+                    
+                    // Registrar arquivos antes do download
                     const filesBefore = fs.readdirSync(DIR_DOWNLOAD);
 
-                    // 8. Clicar em Exportar CSV
-                    console.log(`  💾 Exportando CSV...`);
-                    await btnExportar.click();
+                    const clicouExportar = await frame.evaluate(() => {
+                        // Tentar ID
+                        const btn = document.getElementById("btnExportarCSV") || document.getElementById("LnkExportarCSV") || document.getElementById("btnExportar");
+                        if (btn && btn.style.display !== "none" && btn.style.visibility !== "hidden") { 
+                            btn.click(); 
+                            return true; 
+                        }
+                        
+                        // Tentar por imagem (DevExpress as vezes usa inputs tipo image)
+                        const inputs = document.querySelectorAll('input[type="image"], input[type="submit"], input[type="button"]');
+                        for (let i = 0; i < inputs.length; i++) {
+                            const input = inputs[i] as HTMLInputElement;
+                            if (
+                                (input.title && input.title.toLowerCase().includes("csv")) ||
+                                (input.value && input.value.toLowerCase().includes("csv")) ||
+                                (input.title && input.title.toLowerCase().includes("exportar"))
+                            ) {
+                                input.click();
+                                return true;
+                            }
+                        }
+                        
+                        // Tentar por texto
+                        const elements = document.querySelectorAll('button, a, span');
+                        for (let i = 0; i < elements.length; i++) {
+                            const el = elements[i] as HTMLElement;
+                            if (el.textContent && (el.textContent.trim().toLowerCase().includes("exportar csv") || el.textContent.trim().toLowerCase().includes("gerar csv"))) {
+                                el.click();
+                                return true;
+                            }
+                        }
+                        
+                        return false;
+                    });
+
+                    if (!clicouExportar) {
+                        console.log(`  ⚠️ Botão Exportar CSV não encontrado ou não visível, pulando.`);
+                        totalPulado++;
+                        continue;
+                    }
 
                     // 9. Aguardar download
                     console.log(`  ⏳ Aguardando download...`);
