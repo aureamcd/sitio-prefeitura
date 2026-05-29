@@ -52,22 +52,22 @@ function parseArgs() {
     return { desdeAno, desdeMes, ateAno, ateMes };
 }
 
-function gerarMeses(
+function gerarMesesDecrescente(
     desdeAno: number,
     desdeMes: number,
     ateAno: number,
     ateMes: number
 ): { ano: number; mes: number }[] {
     const meses: { ano: number; mes: number }[] = [];
-    let ano = desdeAno;
-    let mes = desdeMes;
+    let ano = ateAno;
+    let mes = ateMes;
 
-    while (ano < ateAno || (ano === ateAno && mes <= ateMes)) {
+    while (ano > desdeAno || (ano === desdeAno && mes >= desdeMes)) {
         meses.push({ ano, mes });
-        mes++;
-        if (mes > 12) {
-            mes = 1;
-            ano++;
+        mes--;
+        if (mes < 1) {
+            mes = 12;
+            ano--;
         }
     }
 
@@ -124,12 +124,14 @@ function nomeArquivo(ano: number, mes: number, tipo: string): string {
 async function main() {
     const cliArgs = parseArgs();
 
-    const agora = new Date();
-    const anoAtual = cliArgs.ateAno ?? agora.getFullYear();
-    const mesAtual = cliArgs.ateMes ?? agora.getMonth() + 1;
+    // Default to downloading from 2023.01 up to 2026.05 if not specified
+    const anoAtual = cliArgs.ateAno ?? 2026;
+    const mesAtual = cliArgs.ateMes ?? 5;
+    const anoInicial = cliArgs.desdeAno ?? 2023;
+    const mesInicial = cliArgs.desdeMes ?? 1;
 
-    // Gerar lista de todos os meses
-    const meses = gerarMeses(cliArgs.desdeAno, cliArgs.desdeMes, anoAtual, mesAtual);
+    // Gerar lista de todos os meses em ordem decrescente
+    const meses = gerarMesesDecrescente(anoInicial, mesInicial, anoAtual, mesAtual);
 
     // Criar diretório de saída
     fs.mkdirSync(DIR_DOWNLOAD, { recursive: true });
@@ -137,7 +139,7 @@ async function main() {
     console.log("🚀 INICIANDO DOWNLOAD DE TODAS AS FOLHAS DE PAGAMENTO");
     console.log(`📁 Diretório de saída: ${DIR_DOWNLOAD}`);
     console.log(
-        `📅 Período: ${cliArgs.desdeAno}/${String(cliArgs.desdeMes).padStart(2, "0")} até ${anoAtual}/${String(mesAtual).padStart(2, "0")}`
+        `📅 Período (Decrescente): ${anoAtual}/${String(mesAtual).padStart(2, "0")} até ${anoInicial}/${String(mesInicial).padStart(2, "0")}`
     );
     console.log(`📊 Total de meses: ${meses.length}`);
 
@@ -162,27 +164,6 @@ async function main() {
     let totalErro = 0;
 
     try {
-        // ── Navegar para Default.aspx e setar o exercício inicial ──────
-        console.log("\n🌐 Abrindo portal de transparência...");
-        await page.goto(URL_DEFAULT, {
-            waitUntil: "networkidle2",
-            timeout: 60_000,
-        });
-        await waitForNetworkIdle(page);
-
-        console.log(`📆 Definindo exercício para ${anoAtual}...`);
-        await page.evaluate((ano: number) => {
-            // @ts-ignore
-            if (typeof cmbExercicio !== "undefined") {
-                // @ts-ignore
-                cmbExercicio.SetValue(String(ano));
-                // Forçar o site a processar a mudança
-                // @ts-ignore
-                if (cmbExercicio.SelectedIndexChanged) cmbExercicio.SelectedIndexChanged.FireEvent(cmbExercicio, {});
-            }
-        }, anoAtual);
-        await waitForNetworkIdle(page);
-
         // ── Agrupar meses por ano ────────────────────────────────────────
         const mesesPorAno = new Map<number, number[]>();
         for (const m of meses) {
@@ -190,8 +171,12 @@ async function main() {
             mesesPorAno.get(m.ano)!.push(m.mes);
         }
 
+        const anosDecrescente = Array.from(mesesPorAno.keys()).sort((a, b) => b - a);
+
         // ── Processar cada ano separadamente ─────────────────────────────
-        for (const [ano, listaMeses] of mesesPorAno.entries()) {
+        for (const ano of anosDecrescente) {
+            const listaMeses = mesesPorAno.get(ano)!;
+            
             console.log(`\n========================================`);
             console.log(`📆 INICIANDO O ANO: ${ano}`);
             console.log(`========================================`);
@@ -205,32 +190,34 @@ async function main() {
             await waitForNetworkIdle(page);
 
             // 2. Definir o exercício (ano) POR CLIQUE E DIGITAÇÃO (como um humano)
-            console.log(`  📆 Digitando o ano ${ano}...`);
+            console.log(`  📆 Selecionando o ano ${ano}...`);
             try {
-                // Clica 3 vezes para selecionar todo o texto que já está na caixa
-                await page.click('#cmbExercicio_I', { clickCount: 3 });
-                // Digita o ano novo
-                await page.keyboard.type(String(ano));
-                // Aperta Enter para confirmar e forçar o site a processar
-                await page.keyboard.press('Enter');
-            } catch (e) {
-                console.log(`  ⚠️ Erro ao tentar digitar o ano, tentando via código...`);
-                await page.evaluate((ano: number) => {
+                // Tenta interagir nativamente com DevExpress
+                await page.evaluate((anoStr: string) => {
                     // @ts-ignore
                     if (typeof cmbExercicio !== "undefined") {
                         // @ts-ignore
-                        cmbExercicio.SetValue(String(ano));
+                        cmbExercicio.SetValue(anoStr);
                         // @ts-ignore
                         if (cmbExercicio.SelectedIndexChanged) cmbExercicio.SelectedIndexChanged.FireEvent(cmbExercicio, {});
                     }
-                }, ano);
+                }, String(ano));
+                
+                await new Promise((r) => setTimeout(r, 2000));
+                
+                // Clica 3 vezes para selecionar todo o texto que já está na caixa e digita
+                await page.click('#cmbExercicio_I', { clickCount: 3 });
+                await page.keyboard.type(String(ano));
+                await page.keyboard.press('Enter');
+            } catch (e) {
+                console.log(`  ⚠️ Erro ao tentar digitar o ano...`);
             }
             
             // Aguarda um tempo maior pois a troca de ano sempre dispara um postback no DevExpress
             await new Promise((r) => setTimeout(r, 4000));
             await waitForNetworkIdle(page);
 
-            // 3. Agora sim, clica no card "Servidores" chamando a função nativa do site
+            // 3. Clica no card "Servidores" chamando a função nativa do site
             console.log(`  🖱️  Acessando Servidores...`);
             try {
                 await page.evaluate(() => {
@@ -271,18 +258,38 @@ async function main() {
                     console.log(`\n────────────────────────────────────────`);
                     console.log(`${progresso} 📋 Processando: ${label}`);
 
-                    // 4. Definir o mês via API do DevExpress com FireEvent
+                    // 4. Definir o mês via API do DevExpress com FireEvent ou Select Nativo
                     const mesStr = String(mes).padStart(2, "0");
                     console.log(`  📅 Definindo mês: ${mesStr}...`);
-                    await page.evaluate((str: string) => {
+                    await page.evaluate((str: string, mesNum: number) => {
+                        // Tentar DevExpress primeiro
                         // @ts-ignore
                         if (typeof cmbMes !== "undefined") {
                             // @ts-ignore
                             cmbMes.SetValue(str);
                             // @ts-ignore
                             if (cmbMes.SelectedIndexChanged) cmbMes.SelectedIndexChanged.FireEvent(cmbMes, {});
+                        } else {
+                            // Tentar encontrar um select nativo
+                            const selects = document.querySelectorAll('select');
+                            const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+                            const nomeMes = mesesNomes[mesNum - 1];
+                            
+                            for (let i = 0; i < selects.length; i++) {
+                                const select = selects[i];
+                                if (select.options.length >= 12) {
+                                    for (let j = 0; j < select.options.length; j++) {
+                                        const opt = select.options[j];
+                                        if (opt.text.trim().toLowerCase() === nomeMes.toLowerCase() || opt.value === str || opt.value === String(mesNum)) {
+                                            select.selectedIndex = j;
+                                            select.dispatchEvent(new Event('change', { bubbles: true }));
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
                         }
-                    }, mesStr);
+                    }, mesStr, mes);
                     
                     // O DevExpress costuma fazer uma chamada AJAX rápida (Callback) ao mudar de mês
                     await new Promise((r) => setTimeout(r, 2000));

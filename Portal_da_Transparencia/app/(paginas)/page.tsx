@@ -201,7 +201,7 @@ const sections: SectionItem[] = [
         title: "Saúde",
         description:
           "Plano Municipal de Saúde, programação anual, escala de médicos, horários de atendimento, lista de espera para consultas/exames e relação de estoque de medicamentos (inclusive de alto custo).",
-        href: "/transparencia/relatorios",
+        href: "/atividades/saude",
         Icon: Activity,
         variant: "highlight",
       },
@@ -209,7 +209,7 @@ const sections: SectionItem[] = [
         title: "Educação",
         description:
           "Plano Municipal de Educação, relatório de resultados, lista de espera em creches públicas e seus critérios de priorização.",
-        href: "/transparencia/emendas",
+        href: "/atividades/educacao",
         Icon: GraduationCap,
         variant: "highlight",
       },
@@ -217,16 +217,37 @@ const sections: SectionItem[] = [
   },
 
   {
-    title: "Acesso à Informação e Controle Social",
+    title: "Conselhos Municipais",
     cards: [
       {
-        title: "Conselhos Municipais",
+        title: "Conselho de Saúde",
         description:
-          "Composição, atas, resoluções e calendário dos Conselhos Municipais de Saúde (CMS), Assistência Social (CMAS) e Educação/FUNDEB, em atendimento ao PNTP 2026.",
-        href: "/transparencia/conselhos-municipais",
+          "Acompanhamento e controle social das ações e serviços públicos de saúde.",
+        href: "/conselhos/saude",
         Icon: Users,
         variant: "highlight",
       },
+      {
+        title: "Conselho do FUNDEB / Educação",
+        description:
+          "Acompanhamento e controle social da aplicação dos recursos da Educação Básica.",
+        href: "/conselhos/educacao",
+        Icon: Users,
+        variant: "highlight",
+      },
+      {
+        title: "Conselho de Assistência Social",
+        description:
+          "Acompanhamento e controle social da Política Municipal de Assistência Social.",
+        href: "/conselhos/assistencia",
+        Icon: Users,
+        variant: "highlight",
+      },
+    ],
+  },
+  {
+    title: "Acesso à Informação e Controle Social",
+    cards: [
       {
         title: "e-SIC (Serviço de Informação ao Cidadão)",
         description:

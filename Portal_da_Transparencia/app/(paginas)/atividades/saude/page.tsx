@@ -470,12 +470,10 @@ function MedicamentosFarmaciasTab({ filters }: { filters: FilterValues }) {
 }
 
 // ---------------------------------------------------------------------------
-// Tab 3: Planejamento e Conselho de Saúde
+// Tab 3: Planejamento
 // ---------------------------------------------------------------------------
 
-function PlanejamentoConselhoTab() {
-  const [abaPlanejamento, setAbaPlanejamento] = useState<'documentos' | 'conselho'>('documentos');
-
+function PlanejamentoTab() {
   const documentos = [
     { titulo: 'Plano Municipal de Saúde 2025-2028', tipo: 'Plano', periodo: '2025-2028', situacao: 'Vigente' },
     { titulo: 'Programação Anual de Saúde 2026', tipo: 'Programação', periodo: '2026', situacao: 'Em execução' },
@@ -486,125 +484,37 @@ function PlanejamentoConselhoTab() {
   ];
 
   return (
-    <div>
-      {/* Sub-abas */}
-      <div className="mt-6 flex gap-1 border-b border-gray-200">
-        <button onClick={() => setAbaPlanejamento('documentos')}
-          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
-            abaPlanejamento === 'documentos' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}>
-          <FileText size={16} /> Documentos de Planejamento
-        </button>
-        <button onClick={() => setAbaPlanejamento('conselho')}
-          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
-            abaPlanejamento === 'conselho' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}>
-          <Users size={16} /> Conselho Municipal de Saúde
-        </button>
-      </div>
-
-      {/* Sub-aba: Documentos */}
-      {abaPlanejamento === 'documentos' && (
-        <div className="mt-4">
-          <DataTable
-            columns={[
-              { header: 'Documento', accessor: 'titulo', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
-              { header: 'Tipo', accessor: 'tipo', render: (v: string) => (
-                <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-                  v === 'Plano' ? 'bg-blue-100 text-blue-800' : v === 'Programação' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'
-                }`}>{v}</span>
-              )},
-              { header: 'Período', accessor: 'periodo' },
-              { header: 'Situação', accessor: 'situacao', render: (v: string) => (
-                <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-                  v === 'Vigente' || v === 'Em execução' ? 'bg-emerald-100 text-emerald-800' : v === 'Aprovado' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
-                }`}>{v}</span>
-              )},
-              { header: 'Anexo', accessor: 'titulo', render: () => (
-                <button className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
-                  <FileText size={13} /> PDF
-                </button>
-              )},
-            ]}
-            data={documentos}
-            title="Planejamento em Saúde"
-            caption="Documentos oficiais de planejamento do SUS municipal: Plano Municipal de Saúde, Programação Anual e Relatórios de Gestão."
-            exportable
-          />
-        </div>
-      )}
-
-      {/* Sub-aba: Conselho */}
-      {abaPlanejamento === 'conselho' && (
-        <div className="mt-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div className="bg-white border border-blue-100 rounded-xl p-4 shadow-sm">
-              <p className="text-sm font-semibold text-blue-800 mb-1">Conselho Municipal de Saúde</p>
-              <p className="text-xs text-gray-600">
-                Órgão colegiado permanente e deliberativo do SUS, composto paritariamente por
-                usuários, trabalhadores e gestores da saúde.
-              </p>
-            </div>
-            <div className="bg-white border border-blue-100 rounded-xl p-4 shadow-sm">
-              <p className="text-sm font-semibold text-blue-800 mb-1">Contato</p>
-              <p className="text-xs text-gray-600">E-mail: cms.padremarcos@gmail.com</p>
-              <p className="text-xs text-gray-600">Telefone: (89) 98116-0296</p>
-              <p className="text-xs text-gray-600">Endereço: Rua Principal, s/n — Centro</p>
-            </div>
-          </div>
-
-          <DataTable
-            columns={[
-              { header: 'Nome', accessor: 'nome', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
-              { header: 'Entidade', accessor: 'entidade' },
-              { header: 'Segmento', accessor: 'segmento', render: (v: string) => (
-                <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-                  v === 'Usuário' ? 'bg-blue-100 text-blue-800' : v === 'Trabalhador' ? 'bg-emerald-100 text-emerald-800' : 'bg-purple-100 text-purple-800'
-                }`}>{v}</span>
-              )},
-              { header: 'Contato', accessor: 'contato', render: (v: string) => <span className="text-xs">{v}</span> },
-            ]}
-            data={CONSELHEIROS_SAUDE}
-            title="Conselheiros Municipais de Saúde"
-            caption="Relação dos atuais conselheiros do Conselho Municipal de Saúde, com segmento de representação e contato."
-            exportable
-          />
-
-          {/* Atas */}
-          <div className="mt-6 bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
-            <h3 className="text-sm font-bold text-gray-900 mb-3">Atas de Reuniões e Pareceres</h3>
-            <div className="space-y-2">
-              {[
-                { ata: 'Ata da 1ª Reunião Ordinária — Janeiro/2026', data: '15/01/2026' },
-                { ata: 'Ata da 2ª Reunião Ordinária — Fevereiro/2026', data: '19/02/2026' },
-                { ata: 'Ata da 3ª Reunião Ordinária — Março/2026', data: '20/03/2026' },
-                { ata: 'Parecer sobre a Programação Anual de Saúde 2026', data: '10/02/2026' },
-                { ata: 'Parecer sobre o Relatório de Gestão 2025', data: '15/03/2026' },
-              ].map((item) => (
-                <div key={item.ata} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                  <div className="flex items-center gap-2">
-                    <FileText size={14} className="text-blue-600 shrink-0" />
-                    <span className="text-sm text-gray-700">{item.ata}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-gray-400">{item.data}</span>
-                    <button className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                      <ExternalLink size={12} /> PDF
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+    <div className="mt-4">
+      <DataTable
+        columns={[
+          { header: 'Documento', accessor: 'titulo', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
+          { header: 'Tipo', accessor: 'tipo', render: (v: string) => (
+            <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+              v === 'Plano' ? 'bg-blue-100 text-blue-800' : v === 'Programação' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'
+            }`}>{v}</span>
+          )},
+          { header: 'Período', accessor: 'periodo' },
+          { header: 'Situação', accessor: 'situacao', render: (v: string) => (
+            <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+              v === 'Vigente' || v === 'Em execução' ? 'bg-emerald-100 text-emerald-800' : v === 'Aprovado' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
+            }`}>{v}</span>
+          )},
+          { header: 'Anexo', accessor: 'titulo', render: () => (
+            <button className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+              <FileText size={13} /> PDF
+            </button>
+          )},
+        ]}
+        data={documentos}
+        title="Planejamento em Saúde"
+        caption="Documentos oficiais de planejamento do SUS municipal: Plano Municipal de Saúde, Programação Anual e Relatórios de Gestão."
+        exportable
+      />
 
       <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50 px-5 py-4">
-        <p className="text-sm font-semibold text-blue-800 mb-1">Critérios 18.1 e 18.6 — Planejamento e Conselho de Saúde</p>
+        <p className="text-sm font-semibold text-blue-800 mb-1">Critério 18.1 — Planejamento em Saúde</p>
         <p className="text-sm text-blue-800/80 leading-relaxed">
           O Critério 18.1 exige a publicação do Plano Municipal de Saúde, Programação Anual e Relatório de Gestão.
-          O Critério 18.6 exige a composição do Conselho Municipal de Saúde com nomes, entidades de representação,
-          contato direto e atas das reuniões.
         </p>
       </div>
     </div>
@@ -673,14 +583,14 @@ export default function SaudePage() {
           className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
             activeTab === 'planejamento' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
           }`}>
-          <Calendar size={16} /> Planejamento e Conselho
+          <Calendar size={16} /> Planejamento
         </button>
       </div>
 
       {/* Conteúdo das abas */}
       {activeTab === 'atendimento' && <AtendimentoFilaTab filters={filters} />}
       {activeTab === 'medicamentos' && <MedicamentosFarmaciasTab filters={filters} />}
-      {activeTab === 'planejamento' && <PlanejamentoConselhoTab />}
+      {activeTab === 'planejamento' && <PlanejamentoTab />}
 
       {/* Nota Legal */}
       <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">

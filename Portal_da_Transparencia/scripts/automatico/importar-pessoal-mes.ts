@@ -15,13 +15,22 @@
 
 import { createClient } from "@supabase/supabase-js";
 import * as dotenv from "dotenv";
+import * as path from "path";
 
-dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL;
+const SUPABASE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ??
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+  process.env.SUPABASE_ANON_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  console.error("❌ Variáveis SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY não definidas no .env");
+  process.exit(1);
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const BASE =
     "https://transparencia.padremarcos.pi.gov.br/Transparencia/VersaoJson/Pessoal/";

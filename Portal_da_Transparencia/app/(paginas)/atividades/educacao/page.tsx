@@ -57,32 +57,7 @@ const PLANEJAMENTO_EDUCACAO = [
   { documento: 'Relatório de Resultados e Metas 2023-2025', tipo: 'Relatório', ano: '2023-2025', situacao: 'Aprovado' },
 ];
 
-const CONSELHEIROS_FUNDEB = [
-  { nome: 'Prof. João Batista Silva', entidade: 'Professores da Rede Municipal', segmento: 'Profissional da Educação', contato: '(89) 99999-0101' },
-  { nome: 'Maria de Lourdes Santos', entidade: 'Associação de Pais e Alunos', segmento: 'Pais de Alunos', contato: '(89) 99999-0102' },
-  { nome: 'Pedro Henrique Costa', entidade: 'Sindicato dos Servidores', segmento: 'Trabalhador da Educação', contato: '(89) 99999-0103' },
-  { nome: 'Ana Paula Oliveira', entidade: 'Secretaria Municipal de Educação', segmento: 'Gestor', contato: 'ana.oliveira@educacao.pmpm.gov.br' },
-  { nome: 'Raimundo Nonato Alves', entidade: 'Conselho Tutelar', segmento: 'Sociedade Civil', contato: '(89) 99999-0104' },
-  { nome: 'Francisca das Chagas Lima', entidade: 'Associação de Moradores', segmento: 'Pais de Alunos', contato: '(89) 99999-0105' },
-];
-
-const CONSELHEIROS_ASSISTENCIA = [
-  { nome: 'Carlos Eduardo Martins', entidade: 'Governo Municipal', segmento: 'Gestor', contato: '(89) 99999-0201' },
-  { nome: 'Maria do Socorro Ribeiro', entidade: 'Usuários da Assistência Social', segmento: 'Usuário', contato: '(89) 99999-0202' },
-  { nome: 'Fernando José Oliveira', entidade: 'Trabalhadores do SUAS', segmento: 'Trabalhador', contato: '(89) 99999-0203' },
-  { nome: 'Rita de Cássia Pereira', entidade: 'Organização da Sociedade Civil', segmento: 'Sociedade Civil', contato: '(89) 99999-0204' },
-  { nome: 'José Ribamar Sousa', entidade: 'Governo Municipal', segmento: 'Gestor', contato: '(89) 99999-0205' },
-  { nome: 'Luciana Maria Santos', entidade: 'Usuários da Assistência Social', segmento: 'Usuário', contato: '(89) 99999-0206' },
-];
-
-const ATAS_CONSELHOS = [
-  { conselho: 'Fundeb', documento: 'Ata da 1ª Reunião Ordinária — Janeiro/2026', data: '22/01/2026' },
-  { conselho: 'Fundeb', documento: 'Ata da 2ª Reunião Ordinária — Fevereiro/2026', data: '19/02/2026' },
-  { conselho: 'Fundeb', documento: 'Resolução nº 001/2026 — Aprovação da Programação Anual', data: '19/02/2026' },
-  { conselho: 'Assistência Social', documento: 'Ata da 1ª Reunião Ordinária — Janeiro/2026', data: '25/01/2026' },
-  { conselho: 'Assistência Social', documento: 'Ata da 2ª Reunião Ordinária — Fevereiro/2026', data: '22/02/2026' },
-  { conselho: 'Assistência Social', documento: 'Parecer sobre o Plano de Ação 2026', data: '22/02/2026' },
-];
+// Removed Conselhos mock data
 
 // ---------------------------------------------------------------------------
 // Empty State
@@ -279,159 +254,14 @@ function PlanejamentoEducacaoTab() {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Tab 3: Conselhos Municipais (Critérios 19.3 e 19.4)
-// ---------------------------------------------------------------------------
-
-function ConselhosMunicipaisTab() {
-  const [abaConselho, setAbaConselho] = useState<'fundeb' | 'assistencia'>('fundeb');
-
-  return (
-    <div className="mt-6">
-      {/* Sub-abas */}
-      <div className="flex gap-1 border-b border-gray-200">
-        <button onClick={() => setAbaConselho('fundeb')}
-          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
-            abaConselho === 'fundeb' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}>
-          <School size={16} /> Conselho do Fundeb
-        </button>
-        <button onClick={() => setAbaConselho('assistencia')}
-          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
-            abaConselho === 'assistencia' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}>
-          <Heart size={16} /> Conselho de Assistência Social
-        </button>
-      </div>
-
-      {/* Conselho do Fundeb */}
-      {abaConselho === 'fundeb' && (
-        <div className="mt-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div className="bg-white border border-blue-100 rounded-xl p-4 shadow-sm">
-              <p className="text-sm font-semibold text-blue-800 mb-1">Conselho Municipal de Acompanhamento e Controle Social do Fundeb</p>
-              <p className="text-xs text-gray-600">
-                Órgão colegiado responsável pelo acompanhamento e controle social da aplicação dos
-                recursos do Fundo de Manutenção e Desenvolvimento da Educação Básica (Fundeb).
-              </p>
-              <p className="text-xs text-gray-500 mt-2">Contato: cacs.fundeb.pmpm@gmail.com</p>
-            </div>
-            <div className="bg-white border border-blue-100 rounded-xl p-4 shadow-sm">
-              <p className="text-sm font-semibold text-blue-800 mb-1">Composição</p>
-              <p className="text-xs text-gray-600">
-                {CONSELHEIROS_FUNDEB.length} conselheiros titulares, representantes dos profissionais
-                da educação, pais de alunos, sociedade civil e governo municipal.
-              </p>
-              <p className="text-xs text-gray-500 mt-2">Mandato: 2025-2027</p>
-            </div>
-          </div>
-
-          <DataTable
-            columns={[
-              { header: 'Nome', accessor: 'nome', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
-              { header: 'Entidade', accessor: 'entidade' },
-              { header: 'Segmento', accessor: 'segmento', render: (v: string) => (
-                <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-                  v === 'Profissional da Educação' ? 'bg-blue-100 text-blue-800' :
-                  v === 'Pais de Alunos' ? 'bg-emerald-100 text-emerald-800' :
-                  v === 'Gestor' ? 'bg-purple-100 text-purple-800' :
-                  'bg-gray-100 text-gray-700'
-                }`}>{v}</span>
-              )},
-              { header: 'Contato', accessor: 'contato', render: (v: string) => <span className="text-xs">{v}</span> },
-            ]}
-            data={CONSELHEIROS_FUNDEB}
-            title="Conselheiros do Fundeb"
-            caption="Relação dos atuais conselheiros do Conselho Municipal de Acompanhamento e Controle Social do Fundeb (CACS-Fundeb)."
-            exportable
-          />
-        </div>
-      )}
-
-      {/* Conselho de Assistência Social */}
-      {abaConselho === 'assistencia' && (
-        <div className="mt-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div className="bg-white border border-blue-100 rounded-xl p-4 shadow-sm">
-              <p className="text-sm font-semibold text-blue-800 mb-1">Conselho Municipal de Assistência Social</p>
-              <p className="text-xs text-gray-600">
-                Órgão colegiado, deliberativo e fiscalizador da Política Municipal de Assistência Social,
-                vinculado ao SUAS.
-              </p>
-              <p className="text-xs text-gray-500 mt-2">Contato: cmas.padremarcos@gmail.com</p>
-            </div>
-            <div className="bg-white border border-blue-100 rounded-xl p-4 shadow-sm">
-              <p className="text-sm font-semibold text-blue-800 mb-1">Composição</p>
-              <p className="text-xs text-gray-600">
-                {CONSELHEIROS_ASSISTENCIA.length} conselheiros titulares, representantes do governo,
-                usuários, trabalhadores e sociedade civil.
-              </p>
-              <p className="text-xs text-gray-500 mt-2">Mandato: 2025-2027</p>
-            </div>
-          </div>
-
-          <DataTable
-            columns={[
-              { header: 'Nome', accessor: 'nome', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
-              { header: 'Entidade', accessor: 'entidade' },
-              { header: 'Segmento', accessor: 'segmento', render: (v: string) => (
-                <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-                  v === 'Gestor' ? 'bg-purple-100 text-purple-800' :
-                  v === 'Usuário' ? 'bg-blue-100 text-blue-800' :
-                  v === 'Trabalhador' ? 'bg-emerald-100 text-emerald-800' :
-                  'bg-gray-100 text-gray-700'
-                }`}>{v}</span>
-              )},
-              { header: 'Contato', accessor: 'contato', render: (v: string) => <span className="text-xs">{v}</span> },
-            ]}
-            data={CONSELHEIROS_ASSISTENCIA}
-            title="Conselheiros da Assistência Social"
-            caption="Relação dos atuais conselheiros do Conselho Municipal de Assistência Social (CMAS)."
-            exportable
-          />
-        </div>
-      )}
-
-      {/* Atas e Resoluções */}
-      <div className="mt-6 bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
-        <h3 className="text-sm font-bold text-gray-900 mb-3">Atas e Resoluções</h3>
-        <div className="space-y-2">
-          {ATAS_CONSELHOS.map((item) => (
-            <div key={item.documento} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-              <div className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full shrink-0 ${item.conselho === 'Fundeb' ? 'bg-blue-500' : 'bg-emerald-500'}`} />
-                <span className="text-[11px] font-semibold text-gray-500 uppercase">{item.conselho}</span>
-                <FileText size={14} className="text-gray-400 shrink-0" />
-                <span className="text-sm text-gray-700">{item.documento}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-gray-400">{item.data}</span>
-                <button className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                  <ExternalLink size={12} /> PDF
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50 px-5 py-4">
-        <p className="text-sm font-semibold text-blue-800 mb-1">Critérios 19.3 e 19.4 — Conselhos Municipais</p>
-        <p className="text-sm text-blue-800/80 leading-relaxed">
-          O Critério 19.3 exige a publicação do Conselho do Fundeb com composição, contato e atas.
-          O Critério 19.4 (recomendado) exige o mesmo para o Conselho de Assistência Social.
-        </p>
-      </div>
-    </div>
-  );
-}
+// ConselhosTab removido
 
 // ---------------------------------------------------------------------------
 // Main Page
 // ---------------------------------------------------------------------------
 
-export default function EducacaoAssistenciaPage() {
-  const [activeTab, setActiveTab] = useState<'creches' | 'planejamento' | 'conselhos'>('creches');
+export default function EducacaoPage() {
+  const [activeTab, setActiveTab] = useState<'creches' | 'planejamento'>('creches');
   const [filters, setFilters] = useState<FilterValues>({ ano: '', mes: '', busca: '' });
 
   const handleChange = useCallback((field: 'ano' | 'mes' | 'busca', value: string) => {
@@ -451,15 +281,15 @@ export default function EducacaoAssistenciaPage() {
   return (
     <ContentPage
       showSearch={false}
-      title="Educação e Assistência Social"
-      description="Informações sobre as políticas públicas de educação e assistência social do município — conforme Dimensão 19 do PNTP 2026."
+      title="Educação"
+      description="Informações sobre as políticas públicas de educação do município — conforme Dimensão 19 do PNTP 2026."
       breadcrumb={[
         { label: 'Início', href: '/' },
         { label: 'Atividades Finalísticas' },
-        { label: 'Educação e Assistência Social' },
+        { label: 'Educação' },
       ]}
       lastUpdate={getTodayDate()}
-      responsible="Secretaria Municipal de Educação / Secretaria Municipal de Assistência Social"
+      responsible="Secretaria Municipal de Educação"
     >
       {/* Filter Panel */}
       <FilterPanel
@@ -484,26 +314,19 @@ export default function EducacaoAssistenciaPage() {
           }`}>
           <BookOpen size={16} /> Planejamento da Educação
         </button>
-        <button onClick={() => setActiveTab('conselhos')} role="tab"
-          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
-            activeTab === 'conselhos' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}>
-          <Users size={16} /> Conselhos Municipais
-        </button>
       </div>
 
       {/* Conteúdo */}
       {activeTab === 'creches' && <VagasCrechesTab filters={filters} />}
       {activeTab === 'planejamento' && <PlanejamentoEducacaoTab />}
-      {activeTab === 'conselhos' && <ConselhosMunicipaisTab />}
 
       {/* Nota Legal */}
       <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
         <p className="text-sm font-semibold text-blue-800 mb-1">Fundamentação Legal</p>
         <p className="text-sm text-blue-800/80 leading-relaxed">
-          A divulgação das informações de educação e assistência social atende ao disposto na Lei nº 9.394/1996 (LDB),
-          Lei nº 11.494/2007 (Fundeb), Lei nº 8.742/1993 (LOAS), Lei nº 12.527/2011 (LAI), LC nº 131/2009 e aos
-          Critérios 19.1 a 19.4 do PNTP 2026 (Plano Nacional de Transparência Pública) — TCE-PI.
+          A divulgação das informações de educação atende ao disposto na Lei nº 9.394/1996 (LDB),
+          Lei nº 11.494/2007 (Fundeb), Lei nº 12.527/2011 (LAI), LC nº 131/2009 e aos
+          Critérios 19.1 e 19.2 do PNTP 2026 (Plano Nacional de Transparência Pública) — TCE-PI.
           A identidade das crianças na fila de espera é preservada em conformidade com a LGPD (Lei nº 13.709/2018).
         </p>
       </div>

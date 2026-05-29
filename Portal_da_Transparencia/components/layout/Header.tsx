@@ -112,7 +112,7 @@ export default function Header(): JSX.Element {
   }
 
   return (
-    <header className="w-full bg-white print:hidden">
+    <header className="w-full bg-white border-b border-gray-200 shadow-sm print:hidden">
 
       {/* 🔷 BARRA AZUL */}
       <div className="w-full bg-[#0B3D91] text-white">
@@ -372,7 +372,12 @@ export default function Header(): JSX.Element {
         <Navbar mobileOpen={isMenuOpen} setMobileOpen={setIsMenuOpen} />
       </nav>
 
-     
+      {/* Faixa colorida inferior */}
+      <div className="w-full flex h-[3px]">
+        <div className="w-1/3 bg-[#F7C325]" />
+        <div className="w-1/3 bg-[#E53935]" />
+        <div className="w-1/3 bg-[#0052CC]" />
+      </div>
 
     </header >
   );

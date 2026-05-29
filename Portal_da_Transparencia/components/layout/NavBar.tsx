@@ -21,7 +21,7 @@ import {
   Users,
 } from "lucide-react";
 
-type MenuKey = "atividades" | null;
+type MenuKey = "atividades" | "conselhos" | null;
 type MenuItem = { href: string; label: string };
 type FixedItem = { href: string; label: string; icon: ReactElement };
 
@@ -35,15 +35,19 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
   const [openMenu, setOpenMenu] = useState<MenuKey>(null);
 
   const atividadesRefs = useRef<Array<HTMLAnchorElement | null>>([]);
+  const conselhosRefs = useRef<Array<HTMLAnchorElement | null>>([]);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const menuRef = useRef<HTMLUListElement | null>(null);
-
   const atividadesItems: MenuItem[] = [
     { href: "/atividades/saude", label: "Saúde" },
     { href: "/atividades/educacao", label: "Educação" },
-    { href: "/atividades/assistencia", label: "Assistência Social" },
-    { href: "/atividades/demais", label: "Demais Programas" },
+  ];
+
+  const conselhosItems: MenuItem[] = [
+    { href: "/conselhos/saude", label: "Conselho de Saúde" },
+    { href: "/conselhos/educacao", label: "Conselho do Fundeb / Educação" },
+    { href: "/conselhos/assistencia", label: "Conselho de Assistência Social" },
   ];
 
   const fixedItems: FixedItem[] = [
@@ -58,9 +62,9 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
   function closeMenus() { setOpenMenu(null); }
 
-  function openMenuHover() {
+  function openMenuHover(menu: MenuKey) {
     if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-    setOpenMenu("atividades");
+    setOpenMenu(menu);
   }
 
   function scheduleClose(delay = 200) {
@@ -147,7 +151,7 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
               </Link>
             </li>
 
-            <li role="none" className="relative" onMouseEnter={openMenuHover} onMouseLeave={() => scheduleClose()}>
+            <li role="none" className="relative" onMouseEnter={() => openMenuHover("atividades")} onMouseLeave={() => scheduleClose()}>
               <button
                 ref={buttonRef}
                 aria-haspopup="true"
@@ -164,7 +168,7 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
                 }}
               >
                 <Folder size={18} aria-hidden="true" />
-                Conselhos Municipais
+                Atividades Finalísticas
                 <ChevronDown aria-hidden="true"
                   className={`w-4 h-4 transition-transform duration-200 ${openMenu === "atividades" ? "rotate-180" : ""}`} />
               </button>
@@ -182,6 +186,51 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
                         onKeyDown={(e: KeyboardEvent<HTMLAnchorElement>) => {
                           if (e.key === "ArrowDown") { e.preventDefault(); atividadesRefs.current[i + 1]?.focus(); }
                           if (e.key === "ArrowUp") { e.preventDefault(); i === 0 ? buttonRef.current?.focus() : atividadesRefs.current[i - 1]?.focus(); }
+                          if (e.key === "Escape") { closeMenus(); buttonRef.current?.focus(); }
+                        }}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+
+            <li role="none" className="relative" onMouseEnter={() => openMenuHover("conselhos")} onMouseLeave={() => scheduleClose()}>
+              <button
+                aria-haspopup="true"
+                aria-expanded={openMenu === "conselhos"}
+                aria-controls="menu-conselhos"
+                className={navBtnCls("/conselhos")}
+                onClick={() => openMenu === "conselhos" ? closeMenus() : setOpenMenu("conselhos")}
+                onKeyDown={(e: KeyboardEvent<HTMLButtonElement>) => {
+                  if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown") {
+                    e.preventDefault();
+                    setOpenMenu("conselhos");
+                    setTimeout(() => conselhosRefs.current[0]?.focus(), 0);
+                  }
+                }}
+              >
+                <Users size={18} aria-hidden="true" />
+                Conselhos Municipais
+                <ChevronDown aria-hidden="true"
+                  className={`w-4 h-4 transition-transform duration-200 ${openMenu === "conselhos" ? "rotate-180" : ""}`} />
+              </button>
+
+              {openMenu === "conselhos" && (
+                <ul id="menu-conselhos" role="menu"
+                  className="absolute left-0 mt-2 min-w-[280px] bg-white border border-gray-100 rounded-2xl shadow-lg py-2 z-50 overflow-hidden"
+                  onMouseEnter={cancelClose} onMouseLeave={() => scheduleClose()}>
+                  {conselhosItems.map((item, i) => (
+                    <li key={item.href} role="none">
+                      <Link
+                        href={item.href} role="menuitem"
+                        ref={(el) => { conselhosRefs.current[i] = el; }}
+                        className={dropItemCls(item.href)}
+                        onKeyDown={(e: KeyboardEvent<HTMLAnchorElement>) => {
+                          if (e.key === "ArrowDown") { e.preventDefault(); conselhosRefs.current[i + 1]?.focus(); }
+                          if (e.key === "ArrowUp") { e.preventDefault(); i === 0 ? buttonRef.current?.focus() : conselhosRefs.current[i - 1]?.focus(); }
                           if (e.key === "Escape") { closeMenus(); buttonRef.current?.focus(); }
                         }}
                       >
@@ -265,7 +314,7 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
             >
               <span className="flex items-center gap-3">
                 <Folder size={18} aria-hidden="true" />
-                Conselhos Municipais
+                Atividades Finalísticas
               </span>
               <ChevronDown aria-hidden="true"
                 className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${openMenu === "atividades" ? "rotate-180" : ""}`} />
@@ -274,6 +323,43 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
             {openMenu === "atividades" && (
               <ul className="mt-1 ml-4 flex flex-col gap-0.5 border-l-2 border-[#173572]/20 pl-3">
                 {atividadesItems.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={`block px-3 py-2.5 rounded-lg text-sm transition-all duration-150
+                        hover:bg-[#173572]/10 hover:text-[#173572]
+                        ${isActive(item.href) ? "text-[#173572] font-medium" : "text-gray-600"}`}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+
+          {/* Conselhos — acordeão */}
+          <li>
+            <button
+              aria-expanded={openMenu === "conselhos"}
+              onClick={() => setOpenMenu(openMenu === "conselhos" ? null : "conselhos")}
+              className={`w-full flex items-center justify-between gap-3 px-4 py-3.5 rounded-xl
+                text-base transition-all duration-200
+                hover:bg-[#173572]/10 hover:text-[#173572] focus-visible:ring-2 focus-visible:ring-[#173572]
+                ${pathname.startsWith("/conselhos") ? "bg-[#173572]/10 text-[#173572]" : "text-gray-700"}`}
+            >
+              <span className="flex items-center gap-3">
+                <Users size={18} aria-hidden="true" />
+                Conselhos Municipais
+              </span>
+              <ChevronDown aria-hidden="true"
+                className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${openMenu === "conselhos" ? "rotate-180" : ""}`} />
+            </button>
+
+            {openMenu === "conselhos" && (
+              <ul className="mt-1 ml-4 flex flex-col gap-0.5 border-l-2 border-[#173572]/20 pl-3">
+                {conselhosItems.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
