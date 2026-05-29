@@ -68,9 +68,31 @@ export interface DividaAtivaRow {
 export interface ReceitaExtraRow {
   id: string;
   data_lancamento: string;
-  descricao_receita: string;
+  descricao: string;
   historico: string;
   valor: number;
+  empresa: string;
+  empresa_nome: string;
+  ano: number;
+  [key: string]: unknown;
+}
+
+/* ── Detalhes de Receitas (transações individuais) ──── */
+
+export interface ReceitaDetalheRow {
+  id: string;
+  receita_id: string;
+  ano: number;
+  codigo_contabil: string;
+  descricao_receita: string;
+  data_lancamento: string;
+  historico: string;
+  documento: string;
+  contribuinte: string;
+  cpf_cnpj: string;
+  valor: number;
+  empresa: string;
+  empresa_nome: string;
   [key: string]: unknown;
 }
 

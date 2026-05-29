@@ -40,10 +40,13 @@ interface RowProps {
 function Row({ node, depth, canExpand, isExpanded, onToggle }: RowProps) {
   const pct = node.previsto !== 0 ? (node.arrecadado / node.previsto) * 100 : 0;
 
+  const logicalDepth = Math.max(0, node.level - 1);
+  const levelLabel = getLevelName(node.tipoNivel, logicalDepth);
+
   const rowClass = (() => {
-    if (depth === 0) return 'bg-gray-50 border-t border-gray-200 font-semibold text-gray-900';
-    if (depth === 1) return 'font-medium text-gray-800 bg-white border-t border-gray-100';
-    if (depth === 2) return 'text-gray-700 bg-white border-t border-gray-50';
+    if (logicalDepth === 0) return 'bg-gray-50 border-t border-gray-200 font-semibold text-gray-900';
+    if (logicalDepth === 1) return 'font-medium text-gray-800 bg-white border-t border-gray-100';
+    if (logicalDepth === 2) return 'text-gray-700 bg-white border-t border-gray-50';
     return 'text-gray-600 bg-white border-t border-gray-50 text-sm';
   })();
 
@@ -61,8 +64,6 @@ function Row({ node, depth, canExpand, isExpanded, onToggle }: RowProps) {
     },
     [canExpand, node.codigo, onToggle]
   );
-
-  const levelLabel = getLevelName(node.tipoNivel, depth);
 
   return (
     <tr
@@ -82,8 +83,8 @@ function Row({ node, depth, canExpand, isExpanded, onToggle }: RowProps) {
           : undefined
       }
     >
-      {/* Código */}
-      <td className="px-4 py-3 whitespace-nowrap">
+      {/* Código e Descrição com indent */}
+      <td className="px-4 py-3" style={{ paddingLeft: `${16 + logicalDepth * 20}px` }}>
         <div className="flex items-center gap-2">
           {canExpand ? (
             <span
@@ -95,30 +96,20 @@ function Row({ node, depth, canExpand, isExpanded, onToggle }: RowProps) {
           ) : (
             <span className="w-[14px] flex-shrink-0" aria-hidden="true" />
           )}
-          <span
-            className={`font-mono text-xs ${depth === 0 ? 'text-gray-700' : 'text-gray-500'}`}
-          >
-            {node.codigo}
+          <span>
+            <span className={`font-mono text-xs ${logicalDepth === 0 ? 'text-gray-700' : 'text-gray-500'}`}>
+              {node.codigo}
+            </span>
+            {' - '}
+            {node.descricao} <span className="text-gray-400 font-normal">({levelLabel})</span>
           </span>
         </div>
-      </td>
-
-      {/* Descrição com indent */}
-      <td className="px-4 py-3" style={{ paddingLeft: `${16 + depth * 20}px` }}>
-        {node.descricao}
-      </td>
-
-      {/* Nível */}
-      <td className="px-4 py-3 whitespace-nowrap">
-        <span className="inline-flex w-max items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-gray-500 border border-gray-200">
-          {levelLabel}
-        </span>
       </td>
 
       {/* Previsto Inicial */}
       <td
         className={`px-4 py-3 text-right tabular-nums whitespace-nowrap ${
-          depth === 0 ? 'text-gray-900' : 'text-gray-600'
+          logicalDepth === 0 ? 'text-gray-900' : 'text-gray-600'
         }`}
       >
         {formatBRL(node.previstoInicial)}
@@ -127,7 +118,7 @@ function Row({ node, depth, canExpand, isExpanded, onToggle }: RowProps) {
       {/* Previsto Atualizado */}
       <td
         className={`px-4 py-3 text-right tabular-nums whitespace-nowrap ${
-          depth === 0 ? 'text-gray-900' : 'text-gray-700'
+          logicalDepth === 0 ? 'text-gray-900' : 'text-gray-700'
         }`}
       >
         {formatBRL(node.previsto)}
@@ -136,7 +127,7 @@ function Row({ node, depth, canExpand, isExpanded, onToggle }: RowProps) {
       {/* Arrecadado */}
       <td
         className={`px-4 py-3 text-right tabular-nums whitespace-nowrap ${
-          depth === 0 ? 'text-gray-900' : 'text-gray-700'
+          logicalDepth === 0 ? 'text-gray-900' : 'text-gray-700'
         }`}
       >
         {formatBRL(node.arrecadado)}
@@ -161,23 +152,17 @@ function Row({ node, depth, canExpand, isExpanded, onToggle }: RowProps) {
 function SearchRow({ node, level }: { node: ReceitaNode; level: number }) {
   const pct = node.previsto > 0 ? (node.arrecadado / node.previsto) * 100 : 0;
   const color = realizacaoBg(pct);
-  const levelLabel = getLevelName(node.tipoNivel, level);
 
   return (
     <tr key={node.codigo} className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
-      <td className="px-4 py-3 font-mono text-xs text-gray-500 whitespace-nowrap">
-        {node.codigo}
-      </td>
       <td className="px-4 py-3 text-gray-700">
         <span className="text-[10px] text-gray-400 mr-1.5 font-mono">
-          {'·'.repeat(level)}
+          {'·'.repeat(Math.max(0, node.level - 1))}
         </span>
-        {node.descricao}
-      </td>
-      <td className="px-4 py-3 whitespace-nowrap">
-        <span className="inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-gray-500 border border-gray-200">
-          {levelLabel}
+        <span className="font-mono text-xs text-gray-500 mr-2">
+          {node.codigo}
         </span>
+        - {node.descricao} <span className="text-gray-400 font-normal">({getLevelName(node.tipoNivel, Math.max(0, node.level - 1))})</span>
       </td>
       <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap text-gray-600">
         {formatBRL(node.previstoInicial)}
@@ -205,7 +190,7 @@ function EmptyState({ searchMode }: { searchMode: boolean; searchTerm?: string }
   if (searchMode) {
     return (
       <tr>
-        <td colSpan={7} className="px-6 py-16 text-center">
+        <td colSpan={5} className="px-6 py-16 text-center">
           <div className="flex flex-col items-center gap-3 text-gray-400">
             <Search size={32} className="opacity-30" />
             <p className="text-sm font-semibold">Nenhum registro encontrado para os filtros selecionados.</p>
@@ -218,7 +203,7 @@ function EmptyState({ searchMode }: { searchMode: boolean; searchTerm?: string }
 
   return (
     <tr>
-      <td colSpan={7} className="px-6 py-16 text-center">
+      <td colSpan={5} className="px-6 py-16 text-center">
         <div className="flex flex-col items-center gap-3 text-gray-400">
           <Receipt size={32} className="opacity-30" />
           <p className="text-sm font-semibold">Nenhum dado disponível</p>
@@ -236,7 +221,7 @@ function EmptyState({ searchMode }: { searchMode: boolean; searchTerm?: string }
 function ErrorState({ message }: { message: string }) {
   return (
     <tr>
-      <td colSpan={7} className="px-6 py-16 text-center">
+      <td colSpan={5} className="px-6 py-16 text-center">
         <div className="flex flex-col items-center gap-3 text-red-400" role="alert">
           <AlertCircle size={32} />
           <p className="text-sm font-semibold text-red-600">Erro ao carregar dados</p>
@@ -255,7 +240,7 @@ function ErrorState({ message }: { message: string }) {
 function LoadingSkeleton() {
   return (
     <tr>
-      <td colSpan={7} className="px-6 py-10 text-center text-gray-500">
+      <td colSpan={5} className="px-6 py-10 text-center text-gray-500">
         <div className="flex flex-col items-center gap-4" aria-label="Carregando dados">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
           <div className="animate-pulse flex justify-center">
@@ -360,14 +345,8 @@ export default function TreeTable({
         <table className="w-full text-sm" role={searchMode || visibleRows.length > 0 ? 'table' : undefined}>
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200">
-              <th className="px-4 py-3 text-left font-semibold text-gray-700 whitespace-nowrap w-52">
-                Código Contábil
-              </th>
               <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                Descrição da Receita
-              </th>
-              <th className="px-4 py-3 text-left font-semibold text-gray-700 whitespace-nowrap">
-                Nível
+                Código e Descrição da Receita
               </th>
               <th className="px-4 py-3 text-right font-semibold text-gray-700 whitespace-nowrap">
                 Prev. Inicial

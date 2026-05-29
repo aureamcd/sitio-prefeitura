@@ -6,6 +6,7 @@ import FilterPanel, { FilterValues } from '@/components/ui/FilterPanel';
 import DataTable from '@/components/ui/DataTable';
 import { createBrowserClient, useAvailableYears } from '@/lib/supabase/client';
 import { useTodayDate } from '@/lib/hooks/useTodayDate';
+import { EMPRESAS } from '@/lib/empresas';
 
 const MESES = [
   { value: '01', label: 'Janeiro' }, { value: '02', label: 'Fevereiro' },
@@ -28,8 +29,8 @@ function formatBRL(value: number): string {
 // ---------------------------------------------------------------------------
 export default function DiariasPage() {
   const today = useTodayDate();
-  const { anos: ANOS, loading: anosLoading } = useAvailableYears('diarias');
-  const [filters, setFilters] = useState<FilterValues>({ ano: '2026', mes: '', busca: '' });
+  const [filters, setFilters] = useState<FilterValues>({ ano: '2026', mes: '', busca: '', entidade: '' });
+  const { anos: ANOS, loading: anosLoading } = useAvailableYears('diarias', filters.entidade || undefined);
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,6 +49,10 @@ export default function DiariasPage() {
         query = query.eq('ano', parseInt(filters.ano));
       }
       
+      if (filters.entidade) {
+        query = query.eq('empresa', filters.entidade);
+      }
+      
       // Filtro de mês simulado comparando a string ISO `data` ('YYYY-MM-DD')
       if (filters.mes) {
         // Isso é uma filtragem básica via ilike assumindo o formato YYYY-MM
@@ -59,7 +64,7 @@ export default function DiariasPage() {
         query = query.or(`favorecido.ilike.%${filters.busca}%,cargo.ilike.%${filters.busca}%,descricao.ilike.%${filters.busca}%`);
       }
       
-      const { data: result, error } = await query.order('data', { ascending: false }).limit(500);
+      const { data: result, error } = await query.order('data', { ascending: false });
       
       if (!error && result) {
         setData(result);
@@ -75,24 +80,29 @@ export default function DiariasPage() {
     }, 300);
     
     return () => clearTimeout(timer);
-  }, [filters.ano, filters.mes, filters.busca, supabase]);
+  }, [filters.ano, filters.mes, filters.busca, filters.entidade, supabase]);
 
-  const handleChange = useCallback((field: 'ano' | 'mes' | 'busca', value: string) => {
+  const handleChange = useCallback((field: 'ano' | 'mes' | 'busca' | 'entidade', value: string) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
   }, []);
 
   const handleClear = useCallback(() => {
-    setFilters({ ano: '', mes: '', busca: '' });
+    setFilters({ ano: '', mes: '', busca: '', entidade: '' });
   }, []);
 
-  const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}`;
-  const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca);
+  const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}-${filters.entidade}`;
+  const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca || filters.entidade);
 
   const totalDiarias = data.length;
   // Algumas tabelas podem subtrair valor_anulado do valor, mas faremos a soma direta de "valor" 
   const valorTotalDiarias = data.reduce((acc, curr) => acc + (Number(curr.valor) || 0) - (Number(curr.valor_anulado) || 0), 0);
 
   const columns = [
+    {
+      header: 'Entidade',
+      accessor: 'empresa_nome',
+      render: (val: string) => val || '-',
+    },
     { 
       header: "Beneficiário", 
       accessor: "favorecido",
@@ -165,6 +175,7 @@ export default function DiariasPage() {
         onChange={handleChange}
         onClear={handleClear}
         anosLoading={anosLoading}
+        empresas={EMPRESAS}
       />
 
       {/* Totalizer strip */}

@@ -48,7 +48,6 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
   const fixedItems: FixedItem[] = [
     { href: "/page", label: "Transparência", icon: <FileText size={18} aria-hidden="true" /> },
-    { href: "/transparencia/conselhos-municipais", label: "Conselhos Municipais", icon: <Users size={18} aria-hidden="true" /> },
     { href: "/esic", label: "E-SIC", icon: <MessageSquare size={18} aria-hidden="true" /> },
     { href: "/ouvidoria", label: "Ouvidoria", icon: <MessageSquare size={18} aria-hidden="true" /> },
     { href: "/contato", label: "Contato", icon: <Phone size={18} aria-hidden="true" /> },
@@ -165,7 +164,7 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
                 }}
               >
                 <Folder size={18} aria-hidden="true" />
-                Atividades Finalísticas
+                Conselhos Municipais
                 <ChevronDown aria-hidden="true"
                   className={`w-4 h-4 transition-transform duration-200 ${openMenu === "atividades" ? "rotate-180" : ""}`} />
               </button>
@@ -266,7 +265,7 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
             >
               <span className="flex items-center gap-3">
                 <Folder size={18} aria-hidden="true" />
-                Atividades Finalísticas
+                Conselhos Municipais
               </span>
               <ChevronDown aria-hidden="true"
                 className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${openMenu === "atividades" ? "rotate-180" : ""}`} />
@@ -300,7 +299,13 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
             </li>
           ))}
         </ul>
-      </div>
-    </>
-  );
+      </div>     
+
+      <div className="h-[3px] flex">
+        <div className="flex-1 bg-[#F7C325]" />
+        <div className="flex-1 bg-[#E53935]" />
+        <div className="flex-1 bg-[#0052CC]" />
+      </div> 
+    </>    
+  );  
 }

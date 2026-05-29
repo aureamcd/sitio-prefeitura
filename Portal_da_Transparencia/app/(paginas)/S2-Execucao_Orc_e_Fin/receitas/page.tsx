@@ -9,22 +9,23 @@ import {
   RefreshCcw,
   AlertCircle,
 } from 'lucide-react';
+import { EMPRESAS } from '@/lib/empresas';
 import Pagination from '@/components/ui/Pagination';
 import { createBrowserClient, useAvailableYears } from '@/lib/supabase/client';
 import { usePagination } from '@/lib/hooks/usePagination';
 import { useTodayDate } from '@/lib/hooks/useTodayDate';
 import { buildTree, flattenTree, formatDate } from '@/lib/receitas/receitasTree';
 import type {
-  RawReceita,
   DividaAtivaRow,
+  RawReceita,
   ReceitaExtraRow,
 } from '@/lib/receitas/types';
+import TreeTable from '@/components/receitas/TreeTable';
 import {
   MESES,
   formatBRL,
   PAGE_SIZE,
 } from '@/lib/receitas/types';
-import TreeTable from '@/components/receitas/TreeTable';
 import DataTable, { ColumnConfig } from '@/components/ui/DataTable';
 
 // ---------------------------------------------------------------------------
@@ -111,11 +112,13 @@ function DividaAtivaTable({
   loading,
   error,
   filterKey,
+  today,
 }: {
   data: DividaAtivaRow[];
   loading: boolean;
   error: string | null;
   filterKey: string;
+  today: string;
 }) {
   const pagination = usePagination(data, PAGE_SIZE, filterKey);
 
@@ -134,13 +137,18 @@ function DividaAtivaTable({
   }
 
   return (
-    <div className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-100">
-        <h2 className="text-base font-semibold text-gray-800">Estoque da Dívida Ativa</h2>
-        <p className="text-xs text-gray-500 mt-0.5">
-          Lista de inscritos em dívida ativa do município, conforme exigência do PNTP 2026 (estoque por tipo e exercício).
-        </p>
-      </div>
+    <div className="mt-6 space-y-6">
+
+      
+
+      {/* ── Tabela Agregada ── */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h2 className="text-base font-semibold text-gray-800">Estoque da Dívida Ativa</h2>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Estoques consolidados por tipo de dívida e exercício, conforme dados disponíveis.
+          </p>
+        </div>
 
       {loading ? (
         <div className="p-10 flex justify-center" aria-label="Carregando dados de dívida ativa">
@@ -189,16 +197,27 @@ function DividaAtivaTable({
           </div>
         </>
       ) : (
-        <div className="px-6 py-20 text-center flex flex-col items-center justify-center bg-gray-50/50">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 border border-gray-200">
-            <FileWarning size={28} className="text-gray-400" />
+        <div className="px-6 py-16 text-center flex flex-col items-center justify-center">
+          <div className="max-w-lg">
+            <div className="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center mb-5 mx-auto border border-blue-100">
+              <FileWarning size={26} className="text-blue-400" />
+            </div>
+            <h3 className="text-base font-bold text-gray-800 mb-3">
+              Declaração de Inexistência — Dívida Ativa
+            </h3>
+            <div className="text-sm text-gray-600 leading-relaxed space-y-2">
+              <p>
+                Informa-se que não há registros de inscritos em Dívida Ativa no município de
+                Padre Marcos — PI no período de 2023 a 2026.
+              </p>
+              <p className="text-xs text-gray-400 font-medium">
+                Atualizado em {today}.
+              </p>
+            </div>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Não há dados disponíveis</h3>
-          <p className="text-sm text-gray-500 max-w-md">
-            O município não possui registros de Dívida Ativa ou não houve movimentação no período de janeiro de 2023 a dezembro de 2025.
-          </p>
         </div>
       )}
+      </div>
     </div>
   );
 }
@@ -290,6 +309,11 @@ function ReceitasExtraTable({
 }) {
   const columns: ColumnConfig[] = [
     {
+      header: 'Entidade',
+      accessor: 'empresa_nome',
+      render: (val: string) => val || '-',
+    },
+    {
       header: 'Data',
       accessor: 'data_lancamento',
       render: (val: string) => {
@@ -299,7 +323,7 @@ function ReceitasExtraTable({
     },
     {
       header: 'Descrição',
-      accessor: 'descricao_receita',
+      accessor: 'descricao',
       render: (val: string) => (
         <span className="line-clamp-2 max-w-[260px]" title={val || ''}>
           {val || '-'}
@@ -350,25 +374,25 @@ function ReceitasExtraTable({
 
 export default function ReceitasPage() {
   const today = useTodayDate();
-  const { anos: ANOS, loading: anosLoading } = useAvailableYears('receitas');
   const [activeTab, setActiveTab] = useState<'arrecadacao' | 'divida_ativa' | 'receitas_extra'>('arrecadacao');
-  const [filters, setFilters] = useState<FilterValues>({ ano: '2026', mes: '', busca: '' });
+  const [filters, setFilters] = useState<FilterValues>({ ano: '2026', mes: '', busca: '', entidade: '' });
+  const { anos: ANOS, loading: anosLoading } = useAvailableYears('receitas', filters.entidade || undefined);
   const [rawData, setRawData] = useState<RawReceita[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [dividaAtivaData, setDividaAtivaData] = useState<DividaAtivaRow[]>([]);
   const [dividaAtivaLoading, setDividaAtivaLoading] = useState(false);
   const [dividaAtivaError, setDividaAtivaError] = useState<string | null>(null);
   const [receitasExtraData, setReceitasExtraData] = useState<ReceitaExtraRow[]>([]);
   const [receitasExtraLoading, setReceitasExtraLoading] = useState(false);
   const [receitasExtraError, setReceitasExtraError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   const supabase = createBrowserClient();
-  const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}`;
-  const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca);
+  const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}-${filters.entidade}`;
+  const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca || filters.entidade);
 
-  // --- Fetch receitas (arrecadação) ---
+  // --- Fetch receitas (arrecadação) — dados agregados para o dashboard ---
   useEffect(() => {
     let cancelled = false;
 
@@ -383,17 +407,16 @@ export default function ReceitasPage() {
           .from('receitas')
           .select('*');
 
+        if (filters.entidade) {
+          query = query.eq('empresa', filters.entidade);
+        }
+
         if (filters.ano) {
           query = query.eq('ano', Number(filters.ano));
         }
 
-        if (filters.busca) {
-          query = query.or(`codigo_contabil.ilike.%${filters.busca}%,descricao.ilike.%${filters.busca}%,fonte_recurso.ilike.%${filters.busca}%`);
-        }
-
         const { data: result, error: queryError } = await query
-          .order('codigo_contabil', { ascending: true })
-          .limit(5000);
+          .order('codigo_contabil', { ascending: true });
 
         if (cancelled) return;
 
@@ -401,21 +424,7 @@ export default function ReceitasPage() {
           setError(queryError.message);
           setRawData([]);
         } else if (result) {
-          setRawData(
-            result.map((r) => ({
-              id: String(r.id),
-              codigo_contabil: String(r.codigo_contabil),
-              descricao: String(r.descricao),
-              nivel: Number(r.nivel) || 0,
-              tipo_nivel: String(r.tipo_nivel || ''),
-              codigo_pai: r.codigo_pai ? String(r.codigo_pai) : null,
-              previsto_inicial: Number(r.previsto_inicial) || 0,
-              previsto_atualizado: Number(r.previsto_atualizado) || 0,
-              arrecadado_periodo: Number(r.arrecadado_periodo) || 0,
-              arrecadado_total: Number(r.arrecadado_total) || 0,
-              fonte_recurso: r.fonte_recurso ? String(r.fonte_recurso) : null,
-            }))
-          );
+          setRawData(result as any);
         }
       } catch (err) {
         if (!cancelled) {
@@ -432,7 +441,7 @@ export default function ReceitasPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [filters.ano, filters.busca, supabase]);
+  }, [filters.ano, filters.entidade, supabase]);
 
   // --- Fetch dívida ativa ---
   useEffect(() => {
@@ -448,6 +457,10 @@ export default function ReceitasPage() {
           .schema('transparencia')
           .from('divida_ativa')
           .select('*');
+
+        if (filters.entidade) {
+          query = query.eq('empresa', filters.entidade);
+        }
 
         if (filters.ano) {
           query = query.eq('ano', Number(filters.ano));
@@ -490,7 +503,7 @@ export default function ReceitasPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [activeTab, filters.ano, supabase]);
+  }, [activeTab, filters.ano, filters.entidade, supabase]);
 
   // --- Fetch receitas extra-orçamentárias ---
   useEffect(() => {
@@ -507,6 +520,10 @@ export default function ReceitasPage() {
           .from('receitas_extra_orcamentarias')
           .select('*');
 
+        if (filters.entidade) {
+          query = query.eq('empresa', filters.entidade);
+        }
+
         if (filters.ano) {
           query = query.eq('ano', Number(filters.ano));
         }
@@ -522,12 +539,11 @@ export default function ReceitasPage() {
         }
 
         if (filters.busca) {
-          query = query.or(`descricao_receita.ilike.%${filters.busca}%,historico.ilike.%${filters.busca}%`);
+          query = query.or(`descricao.ilike.%${filters.busca}%,historico.ilike.%${filters.busca}%`);
         }
 
         const { data: result, error: queryError } = await query
-          .order('data_lancamento', { ascending: false })
-          .limit(10000);
+          .order('data_lancamento', { ascending: false });
 
         if (cancelled) return;
 
@@ -552,7 +568,7 @@ export default function ReceitasPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [activeTab, filters.ano, filters.mes, filters.busca, supabase]);
+  }, [activeTab, filters.ano, filters.mes, filters.busca, filters.entidade, supabase]);
 
   // --- Build tree ---
   const tree = useMemo(() => buildTree(rawData), [rawData]);
@@ -567,13 +583,18 @@ export default function ReceitasPage() {
     });
   }, [tree, isSearchMode, filters.busca]);
 
+  // --- Totals (from tree) ---
+  const totalPrevistoInicial = tree.reduce((s, n) => s + n.previstoInicial, 0);
+  const totalPrevisto = tree.reduce((s, n) => s + n.previsto, 0);
+  const totalArrecadado = tree.reduce((s, n) => s + n.arrecadado, 0);
+
   // --- Handlers ---
-  const handleChange = useCallback((field: 'ano' | 'mes' | 'busca', value: string) => {
+  const handleChange = useCallback((field: 'ano' | 'mes' | 'busca' | 'entidade', value: string) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
   }, []);
 
   const handleClear = useCallback(() => {
-    setFilters({ ano: '', mes: '', busca: '' });
+    setFilters({ ano: '', mes: '', busca: '', entidade: '' });
   }, []);
 
   const handleToggle = useCallback((codigo: string) => {
@@ -584,11 +605,6 @@ export default function ReceitasPage() {
       return next;
     });
   }, []);
-
-  // --- Totals ---
-  const totalPrevistoInicial = tree.reduce((s, n) => s + n.previstoInicial, 0);
-  const totalPrevisto = tree.reduce((s, n) => s + n.previsto, 0);
-  const totalArrecadado = tree.reduce((s, n) => s + n.arrecadado, 0);
 
   return (
     <ContentPage
@@ -611,6 +627,7 @@ export default function ReceitasPage() {
         onChange={handleChange}
         onClear={handleClear}
         anosLoading={anosLoading}
+        empresas={EMPRESAS}
       />
 
       {/* Abas lado a lado */}
@@ -694,6 +711,7 @@ export default function ReceitasPage() {
             loading={dividaAtivaLoading}
             error={dividaAtivaError}
             filterKey={filterKey}
+            today={today}
           />
         </div>
       )}

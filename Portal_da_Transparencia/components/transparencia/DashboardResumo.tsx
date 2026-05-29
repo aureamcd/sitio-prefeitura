@@ -1,16 +1,80 @@
+'use client';
+
 import Link from "next/link";
 import { TrendingUp, TrendingDown } from "lucide-react";
+import { useState, useEffect } from "react";
+import { createBrowserClient } from "@/lib/supabase/client";
+
+function formatMillions(value: number) {
+  if (!value) return "R$ 0,0 mi";
+  return `R$ ${(value / 1000000).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} mi`;
+}
 
 export default function DashboardResumo() {
+  const [data, setData] = useState({
+    receita: 0,
+    despesa: 0,
+    servidores: 0,
+    contratos: 0
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchData() {
+      const supabase = createBrowserClient();
+      const currentYear = new Date().getFullYear();
+
+      try {
+        // 1. Receitas
+        const { data: recData } = await supabase
+          .schema('transparencia')
+          .from('receitas')
+          .select('arrecadado_total')
+          .eq('ano', currentYear);
+        
+        const totalReceita = (recData || []).reduce((acc, curr) => acc + (Number(curr.arrecadado_total) || 0), 0);
+
+        // 2. Despesas
+        const { data: despData } = await supabase
+          .schema('transparencia')
+          .from('despesas')
+          .select('valor_pago')
+          .eq('ano', currentYear);
+        
+        const totalDespesa = (despData || []).reduce((acc, curr) => acc + (Number(curr.valor_pago) || 0), 0);
+
+        // 3. Servidores
+        const { count: servCount } = await supabase
+          .schema('transparencia')
+          .from('servidores')
+          .select('*', { count: 'exact', head: true })
+          .eq('ativo', true);
+
+        // 4. Contratos
+        const { count: contCount } = await supabase
+          .schema('transparencia')
+          .from('contratos')
+          .select('*', { count: 'exact', head: true })
+          .eq('ano', currentYear);
+
+        if (!cancelled) {
+          setData({
+            receita: totalReceita,
+            despesa: totalDespesa,
+            servidores: servCount || 0,
+            contratos: contCount || 0
+          });
+        }
+      } catch (e) {
+        console.error("Dashboard fetch error", e);
+      }
+    }
+    fetchData();
+    return () => { cancelled = true; };
+  }, []);
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#0B3D91] via-[#173572] to-[#041E57] py-14 md:py-20 text-center">
-
-      <div className="absolute top-0 left-0 right-0 h-[3px] flex">
-        <div className="flex-1 bg-[#F7C325]" />
-        <div className="flex-1 bg-[#E53935]" />
-        <div className="flex-1 bg-[#0052CC]" />
-      </div>
-     
       {/* Círculos decorativos premium */}
       <div className="pointer-events-none absolute -top-24 -right-16 w-96 h-96 rounded-full bg-white/5 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-12 -left-10 w-72 h-72 rounded-full bg-blue-400/10 blur-3xl" />
@@ -18,13 +82,13 @@ export default function DashboardResumo() {
 
       <div className="relative z-10 w-[90%] max-w-4xl mx-auto flex flex-col items-center">
 
-        {/* Exercício em destaque no topo */}
+        {/* Exercício em destaque no topo (removido exercicio 2026) */}
         <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2 text-[11px] sm:text-xs font-bold tracking-[0.2em] text-white/95 uppercase mb-6 shadow-sm backdrop-blur-sm transition-transform hover:scale-105 cursor-default">
           <span className="relative flex w-2 h-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full w-2 h-2 bg-[#ffdf00]"></span>
           </span>
-          Transparência Pública • Exercício 2026
+          Transparência Pública
         </span>
 
         {/* Título */}
@@ -69,34 +133,22 @@ export default function DashboardResumo() {
 
           <Link href="/S2-Execucao_Orc_e_Fin/receitas" className="group p-5 bg-transparent hover:bg-white/10 transition-all duration-300 text-center flex flex-col justify-center">
             <p className="text-[10px] sm:text-xs tracking-wider text-white/70 uppercase mb-2 font-semibold">Receita Total</p>
-            <p className="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-[#ffdf00] transition-colors">R$ 8,1 mi</p>
-            <p className="text-[10px] sm:text-xs font-medium text-emerald-400 flex items-center justify-center gap-1">
-              <TrendingUp className="w-3.5 h-3.5" /> +12,5% vs mês ant.
-            </p>
+            <p className="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-[#ffdf00] transition-colors">{formatMillions(data.receita)}</p>
           </Link>
 
           <Link href="/S2-Execucao_Orc_e_Fin/despesas" className="group p-5 bg-transparent hover:bg-white/10 transition-all duration-300 text-center flex flex-col justify-center">
             <p className="text-[10px] sm:text-xs tracking-wider text-white/70 uppercase mb-2 font-semibold">Despesa Total</p>
-            <p className="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-[#ffdf00] transition-colors">R$ 7,4 mi</p>
-            <p className="text-[10px] sm:text-xs font-medium text-emerald-400 flex items-center justify-center gap-1">
-              <TrendingUp className="w-3.5 h-3.5" /> +8,2% vs mês ant.
-            </p>
+            <p className="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-[#ffdf00] transition-colors">{formatMillions(data.despesa)}</p>
           </Link>
 
           <div className="group p-5 bg-transparent hover:bg-white/10 transition-all duration-300 text-center flex flex-col justify-center cursor-default">
             <p className="text-[10px] sm:text-xs tracking-wider text-white/70 uppercase mb-2 font-semibold">Servidores Ativos</p>
-            <p className="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-[#ffdf00] transition-colors">342</p>
-            <p className="text-[10px] sm:text-xs font-medium text-emerald-400 flex items-center justify-center gap-1">
-              <TrendingUp className="w-3.5 h-3.5" /> +5 vs mês ant.
-            </p>
+            <p className="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-[#ffdf00] transition-colors">{data.servidores}</p>
           </div>
 
           <div className="group p-5 bg-transparent hover:bg-white/10 transition-all duration-300 text-center flex flex-col justify-center cursor-default">
             <p className="text-[10px] sm:text-xs tracking-wider text-white/70 uppercase mb-2 font-semibold">Contratos Vigentes</p>
-            <p className="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-[#ffdf00] transition-colors">47</p>
-            <p className="text-[10px] sm:text-xs font-medium text-red-400 flex items-center justify-center gap-1">
-              <TrendingDown className="w-3.5 h-3.5" /> -3 vs mês ant.
-            </p>
+            <p className="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-[#ffdf00] transition-colors">{data.contratos}</p>
           </div>
 
         </div>

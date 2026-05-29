@@ -1,0 +1,832 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR">
+<head id="Head1"><link rel="stylesheet" type="text/css" href="/Transparencia/DXR.axd?r=2_2-U4tE2" /><link rel="stylesheet" type="text/css" href="/Transparencia/DXR.axd?r=0_512-V4tE2" /><link rel="stylesheet" type="text/css" href="/Transparencia/DXR.axd?r=0_515-V4tE2" /><title>
+	SCPI 9.0 - Transparência
+</title><link id="cssEstiloPrincipal" href="EstiloCss/CorPadrao.css" rel="stylesheet" type="text/css" /><link href="EstiloCss/AjaxLoader.css" rel="stylesheet" type="text/css" /><link href="EstiloCss/MostraModalWindow.css" rel="stylesheet" type="text/css" /><link rel="stylesheet" href="EstiloCss/bootstrap-grid.css" /><link rel="icon" href="AppImagens/LogoBranco.png" type="image/x-icon" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<script src="ScriptsJS/AjaxLoader.js" type="text/javascript"></script>
+    <script src="JQuery/jquery-1.11.0.min.js" type="text/javascript"></script>
+    <script src="ScriptsJS/MostraModalWindow.js" type="text/javascript"></script>
+    <script src="ScriptsJS/Utilitarios.js" type="text/javascript"></script>
+    <script src="ScriptsJS/Default.js" type="text/javascript"></script>       
+
+</head>
+    <script type="text/javascript" >
+        var pressedCtrl;
+        var zoomAtual = ((window.outerWidth - 10) / window.innerWidth) * 100; //o zoom que tiver exemplo 175% será o 100% para fazer o aumento, a diminuição e o original. Ao voltar o zoom para 100% volta tudo ao normal.
+
+        pressedCtrl = false; //variável de controle
+        $(document).keyup(function (e) {  //O evento Keyup é acionado quando as teclas são soltas
+            if (e.which == 17) pressedCtrl = false; //Quando qualquer tecla for solta é preciso informar que Crtl não está pressionada
+        });
+        $(document).keydown(function (e) { //Quando uma tecla é pressionada
+            if (e.which == 17) pressedCtrl = true; //Informando que Crtl está acionado
+            if ((e.which == 77 || e.keyCode == 77) && pressedCtrl == true) { //Reconhecendo tecla M
+                self.parent.ChamaAcessoRapido();
+            }
+        });
+
+             $(document).ready(function () {
+                // do stuff when DOM is ready
+
+                //contraste();
+                 if ('False' != 'False') {
+                   $get("darkmode-toggle").click();
+                 }
+            });
+
+
+        function AlterarZoom(acao) {
+            var zoomAumentar = 0;
+            var zoomDiminuir = 0;
+            if ((zoomAtual > 22) && (zoomAtual < 31)) { zoomAtual = 25; zoomAumentar = 33; zoomDiminuir = 25; }
+            if ((zoomAtual > 31) && (zoomAtual < 47)) { zoomAtual = 33; zoomAumentar = 50; zoomDiminuir = 25; }
+            if ((zoomAtual > 47) && (zoomAtual < 64)) { zoomAtual = 50; zoomAumentar = 67; zoomDiminuir = 33; }
+            if ((zoomAtual > 64) && (zoomAtual < 72)) { zoomAtual = 67; zoomAumentar = 75; zoomDiminuir = 50; }
+            if ((zoomAtual > 72) && (zoomAtual < 77)) { zoomAtual = 75; zoomAumentar = 80; zoomDiminuir = 67; }
+            if ((zoomAtual > 77) && (zoomAtual < 87)) { zoomAtual = 80; zoomAumentar = 90; zoomDiminuir = 75; }
+            if ((zoomAtual > 87) && (zoomAtual < 97)) { zoomAtual = 90; zoomAumentar = 100; zoomDiminuir = 80; }
+            if ((zoomAtual > 97) && (zoomAtual < 107)) { zoomAtual = 100; zoomAumentar = 110; zoomDiminuir = 90; }
+            if ((zoomAtual > 107) && (zoomAtual < 121)) { zoomAtual = 110; zoomAumentar = 125; zoomDiminuir = 100; }
+            if ((zoomAtual > 121) && (zoomAtual < 146)) { zoomAtual = 125; zoomAumentar = 150; zoomDiminuir = 110; }
+            if ((zoomAtual > 146) && (zoomAtual < 171)) { zoomAtual = 150; zoomAumentar = 175; zoomDiminuir = 125; }
+            if ((zoomAtual > 171) && (zoomAtual < 196)) { zoomAtual = 175; zoomAumentar = 200; zoomDiminuir = 150; }
+            if ((zoomAtual > 196) && (zoomAtual < 245)) { zoomAtual = 200; zoomAumentar = 250; zoomDiminuir = 175; }
+            if ((zoomAtual > 245) && (zoomAtual < 295)) { zoomAtual = 250; zoomAumentar = 300; zoomDiminuir = 200; }
+            if ((zoomAtual > 295) && (zoomAtual < 394)) { zoomAtual = 300; zoomAumentar = 400; zoomDiminuir = 250; }
+            if ((zoomAtual > 394) && (zoomAtual < 483)) { zoomAtual = 400; zoomAumentar = 500; zoomDiminuir = 300; }
+            if ((zoomAtual > 483) && (zoomAtual < 598)) { zoomAtual = 500; zoomAumentar = 500; zoomDiminuir = 400; }
+            //as medidas tem uma margem de erro porque a conta não retorna o valor exato da porcentagem, mas um valor aproximado. Cada um desses valores foram testados e foram colocados 2 a menos para a margem de erro.
+            //   alert('zoom atual: ' + zoomAtual.toString() + ' zomm aumentar: ' + zoomAumentar.toString() + ' zoom diminuir: ' + zoomDiminuir.toString() + ' ação solicitada: ' + acao.toString());
+            if (acao == 'aumentar') {
+                document.body.style.zoom = zoomAumentar.toString() + "%";
+                zoomAtual = zoomAumentar;
+            } else if (acao == 'diminuir') {
+                document.body.style.zoom = zoomDiminuir.toString() + "%";
+                zoomAtual = zoomDiminuir;
+            } else if (acao == 'original') {
+                document.body.style.zoom = "100%";
+                zoomAtual = 100;
+            }
+            // alert(document.body.style.zoom.toString());
+            return false;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const menu = document.querySelector('.links');
+            const checkbox = document.getElementById('show-menu');
+            const closeButton = document.getElementById('close-menu-button');
+
+            document.addEventListener('click', function(event) {
+                if (!menu.contains(event.target) && !checkbox.contains(event.target) && checkbox.checked) {
+                    checkbox.checked = false;
+                }
+            });
+
+                if (closeButton) {
+                closeButton.addEventListener('click', function() {
+                    checkbox.checked = false;
+                });
+            }
+        });
+    </script>
+
+<body style="overflow: auto;">
+    <form method="post" action="./Default.aspx" id="form1">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTE5MTc5Nzc2NjAPZBYCAgEPZBYGAg0PZBYCZg9kFhICBw8UKwAFDxYCHgVWYWx1ZQUEMjAyNmRkZDwrAAkBCDwrAAQBAg8WAh4KSXNTYXZlZEFsbGcPFCsADBQrAAEWBh4EVGV4dAUEMjAxNh8ABQQyMDE2Hg5SdW50aW1lQ3JlYXRlZGcUKwABFgYfAgUEMjAxNx8ABQQyMDE3HwNnFCsAARYGHwIFBDIwMTgfAAUEMjAxOB8DZxQrAAEWBh8CBQQyMDE5HwAFBDIwMTkfA2cUKwABFgYfAgUEMjAyMB8ABQQyMDIwHwNnFCsAARYGHwIFBDIwMjEfAAUEMjAyMR8DZxQrAAEWBh8CBQQyMDIyHwAFBDIwMjIfA2cUKwABFgYfAgUEMjAyMx8ABQQyMDIzHwNnFCsAARYGHwIFBDIwMjQfAAUEMjAyNB8DZxQrAAEWBh8CBQQyMDI1HwAFBDIwMjUfA2cUKwABFgYfAgUEMjAyNh8ABQQyMDI2HwNnFCsAARYGHwIFBDIwMjcfAAUEMjAyNx8DZ2RkZAINDxQrAAUPFgIfAAUBMWRkZDwrAAkBCDwrAAQBAg8WAh8BZw8UKwAKFCsAARYGHwIFIENBTUFSQSBNVU5JQ0lQQUwgREUgUEFEUkUgTUFSQ09THwAFATIfA2cUKwABFgYfAgUvRlVORE8gREUgTUFOLiBETyBERVNFTlYuIERBIEVEVUNBw4fDg08gLSBGVU5ERUIfAAUBNB8DZxQrAAEWBh8CBSVGVU5ETyBERSBQUkVWSUTDik5DSUEgUFLDk1BSSUEgLSBSUFBTHwAFATcfA2cUKwABFgYfAgUzRlVORE8gTVVOLkRPUyBESVJFSVRPUyBEQSBDUklBTsOHQSBFIERPIEFET0xFU0NFTlRFHwAFATgfA2cUKwABFgYfAgUtRlVORE8gTVVOSUNJUEFMICBERSBBU1NJU1RFTkNJQSBTT0NJQUwgLSBGTUFTHwAFATUfA2cUKwABFgYfAgUkRlVORE8gTVVOSUNJUEFMIERBIENVTFRVUkEgRSBUVVJJU01PHwAFAjEwHwNnFCsAARYGHwIFIEZVTkRPIE1VTklDSVBBTCBERSBNRUlPIEFNQklFTlRFHwAFATkfA2cUKwABFgYfAgUZRlVORE8gTVVOSUNJUEFMIERFIFNBw5pERR8ABQEzHwNnFCsAARYGHwIFJFBSRUZFSVRVUkEgTVVOSUNJUEFMIERFIFBBRFJFIE1BUkNPUx8ABQExHwNnFCsAARYGHwIFIlVOSURBREUgTUlTVEEgREUgU0HDmkRFIC0gSE9TUElUQUwfAAUBNh8DZ2RkZAIPDw8WAh8CBSRQUkVGRUlUVVJBIE1VTklDSVBBTCBERSBQQURSRSBNQVJDT1NkZAITDw8WAh8CBT9EYWRvcyBhdHVhbGl6YWRvcyBlbTogMjkvMDUvMjAyNiAtIFF1YW50aWRhZGUgZGUgQWNlc3NvczogNDQxODRkZAIVDw8WAh8CZWRkAhcPDxYCHgdWaXNpYmxlaGRkAhkPFgIeBXN0eWxlBQ5kaXNwbGF5OmJsb2NrO2QCHQ8PFgIeCEltYWdlVXJsBSR+L0FwcEltYWdlbnMvTG9nb1RyYW5zcGFyZW5jaWFfMS5wbmdkZAIfD2QWGAIDD2QWEAIDDxYCHwUFDWRpc3BsYXk6bm9uZTtkAgUPFgIfBQUOZGlzcGxheTpibG9jaztkAgcPFgIfBQUOZGlzcGxheTpibG9jaztkAgkPFgIfBQUOZGlzcGxheTpibG9jaztkAgsPFgIfBQUOZGlzcGxheTpibG9jaztkAg0PFgIfBQUNZGlzcGxheTpub25lO2QCDw8WAh8FBQ1kaXNwbGF5Om5vbmU7ZAIRDxYCHwUFDWRpc3BsYXk6bm9uZTtkAgUPZBYsAgMPFgIfBQUNZGlzcGxheTpub25lO2QCBQ8WAh8FBQ1kaXNwbGF5Om5vbmU7FgICAQ8WAh8FBQ1kaXNwbGF5Om5vbmU7ZAIJDxYEHgtMaW5rUGFnQWx2bwUQSG9tZURpYXJpYXMuQVNQWB8FBQ1kaXNwbGF5Om5vbmU7ZAILDxYCHwUFDWRpc3BsYXk6bm9uZTtkAg0PFgQfBwUWSG9tZUFkaWFudGFtZW50b3MuQVNQWB8FBQ1kaXNwbGF5Om5vbmU7ZAIPDxYCHwUFDWRpc3BsYXk6bm9uZTtkAhEPFgIeCUJsb3F1ZWFkbwUFRmFsc2VkAhMPFgIfCAUFRmFsc2VkAhcPFgIfCAUFRmFsc2VkAhkPFgIfCAUFRmFsc2VkAhsPFgIfCAUFRmFsc2VkAh0PFgIfCAUFRmFsc2VkAh8PFgIfCAUFRmFsc2VkAiEPFgIfCAUFRmFsc2VkAiMPFgIfCAUFRmFsc2VkAiUPFgIfCAUFRmFsc2VkAicPFgIfCAUFRmFsc2VkAikPFgIfCAUFRmFsc2UWAgIBDxYCHglpbm5lcmh0bWwFJ0Rlc3Blc2FzIHBvciBGb250ZSBkZSBSZWN1cnNvIERldGFsaGFkb2QCKw8WAh8IBQVGYWxzZWQCLw8WAh8IBQVGYWxzZWQCMQ8WAh8IBQVGYWxzZWQCNw8WBB8FBQ5kaXNwbGF5OmJsb2NrOx8IBQVGYWxzZWQCBw9kFgoCAw8WAh8HBQ9TZXJ2aWRvcmVzLkFTUFhkAgUPFgIfBQUOZGlzcGxheTpibG9jaztkAgcPFgIfBQUOZGlzcGxheTpibG9jaztkAgkPFgIfBQUOZGlzcGxheTpibG9jaztkAgsPFgIfBQUNZGlzcGxheTpub25lO2QCCQ9kFgYCAw8WAh8HBQhQUEEuQVNQWGQCBQ8WAh8HBQhMRE8uQVNQWGQCBw8WAh8HBQhMT0EuQVNQWGQCCw9kFggCAw8WAh8HBRpJbmZvcm1hY29lc0xpY2l0YWNvZXMuQVNQWGQCBQ8WAh8HBRlJbmZvcm1hY29lc0NvbnRyYXRvcy5BU1BYZAIHDxYEHwdkHwUFDWRpc3BsYXk6bm9uZTtkAgkPFgQfBwUTSW5mb3JtYWNvZXNQQ0EuQVNQWB8FBQ1kaXNwbGF5Om5vbmU7ZAIND2QWCAIDDxYCHwcFDUJhbGFuY29zLkFTUFhkAgUPFgIfBQUNZGlzcGxheTpub25lO2QCBw8WAh8FBQ1kaXNwbGF5Om5vbmU7ZAIJDxYCHwUFDWRpc3BsYXk6bm9uZTtkAg8PZBYCAgMPFgIfBQUNZGlzcGxheTpub25lO2QCEQ9kFgQCBQ8WAh8FBQ1kaXNwbGF5Om5vbmU7ZAIHDxYCHwUFDmRpc3BsYXk6YmxvY2s7ZAITD2QWBAIDDxYCHwUFDWRpc3BsYXk6bm9uZTtkAgUPFgIfBwUSSG9tZUNvbnZlbmlvcy5BU1BYZAIVD2QWBAIDDxYCHwcFGFBhdHJpbW9uaW9fVmVpY3Vsb3MuQVNQWGQCBQ8WAh8FBQ5kaXNwbGF5OmJsb2NrO2QCFw9kFigCAw8WAh8HBRZIb21lSW5zdGl0dWNpb25hbC5BU1BYZAIFDxYCHwcFFkhvbWVJbnN0aXR1Y2lvbmFsLkFTUFhkAgcPFgQfBwUhSG9tZUF0b3NFUHVibGljYWNvZXNPZmljaWFpcy5BU1BYHwUFDWRpc3BsYXk6bm9uZTtkAgkPFgIfBQUNZGlzcGxheTpub25lO2QCCw8WAh8HBQ5Ib21lT2JyYXMuYXNweGQCDQ8WBB8FBQ5kaXNwbGF5OmJsb2NrOx8HBStodHRwOi8vbG9jYWxob3N0OjU2NTYvVHJhbnNwYXJlbmNpYUhvbWVQYWdlZAIPDxYCHwcFFmh0dHA6Ly93d3cuZGlvZS5jb20uYnJkAhEPFgIfBwUNSG9tZUVTSUMuQVNQWGQCEw8WAh8FBQ1kaXNwbGF5Om5vbmU7ZAIVDxYCHwUFDWRpc3BsYXk6bm9uZTtkAhcPFgIfBQUNZGlzcGxheTpub25lO2QCGQ8WAh8FBQ1kaXNwbGF5Om5vbmU7ZAIbDxYCHwUFDWRpc3BsYXk6bm9uZTtkAh0PFgIfBQUNZGlzcGxheTpub25lO2QCHw8WAh8FBQ1kaXNwbGF5Om5vbmU7ZAIhDxYCHwUFDWRpc3BsYXk6bm9uZTtkAiMPFgIfBQUOZGlzcGxheTpibG9jaztkAicPFgIfBQUNZGlzcGxheTpub25lO2QCKQ8WAh8FBQ1kaXNwbGF5Om5vbmU7ZAIrDxYCHwcFGFBlcmd1bnRhc0ZyZXF1ZW50ZXMuQVNQWGQCGQ8WAh8FBQ1kaXNwbGF5Om5vbmU7ZAIRD2QWDAIBDw8WAh8CBSRQUkVGRUlUVVJBIE1VTklDSVBBTCBERSBQQURSRSBNQVJDT1NkZAIDDw8WAh8CBRhDTlBKOiAwNi41NTMuNzg4LzAwMDEtNDBkZAIFDw8WAh8CBSJSVUEgQU5GUklTSU8gTUFDRURPIENFUDogNjQ2ODAtMDAwZGQCBw8PFgIfAgURUEFEUkUgTUFSQ09TIC0gUElkZAIJDw8WAh8CBQMgLSBkZAILDw8WAh8CZWRkAhMPZBYCAgEPDxYCHwIFX0Zpb3JpbGxpIFNvY2llZGFkZSBDaXZpbCBMdGRhLiBTb2Z0d2FyZSDCqSAyMDE2IC0gUG9ydGFsIGRhIFRyYW5zcGFyw6puY2lhIFZlcnPDo28gMS4yMDI2LjEwLjI4ZGQYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFhMFB2ltZ0x1cGEFEGNtYkV4ZXJjaWNpbyREREQFF2NtYkVudGlkYWRlQ29udGFiaWwkREREBQdidG5FU0lDBRJMbmtNZW51SW5pY2lvSW5wdXQFFExua01lbnVSZWNlaXRhc0lucHV0BRRMbmtNZW51RGVzcGVzYXNJbnB1dAUTTG5rTWVudVBlc3NvYWxJbnB1dAUkTG5rTWVudVBsYW5lamFtZW50b09yY2FtZW50YXJpb0lucHV0BSBMbmtNZW51TGljaXRhY29lc0VDb250cmF0b3NJbnB1dAUdTG5rTWVudVByZXN0YWNhb0RlQ29udGFzSW5wdXQFGUxua01lbnVUZXJjZWlyb1NldG9ySW5wdXQFGkxua01lbnVUcmFuc2ZlcmVuY2lhc0lucHV0BRVMbmtNZW51Q29udmVuaW9zSW5wdXQFFkxua01lbnVQYXRyaW1vbmlvSW5wdXQFHUxua01lbnVBY2Vzc29BSW5mb3JtYWNhb0lucHV0BRJsbmtMaW5rc1V0ZWlzSW5wdXQFCmJ0bkltZ0VTSUMFCWJ0bkltZ0ZBUQR0cRwUD3PQ0xbycBgDiDrjxra7aqGKLFPM/JyIUizi" />
+
+
+<script src="/Transparencia/ScriptResource.axd?d=8Hwxy37qq3iIex7oh-SZmmIcZmlu-de35lp1L4fqO4pWIfFemD9ltZ0FvcYitEKR-UZhquQIUCi8sUhfeM6JGo0YdHlh3Db2nECDusLA9q4Tdl67qQk1fOWzG5CV0nVNxQvEi2pgILmeUgzH-b8LaStI5b7B4le6av4JjG9rfA81&amp;t=13798092" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+var PageMethods = function() {
+PageMethods.initializeBase(this);
+this._timeout = 0;
+this._userContext = null;
+this._succeeded = null;
+this._failed = null;
+}
+PageMethods.prototype = {
+_get_path:function() {
+ var p = this.get_path();
+ if (p) return p;
+ else return PageMethods._staticInstance.get_path();},
+RecuperaEntidadePadrao:function(succeededCallback, failedCallback, userContext) {
+return this._invoke(this._get_path(), 'RecuperaEntidadePadrao',false,{},succeededCallback,failedCallback,userContext); },
+AtualizaTabelaPesquisaGeral:function(strTipoEntidade,strNomeEntidade,strlnkButtonID,strExercicio,succeededCallback, failedCallback, userContext) {
+return this._invoke(this._get_path(), 'AtualizaTabelaPesquisaGeral',false,{strTipoEntidade:strTipoEntidade,strNomeEntidade:strNomeEntidade,strlnkButtonID:strlnkButtonID,strExercicio:strExercicio},succeededCallback,failedCallback,userContext); },
+RecuperarDados:function(strLnkButtonID,strExercicio,strEmpresa,succeededCallback, failedCallback, userContext) {
+return this._invoke(this._get_path(), 'RecuperarDados',false,{strLnkButtonID:strLnkButtonID,strExercicio:strExercicio,strEmpresa:strEmpresa},succeededCallback,failedCallback,userContext); },
+PesquisaGeral:function(textoPesquisa,succeededCallback, failedCallback, userContext) {
+return this._invoke(this._get_path(), 'PesquisaGeral',false,{textoPesquisa:textoPesquisa},succeededCallback,failedCallback,userContext); },
+PesquisaGeralExecutar:function(textoPesquisa,succeededCallback, failedCallback, userContext) {
+return this._invoke(this._get_path(), 'PesquisaGeralExecutar',false,{textoPesquisa:textoPesquisa},succeededCallback,failedCallback,userContext); }}
+PageMethods.registerClass('PageMethods',Sys.Net.WebServiceProxy);
+PageMethods._staticInstance = new PageMethods();
+PageMethods.set_path = function(value) { PageMethods._staticInstance.set_path(value); }
+PageMethods.get_path = function() { return PageMethods._staticInstance.get_path(); }
+PageMethods.set_timeout = function(value) { PageMethods._staticInstance.set_timeout(value); }
+PageMethods.get_timeout = function() { return PageMethods._staticInstance.get_timeout(); }
+PageMethods.set_defaultUserContext = function(value) { PageMethods._staticInstance.set_defaultUserContext(value); }
+PageMethods.get_defaultUserContext = function() { return PageMethods._staticInstance.get_defaultUserContext(); }
+PageMethods.set_defaultSucceededCallback = function(value) { PageMethods._staticInstance.set_defaultSucceededCallback(value); }
+PageMethods.get_defaultSucceededCallback = function() { return PageMethods._staticInstance.get_defaultSucceededCallback(); }
+PageMethods.set_defaultFailedCallback = function(value) { PageMethods._staticInstance.set_defaultFailedCallback(value); }
+PageMethods.get_defaultFailedCallback = function() { return PageMethods._staticInstance.get_defaultFailedCallback(); }
+PageMethods.set_enableJsonp = function(value) { PageMethods._staticInstance.set_enableJsonp(value); }
+PageMethods.get_enableJsonp = function() { return PageMethods._staticInstance.get_enableJsonp(); }
+PageMethods.set_jsonpCallbackParameter = function(value) { PageMethods._staticInstance.set_jsonpCallbackParameter(value); }
+PageMethods.get_jsonpCallbackParameter = function() { return PageMethods._staticInstance.get_jsonpCallbackParameter(); }
+PageMethods.set_path("Default.aspx");
+PageMethods.RecuperaEntidadePadrao= function(onSuccess,onFailed,userContext) {PageMethods._staticInstance.RecuperaEntidadePadrao(onSuccess,onFailed,userContext); }
+PageMethods.AtualizaTabelaPesquisaGeral= function(strTipoEntidade,strNomeEntidade,strlnkButtonID,strExercicio,onSuccess,onFailed,userContext) {PageMethods._staticInstance.AtualizaTabelaPesquisaGeral(strTipoEntidade,strNomeEntidade,strlnkButtonID,strExercicio,onSuccess,onFailed,userContext); }
+PageMethods.RecuperarDados= function(strLnkButtonID,strExercicio,strEmpresa,onSuccess,onFailed,userContext) {PageMethods._staticInstance.RecuperarDados(strLnkButtonID,strExercicio,strEmpresa,onSuccess,onFailed,userContext); }
+PageMethods.PesquisaGeral= function(textoPesquisa,onSuccess,onFailed,userContext) {PageMethods._staticInstance.PesquisaGeral(textoPesquisa,onSuccess,onFailed,userContext); }
+PageMethods.PesquisaGeralExecutar= function(textoPesquisa,onSuccess,onFailed,userContext) {PageMethods._staticInstance.PesquisaGeralExecutar(textoPesquisa,onSuccess,onFailed,userContext); }
+//]]>
+</script>
+
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="CF462D3F" />
+<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAB4qPt9g5oKQL2L2tFCC6jVqUT0uKSSvxNOtIbylCyzm7LuyLF2a6hERj4uklzFM2012nfmUBmyeNjL+q5xV7Ay6jzLNuo7D8ButiekFohMIMBazElOmw6lRIyoMAA5JFtspSlJsjD1D5LTT4g+/u3ba/nQ18bDhPxe1+3D09A0Ycfz7wgVC8GuFzKOGcC/U7NCFhjBIRRwzvNWdbtg6ZC7rKDle51hXK1xmrWqqZjMuTb+a2yYVgBw3NPnWFDqrO7pI58cDoGxrNMZjr1JM6qHIX05OrFIqANUG+wbiCeKm0pStruq5fKon8faIiliq1Mw8as6JBS+Tkpv/y12M19YOmy/W+KF2NbWYYxs9x1frP15gGFItkaeYbzAlfn0+hWQ72fnhbRHw/tB71bvzqfE1BKhmO6watoD/pRdfXnp7sPQwP60wGLi2TuZXU20qbA76aIcMVIDi6ejYKXR64M8GTwZP5lo7MwuuZAVPv6rQts/SWyJwY5qNAwCgma1QNHCl2Ue4AkKvcoTIp+41ZCWp4H9GvKHeUcS8WMr8nLhjIf6/NDET8xuglf1amjy3Lg0QzZ0l27w4BMf6NXGuvFVEs4YuuvNGsaXAB4DlN439l/EHdfX9EMFLI90Pk3LCxdC3NhfVT7+Uovb1a2L02en3K1zHTA6MYwnZ5eqdIP5glA==" />
+        
+        <input type="hidden" name="hfCodigoEntidade" id="hfCodigoEntidade" value="1" />
+        <input type="hidden" name="hfTipoEntidade" id="hfTipoEntidade" value="1" />  
+        <input type="hidden" name="hfTipoAcaoContador" id="hfTipoAcaoContador" />        
+        <input type="submit" name="btnCallBack" value="AtualizarEntidade" id="btnCallBack" style="display: none;" />
+        <input type="submit" name="btnCallBackTrocaEntExercicio" value="TrocarEntidadeExercicio" id="btnCallBackTrocaEntExercicio" style="display: none;" />
+        <div id="divPaginaHome">
+            <div id="UpdatePanel1" class="default-topo-div">
+	               
+                    <div id="divBarraSuperiorHome">
+                        <div class="default-barra-funcionalidades">
+                            <div>
+                                <div style="position: relative;">
+                                    <div class="d-flex align-items-center">
+                                        <input name="txtPesquisaGeral" type="text" id="txtPesquisaGeral" class="default-pesquisa-textbox" placeholder="Pesquisar" onKeyup="return PesquisarGeral(this.value);" />
+                                        <input type="image" name="imgLupa" id="imgLupa" title="Pesquisar" class="default-imagem-lupa" alt="botao-lupa" src="AppImagens/Lupa.png" onclick="return PesquisarGeralExecutar($get(&#39;txtPesquisaGeral&#39;).value);" /> <!--Retorno o primeiro item achado-->
+                                        <a onclick="return ProcessaDados(&#39;MapaDoSite&#39;);" id="btnMapadoSite" class="button-mapa-do-site" href="javascript:__doPostBack(&#39;btnMapadoSite&#39;,&#39;&#39;)">Mapa do Site</a>
+                                    </div>
+                                    <div id="divPainelPesquisa" class="default-div-painel-pesquisa" style="display: none;">
+                                        <span id="lblResultadoPesquisa"></span>
+                                    </div>
+                                </div>               
+                            </div>
+                            <div class="default-libras-funcionalidade-div">
+                                <span id="lblAcessibilidade" style="margin-right: 5px;">Acessibilidade:</span>                    
+                                <a onclick="return ProcessaDados(&#39;lnkAcessibilidadeLibras&#39;);" id="btnLibras" class="linkBranco" href="javascript:__doPostBack(&#39;btnLibras&#39;,&#39;&#39;)">
+                                    <img src="AppImagens/icone_vlibras.png" class="default-imagem-libras" alt="libras" />
+                                </a>
+                                <div style="margin-right: 5px;">
+                                    Libras
+                                </div>
+                                <input type="checkbox" id="darkmode-toggle" onclick="return contraste();" />
+                                <label class="dark-mode-label" for="darkmode-toggle"></label>
+                                <div style="margin-left: 5px;">Contraste</div>
+                            </div>
+                            <div class="default-fonte-funcionalidade-div">
+                                <a onclick="return AlterarZoom('aumentar');" class="default-alterar-fonte-label">
+                                    <span id="Label1" class="default-alterar-fonte-label">Aumentar Fonte <b>(Ctrl + (+))</b></span>
+                                </a>
+                                <a onclick="return AlterarZoom('diminuir');" class="default-alterar-fonte-label">
+                                    <span id="Label2" class="default-alterar-fonte-label">Diminuir Fonte <b>(Ctrl + (-))</b></span>
+                                </a>
+                                <a onclick="return AlterarZoom('original');" class="default-alterar-fonte-label">
+                                    <span id="Label3" class="default-alterar-fonte-label">Fonte Original <b>(Ctrl + (0))</b></span>
+                                </a>
+                                <span id="Label4" class="default-alterar-fonte-label">Acesso Rápido  <b>(Ctrl + (M))</b></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="default-brasao-div">
+                        <div class="default-brasao-escolha-div" style="margin: 5px 0;">
+                            <div id="divBrasaoHome">
+                                <script id="dxis_13334256" src="/Transparencia/DXR.axd?r=1_32-U4tE2" type="text/javascript"></script><script id="dxis_1693235800" src="/Transparencia/DXR.axd?r=1_61-U4tE2" type="text/javascript"></script><script id="dxis_1127977158" src="/Transparencia/DXR.axd?r=2_22-U4tE2" type="text/javascript"></script><script id="dxis_1127622140" src="/Transparencia/DXR.axd?r=2_28-U4tE2" type="text/javascript"></script><script id="dxis_1127727837" src="/Transparencia/DXR.axd?r=2_29-U4tE2" type="text/javascript"></script><script id="dxis_1128015333" src="/Transparencia/DXR.axd?r=2_21-U4tE2" type="text/javascript"></script><script id="dxis_1092231604" src="/Transparencia/DXR.axd?r=1_54-U4tE2" type="text/javascript"></script><script id="dxis_1092472601" src="/Transparencia/DXR.axd?r=1_51-U4tE2" type="text/javascript"></script><script id="dxis_1127774336" src="/Transparencia/DXR.axd?r=2_24-U4tE2" type="text/javascript"></script><script id="dxss_529164702" type="text/javascript">
+<!--
+window.__aspxServerFormID = 'form1';
+window.__aspxEmptyImageUrl = '/Transparencia/DXR.axd?r=1_3-U4tE2';
+//-->
+</script><img class="default-brasao-logo" id="imgBrasao" onclick="aspxSEClick(&#39;imgBrasao&#39;, event)" src="/Transparencia/Default.aspx?DXCache=645ddc5d-773d-4a94-97e6-3966b335fc9b" alt="logo-brasao" title="" border="0" style="cursor:pointer;" /><script id="dxss_904696558" type="text/javascript">
+<!--
+aspxAddDisabledItems('imgBrasao',[[['dxeDisabled'],[''],['']]]);
+
+var dxo = new ASPxClientBinaryImage('imgBrasao');
+window['imgBrasao'] = dxo;
+dxo.renderIFrameForPopupElements = true;
+dxo.Click.AddHandler(function(s, e) {ProcessaDados('LnkMenuInicio');});
+dxo.InlineInitialize();
+
+//-->
+</script>
+                            </div> 
+                            <div id="divNomeEntidadeHome" class="mx-2">
+                                <div class="default-exercicio-dados-abertos-div"> 
+                                    <div class="default-exercicio-div ">
+                                        <span id="lblExercicioDesc" class="default-escolha-label">Escolha o Exercício:</span>
+                                        <div>
+                                            <table class="dxeButtonEdit_DevEx default-escolha-combobox-exercicio" cellspacing="0" cellpadding="0" id="cmbExercicio" style="border-collapse:collapse;">
+		<tr>
+			<td style="display:none;"><input id="cmbExercicio_VI" name="cmbExercicio_VI" type="hidden" value="2026" /></td><td class="dxic" onmousedown="return aspxDDDropDown(&#39;cmbExercicio&#39;, event)" width="100%"><input class="dxeEditArea_DevEx dxeEditAreaSys" name="cmbExercicio" value="2026" id="cmbExercicio_I" onchange="aspxETextChanged(&#39;cmbExercicio&#39;)" onblur="aspxELostFocus(&#39;cmbExercicio&#39;)" onfocus="aspxEGotFocus(&#39;cmbExercicio&#39;)" type="text" onkeydown="aspxEKeyDown(&#39;cmbExercicio&#39;, event)" readonly="readonly" style="margin-left:2px;margin-right:1px;margin-top:0px;margin-bottom:1px;cursor:default;padding-right:1px;" /></td><td id="cmbExercicio_B-1" class="dxeButtonEditButton_DevEx" onmousedown="return aspxDDDropDown(&#39;cmbExercicio&#39;, event)" width="13"><font size="4"><table class="dxbebt" cellspacing="0" cellpadding="0" width="13" style="border-collapse:separate;">
+				<tr>
+					<td class="dx"><font size="4"><img id="cmbExercicio_B-1Img" class="dxEditors_edtDropDown_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt="v" title="" border="0" /></font></td>
+				</tr>
+			</table></font></td>
+		</tr>
+	</table><input type="hidden" id="cmbExercicio_DDDWS" name="cmbExercicio_DDDWS" value="0:0:-1:-10000:-10000:0:-10000:-10000:1" /><div id="cmbExercicio_DDD_PW-1" style="position:absolute;left:0px;top:0px;z-index:10000;visibility:hidden;display:none;">
+		<table id="cmbExercicio_DDD_PWST-1" cellspacing="0" cellpadding="0" style="border-collapse:separate;position:relative;">
+			<tr>
+				<td onmousedown="aspxPWMDown(event,&#39;cmbExercicio_DDD&#39;,-1,false)" width="200" style="cursor:default;"><table id="cmbExercicio_DDD_CLW-1" cellspacing="0" cellpadding="0" width="200" style="border-collapse:separate;">
+					<tr>
+						<td id="cmbExercicio_DDD_PWC-1"><input type="hidden" id="cmbExercicio_DDD_LDeletedItems" name="cmbExercicio_DDD_LDeletedItems" value="" /><input type="hidden" id="cmbExercicio_DDD_LInsertedItems" name="cmbExercicio_DDD_LInsertedItems" value="" /><input type="hidden" id="cmbExercicio_DDD_LCustomCallback" name="cmbExercicio_DDD_LCustomCallback" value="" /><table class="dxeListBox_DevEx" cellspacing="0" cellpadding="0" id="cmbExercicio_DDD_L" style="border-collapse:separate;">
+							<tr>
+								<td valign="top"><font size="4"><div id="cmbExercicio_DDD_L_D" class="dxlbd" style="overflow-x:hidden;overflow-y:auto;">
+									<input id="cmbExercicio_DDD_L_VI" type="hidden" name="cmbExercicio$DDD$L" /><table cellspacing="0" cellpadding="0" style="border-collapse:separate;visibility:hidden!important;display:none!important;">
+										<tr id="cmbExercicio_DDD_L_LBI-1" class="dxeListBoxItemRow_DevEx">
+											<td id="cmbExercicio_DDD_L_LBII" class="dxeListBoxItem_DevEx"><font size="4">&nbsp;</font></td>
+										</tr>
+									</table><table id="cmbExercicio_DDD_L_LBT" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:separate;">
+										<tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx"><font size="4">2016</font></td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx"><font size="4">2017</font></td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx"><font size="4">2018</font></td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx"><font size="4">2019</font></td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx"><font size="4">2020</font></td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx"><font size="4">2021</font></td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx"><font size="4">2022</font></td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx"><font size="4">2023</font></td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx"><font size="4">2024</font></td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx"><font size="4">2025</font></td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx"><font size="4">2026</font></td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx"><font size="4">2027</font></td>
+										</tr>
+									</table>
+								</div></font></td>
+							</tr>
+						</table><script id="dxss_1828655761" type="text/javascript">
+<!--
+aspxAddDisabledItems('cmbExercicio_DDD_L',[[['dxeDisabled_DevEx'],[''],['']]]);
+
+var dxo = new ASPxClientListBox('cmbExercicio_DDD_L');
+window['cmbExercicio_DDD_L'] = dxo;
+dxo.uniqueID = 'cmbExercicio$DDD$L';
+dxo.renderIFrameForPopupElements = true;
+dxo.SelectedIndexChanged.AddHandler(function (s, e) { aspxCBLBSelectedIndexChanged('cmbExercicio', e); });
+dxo.ItemClick.AddHandler(function (s, e) { aspxCBLBItemMouseUp('cmbExercicio', e); });
+dxo.RequireStyleDecoration();
+dxo.styleDecoration.AddStyle('F','dxeFocused_DevEx','');
+dxo.savedSelectedIndex = 10;
+dxo.itemsValue=['2016','2017','2018','2019','2020','2021','2022','2023','2024','2025','2026','2027'];
+dxo.isComboBoxList = true;
+dxo.hasSampleItem = true;
+dxo.hoverClasses=['dxeListBoxItemHover_DevEx'];
+dxo.selectedClasses=['dxeListBoxItemSelected_DevEx'];
+dxo.disabledClasses=['dxeDisabled_DevEx'];
+dxo.InlineInitialize();
+
+//-->
+</script></td>
+					</tr>
+				</table></td><td id="ail1465440616" style="background:url('/Transparencia/DXR.axd?r=1_18-U4tE2') no-repeat left top;//background:none;"><script id="dxss_1126468743" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail1465440616", "/Transparencia/DXR.axd?r=1_18-U4tE2");
+
+//-->
+</script></td>
+			</tr><tr>
+				<td id="ail966649242" style="background:url('/Transparencia/DXR.axd?r=1_17-U4tE2') no-repeat left top;//background:none;"><script id="dxss_1217188383" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail966649242", "/Transparencia/DXR.axd?r=1_17-U4tE2");
+
+//-->
+</script></td><td id="ail162115577" style="background:url('/Transparencia/DXR.axd?r=1_19-U4tE2') no-repeat left top;//background:none;"><div>
+
+				</div><script id="dxss_411223332" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail162115577", "/Transparencia/DXR.axd?r=1_19-U4tE2");
+
+//-->
+</script></td>
+			</tr>
+		</table>
+	</div><iframe id="cmbExercicio_DDD_DXPWIF-1" src="javascript:false" scrolling="no" frameborder="0" style="position:absolute;display:none;z-index:9999;filter:progid:DXImageTransform.Microsoft.Alpha(Style=0, Opacity=0);">
+
+	</iframe><script id="dxss_1199071223" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientPopupControl('cmbExercicio_DDD');
+window['cmbExercicio_DDD'] = dxo;
+dxo.uniqueID = 'cmbExercicio$DDD';
+dxo.renderIFrameForPopupElements = true;
+dxo.Shown.AddHandler(function (s, e) { aspxDDBPCShown('cmbExercicio', e); });
+dxo.adjustInnerControlsSizeOnShow=false;
+dxo.closeAction='CloseButton';
+dxo.popupHorizontalAlign='LeftSides';
+dxo.popupVerticalAlign='Below';
+dxo.isPopupPositionCorrectionOn=false;
+dxo.width=0;
+dxo.height=0;
+dxo.InlineInitialize();
+
+//-->
+</script><table id="cmbExercicio_LP" class="dxeLoadingPanel_DevEx" cellspacing="0" cellpadding="0" style="left:0px;top:0px;z-index:30000;display:none;">
+		<tr>
+			<td class="dx" style="padding-right:5px;"><img src="/Transparencia/DXR.axd?r=0_511-V4tE2" alt="Carregando" align="middle" title="" border="0" /></td><td class="dx" style="padding-left:0px;">Loading&hellip;</td>
+		</tr>
+	</table><div id="cmbExercicio_LD" class="dxeLoadingDiv_DevEx" style="left:0px;top:0px;z-index:29999;display:none;position:absolute;">
+
+	</div><script id="dxss_1023617984" type="text/javascript">
+<!--
+aspxAddHoverItems('cmbExercicio',[[['dxeButtonEditButtonHover_DevEx'],[''],['B-1'],,[['']],['Img']]]);
+aspxAddPressedItems('cmbExercicio',[[['dxeButtonEditButtonPressed_DevEx'],[''],['B-1'],,[['']],['Img']]]);
+aspxAddDisabledItems('cmbExercicio',[[['dxeDisabled_DevEx'],[''],['','I']],[['dxeDisabled_DevEx dxeButtonDisabled_DevEx'],[''],['B-1'],,[[{'spriteCssClass':'dxEditors_edtDropDownDisabled_DevEx'}]],['Img']]]);
+document.getElementById("cmbExercicio_I").setAttribute("autocomplete", "off");
+
+var dxo = new ASPxClientComboBox('cmbExercicio');
+window['cmbExercicio'] = dxo;
+dxo.autoPostBack = true;
+dxo.callBack = function(arg) { WebForm_DoCallback('cmbExercicio',arg,aspxCallback,'cmbExercicio',aspxCallbackError,true); };
+dxo.renderIFrameForPopupElements = true;
+dxo.ValueChanged.AddHandler(function(s, e) {MostraAjaxLoader('Processando. Por favor aguarde...');});
+dxo.widthCorrectionRequired = true;
+dxo.RequireStyleDecoration();
+dxo.styleDecoration.AddStyle('F','dxeFocused_DevEx','');
+dxo.InlineInitialize();
+
+//-->
+</script>  
+                                        </div>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <a onclick="return ProcessaDados(&#39;lnkDadosAbertos&#39;);" id="lnkDadosAbertos" class="default-dados-abertos-button" href="javascript:__doPostBack(&#39;lnkDadosAbertos&#39;,&#39;&#39;)">Dados Abertos</a>
+                                    </div>
+                                </div>
+                                <div class="default-entidade-div">
+                                    <span id="lblEntidade" class="default-escolha-label">Escolha a Entidade:</span> 
+                                    <table class="dxeButtonEdit_DevEx default-escolha-combobox-entidade" cellspacing="0" cellpadding="0" id="cmbEntidadeContabil" style="border-collapse:collapse;">
+		<tr>
+			<td style="display:none;"><input id="cmbEntidadeContabil_VI" name="cmbEntidadeContabil_VI" type="hidden" value="1" /></td><td class="dxic" onmousedown="return aspxDDDropDown(&#39;cmbEntidadeContabil&#39;, event)" width="100%"><input class="dxeEditArea_DevEx dxeEditAreaSys" name="cmbEntidadeContabil" value="PREFEITURA MUNICIPAL DE PADRE MARCOS" id="cmbEntidadeContabil_I" onchange="aspxETextChanged(&#39;cmbEntidadeContabil&#39;)" onblur="aspxELostFocus(&#39;cmbEntidadeContabil&#39;)" onfocus="aspxEGotFocus(&#39;cmbEntidadeContabil&#39;)" type="text" onkeydown="aspxEKeyDown(&#39;cmbEntidadeContabil&#39;, event)" readonly="readonly" style="margin-left:2px;margin-right:1px;margin-top:0px;margin-bottom:1px;cursor:default;padding-right:1px;" /></td><td id="cmbEntidadeContabil_B-1" class="dxeButtonEditButton_DevEx" onmousedown="return aspxDDDropDown(&#39;cmbEntidadeContabil&#39;, event)" width="13"><table class="dxbebt" cellspacing="0" cellpadding="0" width="13" style="border-collapse:separate;">
+				<tr>
+					<td class="dx"><img id="cmbEntidadeContabil_B-1Img" class="dxEditors_edtDropDown_DevEx" src="/Transparencia/DXR.axd?r=1_3-U4tE2" alt="v" title="" border="0" /></td>
+				</tr>
+			</table></td>
+		</tr>
+	</table><input type="hidden" id="cmbEntidadeContabil_DDDWS" name="cmbEntidadeContabil_DDDWS" value="0:0:-1:-10000:-10000:0:-10000:-10000:1" /><div id="cmbEntidadeContabil_DDD_PW-1" style="position:absolute;left:0px;top:0px;z-index:10000;visibility:hidden;display:none;">
+		<table id="cmbEntidadeContabil_DDD_PWST-1" cellspacing="0" cellpadding="0" style="border-collapse:separate;position:relative;">
+			<tr>
+				<td onmousedown="aspxPWMDown(event,&#39;cmbEntidadeContabil_DDD&#39;,-1,false)" width="200" style="cursor:default;"><table id="cmbEntidadeContabil_DDD_CLW-1" cellspacing="0" cellpadding="0" width="200" style="border-collapse:separate;">
+					<tr>
+						<td id="cmbEntidadeContabil_DDD_PWC-1"><input type="hidden" id="cmbEntidadeContabil_DDD_LDeletedItems" name="cmbEntidadeContabil_DDD_LDeletedItems" value="" /><input type="hidden" id="cmbEntidadeContabil_DDD_LInsertedItems" name="cmbEntidadeContabil_DDD_LInsertedItems" value="" /><input type="hidden" id="cmbEntidadeContabil_DDD_LCustomCallback" name="cmbEntidadeContabil_DDD_LCustomCallback" value="" /><table class="dxeListBox_DevEx" cellspacing="0" cellpadding="0" id="cmbEntidadeContabil_DDD_L" style="border-collapse:separate;">
+							<tr>
+								<td valign="top"><div id="cmbEntidadeContabil_DDD_L_D" class="dxlbd" style="overflow-x:hidden;overflow-y:auto;">
+									<input id="cmbEntidadeContabil_DDD_L_VI" type="hidden" name="cmbEntidadeContabil$DDD$L" /><table cellspacing="0" cellpadding="0" style="border-collapse:separate;visibility:hidden!important;display:none!important;">
+										<tr id="cmbEntidadeContabil_DDD_L_LBI-1" class="dxeListBoxItemRow_DevEx">
+											<td id="cmbEntidadeContabil_DDD_L_LBII" class="dxeListBoxItem_DevEx">&nbsp;</td>
+										</tr>
+									</table><table id="cmbEntidadeContabil_DDD_L_LBT" cellspacing="0" cellpadding="0" width="100%" style="border-collapse:separate;">
+										<tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx">CAMARA MUNICIPAL DE PADRE MARCOS</td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx">FUNDO DE MAN. DO DESENV. DA EDUCA&#199;&#195;O - FUNDEB</td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx">FUNDO DE PREVID&#202;NCIA PR&#211;PRIA - RPPS</td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx">FUNDO MUN.DOS DIREITOS DA CRIAN&#199;A E DO ADOLESCENTE</td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx">FUNDO MUNICIPAL &nbsp;DE ASSISTENCIA SOCIAL - FMAS</td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx">FUNDO MUNICIPAL DA CULTURA E TURISMO</td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx">FUNDO MUNICIPAL DE MEIO AMBIENTE</td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx">FUNDO MUNICIPAL DE SA&#218;DE</td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx">PREFEITURA MUNICIPAL DE PADRE MARCOS</td>
+										</tr><tr class="dxeListBoxItemRow_DevEx">
+											<td class="dxeListBoxItem_DevEx">UNIDADE MISTA DE SA&#218;DE - HOSPITAL</td>
+										</tr>
+									</table>
+								</div></td>
+							</tr>
+						</table><script id="dxss_1668763904" type="text/javascript">
+<!--
+aspxAddDisabledItems('cmbEntidadeContabil_DDD_L',[[['dxeDisabled_DevEx'],[''],['']]]);
+
+var dxo = new ASPxClientListBox('cmbEntidadeContabil_DDD_L');
+window['cmbEntidadeContabil_DDD_L'] = dxo;
+dxo.uniqueID = 'cmbEntidadeContabil$DDD$L';
+dxo.renderIFrameForPopupElements = true;
+dxo.SelectedIndexChanged.AddHandler(function (s, e) { aspxCBLBSelectedIndexChanged('cmbEntidadeContabil', e); });
+dxo.ItemClick.AddHandler(function (s, e) { aspxCBLBItemMouseUp('cmbEntidadeContabil', e); });
+dxo.RequireStyleDecoration();
+dxo.styleDecoration.AddStyle('F','dxeFocused_DevEx','');
+dxo.savedSelectedIndex = 8;
+dxo.itemsValue=['2','4','7','8','5','10','9','3','1','6'];
+dxo.isComboBoxList = true;
+dxo.hasSampleItem = true;
+dxo.hoverClasses=['dxeListBoxItemHover_DevEx'];
+dxo.selectedClasses=['dxeListBoxItemSelected_DevEx'];
+dxo.disabledClasses=['dxeDisabled_DevEx'];
+dxo.InlineInitialize();
+
+//-->
+</script></td>
+					</tr>
+				</table></td><td id="ail975438653" style="background:url('/Transparencia/DXR.axd?r=1_18-U4tE2') no-repeat left top;//background:none;"><script id="dxss_1348234892" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail975438653", "/Transparencia/DXR.axd?r=1_18-U4tE2");
+
+//-->
+</script></td>
+			</tr><tr>
+				<td id="ail765566486" style="background:url('/Transparencia/DXR.axd?r=1_17-U4tE2') no-repeat left top;//background:none;"><script id="dxss_1574098260" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail765566486", "/Transparencia/DXR.axd?r=1_17-U4tE2");
+
+//-->
+</script></td><td id="ail1767089983" style="background:url('/Transparencia/DXR.axd?r=1_19-U4tE2') no-repeat left top;//background:none;"><div>
+
+				</div><script id="dxss_1937264497" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail1767089983", "/Transparencia/DXR.axd?r=1_19-U4tE2");
+
+//-->
+</script></td>
+			</tr>
+		</table>
+	</div><iframe id="cmbEntidadeContabil_DDD_DXPWIF-1" src="javascript:false" scrolling="no" frameborder="0" style="position:absolute;display:none;z-index:9999;filter:progid:DXImageTransform.Microsoft.Alpha(Style=0, Opacity=0);">
+
+	</iframe><script id="dxss_1207027961" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientPopupControl('cmbEntidadeContabil_DDD');
+window['cmbEntidadeContabil_DDD'] = dxo;
+dxo.uniqueID = 'cmbEntidadeContabil$DDD';
+dxo.renderIFrameForPopupElements = true;
+dxo.Shown.AddHandler(function (s, e) { aspxDDBPCShown('cmbEntidadeContabil', e); });
+dxo.adjustInnerControlsSizeOnShow=false;
+dxo.closeAction='CloseButton';
+dxo.popupHorizontalAlign='LeftSides';
+dxo.popupVerticalAlign='Below';
+dxo.isPopupPositionCorrectionOn=false;
+dxo.width=0;
+dxo.height=0;
+dxo.InlineInitialize();
+
+//-->
+</script><table id="cmbEntidadeContabil_LP" class="dxeLoadingPanel_DevEx" cellspacing="0" cellpadding="0" style="left:0px;top:0px;z-index:30000;display:none;">
+		<tr>
+			<td class="dx" style="padding-right:5px;"><img src="/Transparencia/DXR.axd?r=0_511-V4tE2" alt="Carregando" align="middle" title="" border="0" /></td><td class="dx" style="padding-left:0px;">Loading&hellip;</td>
+		</tr>
+	</table><div id="cmbEntidadeContabil_LD" class="dxeLoadingDiv_DevEx" style="left:0px;top:0px;z-index:29999;display:none;position:absolute;">
+
+	</div><script id="dxss_614443266" type="text/javascript">
+<!--
+aspxAddHoverItems('cmbEntidadeContabil',[[['dxeButtonEditButtonHover_DevEx'],[''],['B-1'],,[['']],['Img']]]);
+aspxAddPressedItems('cmbEntidadeContabil',[[['dxeButtonEditButtonPressed_DevEx'],[''],['B-1'],,[['']],['Img']]]);
+aspxAddDisabledItems('cmbEntidadeContabil',[[['dxeDisabled_DevEx'],[''],['','I']],[['dxeDisabled_DevEx dxeButtonDisabled_DevEx'],[''],['B-1'],,[[{'spriteCssClass':'dxEditors_edtDropDownDisabled_DevEx'}]],['Img']]]);
+document.getElementById("cmbEntidadeContabil_I").setAttribute("autocomplete", "off");
+
+var dxo = new ASPxClientComboBox('cmbEntidadeContabil');
+window['cmbEntidadeContabil'] = dxo;
+dxo.autoPostBack = true;
+dxo.callBack = function(arg) { WebForm_DoCallback('cmbEntidadeContabil',arg,aspxCallback,'cmbEntidadeContabil',aspxCallbackError,true); };
+dxo.renderIFrameForPopupElements = true;
+dxo.ValueChanged.AddHandler(function(s, e) {MostraAjaxLoader('Processando. Por favor aguarde...');});
+dxo.widthCorrectionRequired = true;
+dxo.RequireStyleDecoration();
+dxo.styleDecoration.AddStyle('F','dxeFocused_DevEx','');
+dxo.InlineInitialize();
+
+//-->
+</script>                           
+                                </div>
+                                <span id="lblNomeEntidade" class="NomeEntidade fonteAcessibilidade" style="display: none;">PREFEITURA MUNICIPAL DE PADRE MARCOS</span>
+                                <input type="hidden" name="lblExercicio" id="lblExercicio" value="2026" />
+                                <div>
+                                    <span id="lblUltimaAtualizacao">Dados atualizados em: 29/05/2026 - Quantidade de Acessos: 44184</span>
+                                    <span id="lblIntegracoes"></span>
+                                    <div class="default-link-acessar-portal-anterior">
+                                        
+                                    </div>
+                                </div>
+                            </div>  
+                        </div>         
+                        <div class="default-brasao-logos-div">
+                            <div id="divBotaoCoronaVirus" onclick="return ProcessaDados(&#39;lnkCoronaVirus&#39;);" title="Despesas, Receitas, Documentos/Atos Normativos e mais informações sobre Coronavírus/Covid-19" style="display:block;">
+                                <div onclick="MostraAjaxLoader('Processando. Por favor aguarde...');">
+                                    <img src="AppImagens/imgBtnCovid.png" class="default-logo-covid" alt="CovidLogo" />
+                                </div>
+                            </div>
+                            <input type="image" name="btnESIC" id="btnESIC" class="default-esic-logo" alt="botao-esic" src="AppImagens/e-SIC_2.png" onclick="return ProcessaDados(&#39;lnkESIC&#39;);" />
+                            <img id="imgLogoTransparencia" class="default-portal-transparencia-logo" alt="logo-transparencia" src="AppImagens/LogoTransparencia_1.png" />
+                        </div>
+                    </div>   
+                    <div id="divMenuHome">
+                        <nav class="fundoMenuNav">
+                            <input type="checkbox" id="show-menu" />
+                            <label for="show-menu" class="menu-icon">
+                                <img src="AppImagens/menu-icon.png" alt="Menu" class="default-menu-icon" />
+                            </label>
+                            <div class="content">
+                                <ul class="links">
+                                    <li class="default-li-fechar-button-links">
+                                        <button type="button" id="close-menu-button" class="default-fechar-button-links">&#10006;</button>
+                                    </li>
+                                    <li id="LnkMenuInicio" class="fonteAcessibilidade">
+                                        <a href="#" class="desktop-link"></a>
+				                        <input name="LnkMenuInicioInput" type="checkbox" id="LnkMenuInicioInput" />
+				                        <label for="LnkMenuInicioInput">Início</label>
+                                        <ul>
+                                            <li id="Li1" class="fonteAcessibilidade">
+                                                <a href="#" class="fonteAcessibilidade" onclick="AbrePagina('Home.aspx','1320px');">Início</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li id="LnkMenuReceitas" class="fonteAcessibilidade">
+                                        <a href="#" class="desktop-link"></a>
+				                        <input name="LnkMenuReceitasInput" type="checkbox" id="LnkMenuReceitasInput" />
+				                        <label for="LnkMenuReceitasInput">Receitas</label>
+                                        <ul>
+                                            <li id="lnkReceitasTribunal" style="display:none;">
+                                                <a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkReceitasTribunal');">Receitas Tribunal de Contas</a>
+                                            </li>
+                                            <li id="lnkReceitaOrcamentaria" class="fonteAcessibilidade" style="display:block;">
+                                                <a href="#" onclick="return ProcessaDados('lnkReceitaOrcamentaria');">Arrecadação Orçamentária - Geral</a>
+                                            </li>
+                                            <li id="lnkReceitaUniao" class="fonteAcessibilidade" style="display:block;">
+                                                <a href="#" onclick="return ProcessaDados('lnkReceitaUniao');">Arrecadação Orçamentária - Transferências da União</a>
+                                            </li>
+                                            <li id="lnkReceitaEstado" class="fonteAcessibilidade" style="display:block;">
+                                                <a href="#" onclick="return ProcessaDados('lnkReceitaEstado');">Arrecadação Orçamentária - Transferências do Estado</a>
+                                            </li>
+                                            <li id="lnkReceitaExtraOrcamentaria" class="fonteAcessibilidade" style="display:block;">
+                                                <a href="#" onclick="return ProcessaDados('lnkReceitaExtraOrcamentaria');">Arrecadação Extra-Orçamentária</a>
+                                            </li>
+                                            <li id="lnkReceitasPorEntidadeCamara" class="fonteAcessibilidade" style="display:none;">
+                                                <a href="#" onclick="return ProcessaDados('lnkReceitasPorEntidadeCamara');">Arrecadação - Geral</a>
+                                            </li>
+                                            <li id="lnkRenunciaFiscalSIA" class="fonteAcessibilidade" style="display:none;">
+                                                <a href="#" onclick="return ProcessaDados('lnkRenunciaFiscalSIA');">Renúncia Fiscal</a>
+                                            </li>
+                                            <li id="lnkRenunciaFiscal" class="fonteAcessibilidade" style="display:none;">
+                                                <a href="#" onclick="return ProcessaDados('lnkRenunciaFiscal');">Renúncia Fiscal</a>
+                                            </li>                                
+                                        </ul>
+                                    </li>
+                                    <li id="LnkMenuDespesas" class="fonteAcessibilidade">
+                                        <a href="#" class="desktop-link"></a>
+				                        <input name="LnkMenuDespesasInput" type="checkbox" id="LnkMenuDespesasInput" />
+				                        <label for="LnkMenuDespesasInput">Despesas</label> 
+                                        <ul>
+                                            <li id="lnkDespesasTribunal" style="display:none;">
+                                                <a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasTribunal');">Despesas Tribunal de Contas</a>
+                                            </li>
+                                            <li id="lnkItemDespesasPorAgrupamento" class="fonteAcessibilidade" style="display:none;">
+                                                <a href="#" class="desktop-link"></a>
+							                    
+							                    <label for="lnkDespesasPorAgrupamento">Despesas por Agrupamento</label>
+                                                <ul class="despagr">
+                                                    <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_ClassificacaoInstitucional');">Despesas por Classificação Institucional</a></li>
+                                                    <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_FuncaoDeGoverno');">Despesas por Função de Governo</a></li>
+                                                    <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_ProgramaDeGoverno');">Despesas por Programa de Governo</a></li>
+                                                    <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_ProjetoAtividadeDeGoverno');">Despesas por Projeto/Atividade de Governo</a></li>
+                                                    <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_CategoriaEconomica');">Despesas por Categoria Econômica</a></li>
+                                                    <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_FonteDeRecursos');">Despesas por Fonte de Recursos</a></li>
+                                                    <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_EsferaAdministrativa');">Despesas por Esfera Administrativa</a></li>
+                                                </ul>                            
+                                            </li>
+                                            <li id="lnkDespesasPor_NotaEmpenho"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_NotaEmpenho');" >Despesas Gerais</a></li>
+                                            <li id="lnkDiarias" LinkPagAlvo="HomeDiarias.ASPX" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDiarias');">Diárias e Passagens</a></li>        
+                                            <li id="lnkDiariasSIP" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDiariasSIP');">Diárias e Passagens</a></li>                           
+                                            <li id="lnkAdiantamentos" LinkPagAlvo="HomeAdiantamentos.ASPX" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkAdiantamentos');">Adiantamentos</a></li>
+                                            <li id="lnkCartoesCorporativos_SupFundos_FundosRot" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkCartoesCorporativos_SupFundos_FundosRot');">Cartões Corporativos/ Suprimentos de Fundos/ Fundos Rotativos</a></li>
+                                            <li id="lnkDespesasPor_Orgao" Bloqueado="False"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_Orgao');">Despesas por Orgão</a></li>
+                                            <li id="lnkDespesasPor_Unidade" Bloqueado="False"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_Unidade');">Despesas por Unidade</a></li>
+                                            <li id="lnkDespesasPor_Funcao"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_Funcao');">Despesas por Função</a></li>
+                                            <li id="lnkDespesasPor_Subfuncao" Bloqueado="False"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_Subfuncao');">Despesas por SubFunção</a></li>
+                                            <li id="lnkDespesasPor_Programa" Bloqueado="False"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_Programa');">Despesas por Programa</a></li>
+                                            <li id="lnkDespesasPor_ProjetoAtividade" Bloqueado="False"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_ProjetoAtividade');">Despesas por Projeto/Atividade</a></li>
+                                            <li id="lnkDespesasPor_Categoria" Bloqueado="False"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_Categoria');">Despesas por Categoria Econômica</a></li>
+                                            <li id="lnkDespesasPor_Grupo" Bloqueado="False"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_Grupo');">Despesas por Grupo</a></li>
+                                            <li id="lnkDespesasPor_Elemento" Bloqueado="False"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_Elemento');">Despesas por Elemento</a></li>
+                                            <li id="lnkDespesasPor_Desdobro" Bloqueado="False"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_Desdobro');">Despesas por Sub-Elemento</a></li>                                    
+                                            <li id="lnkDespesasPor_Aplicacao" Bloqueado="False"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_Aplicacao');">Despesas por Aplicação</a></li>
+                                            <li id="lnkDespesasPor_FonteRecurso" Bloqueado="False"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_FonteRecurso');">Despesas por Fonte de Recurso</a></li>
+                                            <li id="lnkDespesasPor_FonteRecursoDetalhado" Bloqueado="False">
+                                                <a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_FonteRecursoDetalhado');">
+                                                    <div id="divDescDespesasPor_FonteRecursoDetalhado">Despesas por Fonte de Recurso Detalhado</div>
+                                                </a>
+                                            </li>
+                                            <li id="lnkDespesasPor_Fornecedor" Bloqueado="False"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_Fornecedor');">Despesas por Fornecedor</a></li>     
+                                            <li id="lnkDespesasLiquidadas"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasLiquidadas');">Despesas Liquidadas</a></li>                                      
+                                            <li id="lnkDespesasPor_RestosPagar" Bloqueado="False"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_RestosPagar');">Restos à Pagar</a></li>
+                                            <li id="lnkDespesasPor_ExtraOrcamentaria" Bloqueado="False"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_ExtraOrcamentaria');">Extra Orçamentária</a></li>
+                                            <li id="lnkDespesasPor_TipoOrcamento"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_TipoOrcamento');">Despesas por Tipo de Orçamento</a></li>
+                                            <li id="lnkDespesasPor_ComprasRealizadas"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_ComprasRealizadas');">Despesas por Compras Realizadas</a></li>
+                                            <li id="lnkDespesasPor_Exigibilidade" style="display:block;" Bloqueado="False"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_Exigibilidade');">Despesas por Exigibilidade (Ordem Cronológica)</a></li>
+                                            <li id="lnkDespesasPor_PagamentoEmpenho"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasPor_PagamentoEmpenho');">Despesas por Pagamento de Empenho</a></li>
+                                            <li id="lnkDespesasVerbasIndenizatorias"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkDespesasVerbasIndenizatorias');">Verbas Indenizatórias</a></li>     
+                                        </ul>                        
+                                    </li>
+                                    <li id="LnkMenuPessoal" class="fonteAcessibilidade">
+                                        <a href="#" class="desktop-link"></a>
+				                        <input name="LnkMenuPessoalInput" type="checkbox" id="LnkMenuPessoalInput" />
+				                        <label for="LnkMenuPessoalInput">Pessoal</label> 
+                                        <ul>
+                                            <li><a href="#" id="LnkServidores" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;LnkServidores&#39;);" LinkPagAlvo="Servidores.ASPX">Servidores</a></li>                            
+                                            <li id="LnkServidoresCedidos" style="display:block;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkServidoresCedidos');">Servidores Cedidos</a></li>
+                                            <li id="LnkConcursos" style="display:block;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkConcursos');">Concursos / Teste Seletivo</a></li>
+                                            <li id="LnkQuadroFuncional" style="display:block;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkQuadroFuncional');">Relação de Cargos Providos e Vagos</a></li>       
+                                            <li id="LnkServidoresRelatorios" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkServidoresRelatorios');">Relatórios de Servidores</a></li>                     
+                                        </ul>                    
+                                    </li>
+                                    <li id="LnkMenuPlanejamentoOrcamentario" class="fonteAcessibilidade">
+                                        <a href="#" class="desktop-link"></a>
+				                        <input name="LnkMenuPlanejamentoOrcamentarioInput" type="checkbox" id="LnkMenuPlanejamentoOrcamentarioInput" />
+				                        <label for="LnkMenuPlanejamentoOrcamentarioInput">Planejamento Orçamentário</label> 
+                                        <ul>                          
+                                            <li id="lnkPPA" LinkPagAlvo="PPA.ASPX"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkPPA');">PPA - Plano Plurianual</a></li>                            
+                                            <li id="lnkLDO" LinkPagAlvo="LDO.ASPX"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkLDO');">LDO - Lei de Diretrizes Orçamentárias</a></li>                            
+                                            <li id="lnkLOA" LinkPagAlvo="LOA.ASPX"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkLOA');">LOA - Lei Orçamentária Anual</a></li>
+                                        </ul>
+                                    </li>                            
+                                    <li id="LnkMenuLicitacoesEContratos" class="fonteAcessibilidade">
+                                        <a href="#" class="desktop-link"></a>
+				                        <input name="LnkMenuLicitacoesEContratosInput" type="checkbox" id="LnkMenuLicitacoesEContratosInput" />
+				                        <label for="LnkMenuLicitacoesEContratosInput">Licitações e Contratos</label>
+                                        <ul>
+                                            <li><a href="#" id="lnkLicitacoes" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkLicitacoes&#39;);" LinkPagAlvo="InformacoesLicitacoes.ASPX">Licitações</a></li>
+                                            <li><a href="#" id="lnkContratos" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkContratos&#39;);" LinkPagAlvo="InformacoesContratos.ASPX">Contratos</a></li>
+                                            <li id="lnkFornecedoresBloqueados" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkFornecedoresBloqueados');">Fornecedores Bloqueados</a></li>
+                                            <li id="lnkPCA" LinkPagAlvo="InformacoesPCA.ASPX" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkPCA');">Plano de Contratações Anual</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="LnkMenuPrestacaoDeContas" class="fonteAcessibilidade">
+                                        <a href="#" class="desktop-link"></a>
+				                        <input name="LnkMenuPrestacaoDeContasInput" type="checkbox" id="LnkMenuPrestacaoDeContasInput" />
+				                        <label for="LnkMenuPrestacaoDeContasInput">Prestação de Contas</label>
+                                        <ul>
+                                            <li id="LnkBalanco" LinkPagAlvo="Balancos.ASPX"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkBalanco');" >Balanços</a></li>
+                                            <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkRelExecucao');">Relatórios Execução Orçamentária</a></li>
+                                            <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkRelPrestacao');">Relatórios Prestação de Contas</a></li>
+                                            <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkRREO');">Responsabilidade Fiscal - RREO</a></li>
+                                            <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkRGF');">Responsabilidade Fiscal - RGF</a></li>
+                                            <li id="lnkRelIN28" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkRelIN28')">Instrução Normativa 28 (TCU)</a></li>
+                                            <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkParecerTribunal')">Parecer Prévio do Tribunal de Contas</a></li>
+                                            <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkExecContratoPublicidade')">Execução Contrato Publicidade</a></li>
+                                            <li id="lnkMultasTransitoRecebidas" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkMultasTransitoRecebidas')">Multas Trânsito Recebidas</a></li>
+                                            <li id="lnkAbastecimentoVeiculosOficiais" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkAbastecimentoVeiculosOficiais')">Abastecimento Veículos Oficiais</a></li>
+                                        </ul>
+                                    </li>  
+                                    <li id="LnkMenuTerceiroSetor" class="fonteAcessibilidade">
+                                        <a href="#" class="desktop-link"></a>
+				                        <input name="LnkMenuTerceiroSetorInput" type="checkbox" id="LnkMenuTerceiroSetorInput" />
+				                        <label for="LnkMenuTerceiroSetorInput">Terceiro Setor</label>
+                                        <ul>
+                                            <li id="LnkNovoTerceiroSetor" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkNovoTerceiroSetor');">Repasses de Recursos Financeiros/Prestação de contas ao Terceiro Setor</a></li>
+                                            <li id="LnkTerceiroSetor"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkTerceiroSetor');">Repasses de Recursos Financeiros/Prestação de contas ao Terceiro Setor</a></li>
+                                        </ul>
+                                    </li> 
+                                    <li id="LnkMenuTransferencias" class="fonteAcessibilidade">
+                                            <a href="#" class="desktop-link"></a>
+				                            <input name="LnkMenuTransferenciasInput" type="checkbox" id="LnkMenuTransferenciasInput" />
+				                            <label for="LnkMenuTransferenciasInput">Transferências</label>
+                                        <ul>
+                                            <li id="Li2"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkTransf');">Transferências entre Entidades</a></li>
+                                            <li id="LnkTransfArt166A" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkTransfArt166A');">Emendas Parlamentares (art. 166-A da CF)</a></li>
+                                            <li id="LnkEmendasParlamentares" style="display:block;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkEmendasParlamentares');">Emendas Parlamentares (art. 166-A da CF)</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="LnkMenuConvenios" class="fonteAcessibilidade">
+                                        <a href="#" class="desktop-link"></a>
+				                        <input name="LnkMenuConveniosInput" type="checkbox" id="LnkMenuConveniosInput" />
+				                        <label for="LnkMenuConveniosInput">Convênios</label>
+                                        <ul>
+                                            <li id="lnkTransferenciasTipo13" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('LnkTerceiroSetorConvenio');">Transferências (§ 1º do art. 199 da CF)</a></li>
+                                            <li id="lnkConvenios" LinkPagAlvo="HomeConvenios.ASPX"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkConvenios');">Recebimentos de Recursos Financeiros</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="LnkMenuPatrimonio" class="fonteAcessibilidade">
+                                        <a href="#" class="desktop-link"></a>
+				                        <input name="LnkMenuPatrimonioInput" type="checkbox" id="LnkMenuPatrimonioInput" />
+				                        <label for="LnkMenuPatrimonioInput">Patrimônio</label>
+                                        <ul>
+                                            <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkImoveis');">Imóveis</a></li>
+                                            <li id="lnkVeiculos" LinkPagAlvo="Patrimonio_Veiculos.ASPX"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkVeiculos');">Veículos</a></li>
+                                            <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkOutrosBens');">Bens Móveis</a></li>
+                                            <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkIntangiveis');">Bens Intangíveis</a></li>
+                                            <li id="lnkBensDoados" style="display:block;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkBensDoados');">Bens Doados</a></li>                            
+                                        </ul>
+                                    </li>   
+                                    <li id="LnkMenuAcessoAInformacao" class="fonteAcessibilidade">
+                                        <a href="#" class="desktop-link"></a>
+				                        <input name="LnkMenuAcessoAInformacaoInput" type="checkbox" id="LnkMenuAcessoAInformacaoInput" />
+				                        <label for="LnkMenuAcessoAInformacaoInput">Acesso à Informação</label>
+                                        <ul>
+                                            <li><a href="#" id="lnkEquipeGoverno" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkEquipeGoverno&#39;);" LinkPagAlvo="HomeInstitucional.ASPX">Equipe de Governo</a></li>
+                                            <li><a href="#" id="lnkSecretariasOrgaos" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkSecretariasOrgaos&#39;);" LinkPagAlvo="HomeInstitucional.ASPX">Secretarias e Órgãos</a></li>
+                                            <li id="lnkAtosPublicacoes" LinkPagAlvo="HomeAtosEPublicacoesOficiais.ASPX" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkAtosPublicacoes&#39;);">Atos e Publicações</a></li>
+                                            <li id="lnkAcoesProgramas" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkAcoesProgramas&#39;);">Ações e Programas</a></li>
+                                            <li id="lnkObras" LinkPagAlvo="HomeObras.aspx"><a href="#" id="A10" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkObras&#39;);">Obras</a></li>
+                                            <li id="lnkIN28TCU" onclick="GoToLinkPrefeituraPagina(this);" style="display:block;" LinkPagAlvo="http://localhost:5656/TransparenciaHomePage"><a href="#" class="fonteAcessibilidade">IN28 - TCU</a></li>  
+                                            <li><a href="#" id="lnkDiarioOficial" class="fonteAcessibilidade" onclick="GoToLinkPrefeituraPagina(this);" LinkPagAlvo="http://www.dioe.com.br">Diário Oficial</a></li>  
+                                            <li><a href="#" id="lnkESIC" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkESIC&#39;);" LinkPagAlvo="HomeESIC.ASPX">e-SIC</a></li>
+                                            <li id="lnkConselhoMunicipal" style="display:none;"><a href="#" id="A1" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkConselhoMunicipal&#39;);">Conselho Municipal</a></li>
+                                            <li id="lnkDividaAtivaTributaria" style="display:none;"><a href="#" id="A2" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkDividaAtivaTributaria&#39;);">Dívida Ativa Tributária</a></li>
+                                            <li id="lnkDividaAtivaNaoTributaria" style="display:none;"><a href="#" id="A3" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkDividaAtivaNaoTributaria&#39;);">Dívida Ativa Não Tributária</a></li>
+                                            <li id="lnkDividaAtivaTributariaSIA" style="display:none;"><a href="#" id="A4" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkDividaAtivaTributariaSIA&#39;);">Dívida Ativa</a></li>
+                                            <li id="lnkDividaAtivaRelatorio" style="display:none;"><a href="#" id="A9" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkDividaAtivaRelatorio&#39;);">Dívida Ativa</a></li>
+                                            <li id="lnkControleInterno" style="display:none;"><a href="#" id="A5" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkControleInterno&#39;)">Controle Interno</a></li>
+                                            <li id="lnkEscalaMedica" style="display:none;"><a href="#" id="A6" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkEscalaMedica&#39;)">Escala Medica</a></li>
+                                            <li id="lnkContaCorrente" style="display:none;"><a href="#" id="A7" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkContaCorrente&#39;)">Cadastro de Contas Correntes</a></li>
+                                            <div onclick="MostraAjaxLoader('Processando. Por favor aguarde...');">
+                                                <li id="lnkCoronaVirus" style="display:block;"><a href="#" id="A8" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkCoronaVirus&#39;)">Sobre Covid-19</a></li>
+                                            </div>
+                                            
+                                            <li id="lnkCartaServicosCidadao" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkCartaServicosCidadao&#39;)">Carta de Serviços ao Cidadão</a></li>
+                                            <li id="lnkDefesaCivil" style="display:none;"><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkDefesaCivil&#39;)">Defesa Civil</a></li>
+                                            <li><a href="#" class="fonteAcessibilidade" onclick="return ProcessaDados('lnkOutrosDocumentos');">Outros Documentos</a></li>  
+                                            <li><a href="#" id="lnkPerguntasFrequentes" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkPerguntasFrequentes&#39;);" LinkPagAlvo="PerguntasFrequentes.ASPX">Perguntas Frequentes</a></li>
+                                            <li><a href="#" id="lnkGlossario" class="fonteAcessibilidade" onclick="return ProcessaDados(&#39;lnkGlossario&#39;);">Glossário</a></li>
+                                        </ul>
+                                    </li>
+                                    <li id="lnkLinksUteis" class="fonteAcessibilidade" style="display:none;">
+                                        <a href="#" class="desktop-link"></a>
+				                        <input name="lnkLinksUteisInput" type="checkbox" id="lnkLinksUteisInput" />
+				                        <label  for="lnkLinksUteisInput">Links Úteis</label>
+                                        <ul id="MenuLinksUteis" class="SubMenuAEsquerdaItem"></ul>    
+                                    </li>
+                                </ul> 
+                            </div>
+                        </nav>
+                    </div>
+                    <div id="divLocalizacao" class="default-localizacao-div" style="padding: 10px 5px;">
+			            <span id="lblLocalizacao" class="default-localizacao-links"><b>Você está em:</b> <mark class='etiquetaLocalizacao'> Início </mark></span>
+		            </div> 
+                
+</div>
+            <div id="divPaginaConteudoHome">
+                <iframe id="frmPaginaAspx" class="CSS_FramePaginaASPX" frameborder="0" src="Home.aspx" width="100%" title="Conteudo"></iframe>
+            </div>
+            <div id="divRodapePrincipal" class="default-rodape-div">
+                <div class="default-footer-dados-div">
+                    <div class="default-footer-nome-entidade">
+                        <span id="lblNome">PREFEITURA MUNICIPAL DE PADRE MARCOS</span>
+                    </div>
+                    <div>
+                        <span id="lblCnpj">CNPJ: 06.553.788/0001-40</span>
+                    </div>
+                    <div>
+                        <span id="lblEnderecoeCEP">RUA ANFRISIO MACEDO CEP: 64680-000</span>
+                    </div>
+                    <div>
+                        <span id="lblMunicipio">PADRE MARCOS - PI</span>
+                    </div>
+                    <div>
+                        <span id="lblTelefoneEemail"> - </span>
+                    </div>
+                    <div>
+                        <span id="lblHorarioAtendimento"></span>
+                    </div>
+                </div>
+                <div class="default-rodape-icones-div">
+                    <div class="mx-2">
+                        <input type="image" name="btnImgESIC" id="btnImgESIC" alt="botao-esic" src="AppImagens/Botao-e-SIC.png" onclick="return ProcessaDados(&#39;lnkESIC&#39;);" />
+                    </div>
+                    <div class="mx-2">
+                        <input type="image" name="btnImgFAQ" id="btnImgFAQ" alt="botao-esic" src="AppImagens/Botao-FAQ.png" onclick="return ProcessaDados(&#39;lnkPerguntasFrequentes&#39;);" />
+                    </div>
+                </div>
+            </div>
+            <div id="divCopyright">
+                <span id="lblVersao">Fiorilli Sociedade Civil Ltda. Software © 2016 - Portal da Transparência Versão 1.2026.10.28</span>
+            </div>
+        </div>
+    </form>
+</body>
+</html>
+

@@ -9,11 +9,12 @@ import { MESES, formatBRL } from '@/lib/despesas/types';
 import type { RestosPagarRow } from '@/lib/despesas/types';
 import { useTodayDate } from '@/lib/hooks/useTodayDate';
 import { ChevronDown } from 'lucide-react';
+import { EMPRESAS } from '@/lib/empresas';
 
 export default function RestosPagarPage() {
   const today = useTodayDate();
-  const { anos: ANOS, loading: anosLoading } = useAvailableYears('restos_pagar');
-  const [filters, setFilters] = useState<FilterValues>({ ano: '2026', mes: '', busca: '' });
+  const [filters, setFilters] = useState<FilterValues>({ ano: '2026', mes: '', busca: '', entidade: '' });
+  const { anos: ANOS, loading: anosLoading } = useAvailableYears('restos_pagar', filters.entidade || undefined);
 
   // Filtros extras
   const [descricaoFilter, setDescricaoFilter] = useState('');
@@ -57,6 +58,7 @@ export default function RestosPagarPage() {
         .select('*');
 
       if (filters.ano) query = query.eq('ano', filters.ano);
+      if (filters.entidade) query = query.eq('empresa', filters.entidade);
       if (filters.busca) {
         query = query.or(
           `descricao.ilike.%${filters.busca}%` +
@@ -66,8 +68,7 @@ export default function RestosPagarPage() {
       if (descricaoFilter) query = query.eq('descricao', descricaoFilter);
 
       const { data: result, error: err } = await query
-        .order('codigo', { ascending: true })
-        .limit(500);
+        .order('codigo', { ascending: true });
 
       if (cancelled) return;
 
@@ -86,19 +87,19 @@ export default function RestosPagarPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [filters.ano, filters.busca, descricaoFilter, supabase]);
+  }, [filters.ano, filters.entidade, filters.busca, descricaoFilter, supabase]);
 
   // ── Handlers ──
-  const handleChange = useCallback((field: 'ano' | 'mes' | 'busca', value: string) => {
+  const handleChange = useCallback((field: 'ano' | 'mes' | 'busca' | 'entidade', value: string) => {
     setFilters(prev => ({ ...prev, [field]: value }));
   }, []);
 
   const handleClear = useCallback(() => {
-    setFilters({ ano: '', mes: '', busca: '' });
+    setFilters({ ano: '', mes: '', busca: '', entidade: '' });
     setDescricaoFilter('');
   }, []);
 
-  const filterKey = `${filters.ano}-${filters.busca}-${descricaoFilter}`;
+  const filterKey = `${filters.ano}-${filters.busca}-${descricaoFilter}-${filters.entidade}`;
   const hasActiveFilters = !!(filters.ano || filters.busca || descricaoFilter);
 
   const totalEmpenhado = useMemo(
@@ -133,6 +134,10 @@ export default function RestosPagarPage() {
       header: 'Status',
       accessor: 'pago',
       render: (_val: number, row: RestosPagarRow) => <StatusBadge row={row} />,
+    },
+    {
+      header: 'Entidade',
+      accessor: 'empresa_nome',
     },
     {
       header: 'Código',
@@ -211,6 +216,7 @@ export default function RestosPagarPage() {
         onChange={handleChange}
         onClear={handleClear}
         anosLoading={anosLoading}
+        empresas={EMPRESAS}
       >
         {/* Filtro Descrição */}
         <div className="flex flex-col gap-1 sm:w-64">

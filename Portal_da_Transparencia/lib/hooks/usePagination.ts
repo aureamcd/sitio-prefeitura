@@ -6,17 +6,26 @@ const DEFAULT_PAGE_SIZE = 25;
 
 export function usePagination<T>(items: T[], pageSize = DEFAULT_PAGE_SIZE, resetKey?: string | number) {
   const [page, setPage] = useState(1);
+  const [prevLength, setPrevLength] = useState(items.length);
+  const [prevReset, setPrevReset] = useState(resetKey);
 
-  useEffect(() => {
+  let currentSafePage = page;
+
+  if (items.length !== prevLength || resetKey !== prevReset) {
+    setPrevLength(items.length);
+    setPrevReset(resetKey);
     setPage(1);
-  }, [items.length, resetKey]);
+    currentSafePage = 1;
+  }
 
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
-  const safePage = Math.min(page, totalPages);
+  
+  if (currentSafePage > totalPages) {
+    setPage(totalPages);
+    currentSafePage = totalPages;
+  }
 
-  useEffect(() => {
-    if (page > totalPages) setPage(totalPages);
-  }, [page, totalPages]);
+  const safePage = currentSafePage;
 
   const slice = useMemo(() => {
     const start = (safePage - 1) * pageSize;

@@ -6,6 +6,7 @@ import FilterPanel, { FilterValues } from '@/components/ui/FilterPanel';
 import DataTable from '@/components/ui/DataTable';
 import { createBrowserClient, useAvailableYears } from '@/lib/supabase/client';
 import { useTodayDate } from '@/lib/hooks/useTodayDate';
+import { deduplicateServidores } from '@/lib/utils/deduplicate';
 
 const MESES = [
   { value: '01', label: 'Janeiro' }, { value: '02', label: 'Fevereiro' },
@@ -19,10 +20,6 @@ const MESES = [
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-function formatBRL(value: number): string {
-  return (value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-}
-
 function getVinculoBadge(vinculo: string) {
   if (!vinculo) return 'bg-gray-50 text-gray-700 border-gray-200';
   const v = vinculo.toLowerCase();
@@ -32,13 +29,20 @@ function getVinculoBadge(vinculo: string) {
   return 'bg-gray-50 text-gray-700 border-gray-200';
 }
 
+function formatDate(val: string | null): string {
+  if (!val) return '-';
+  return new Date(val).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+}
+
 // ---------------------------------------------------------------------------
 // Main Component
 // ---------------------------------------------------------------------------
 export default function ServidoresPage() {
   const today = useTodayDate();
-  const { anos: ANOS, loading: anosLoading } = useAvailableYears('servidores');
-  const [filters, setFilters] = useState<FilterValues>({ ano: '2026', mes: '05', busca: '' });
+  const [filters, setFilters] = useState({
+    busca: '',
+    status: '',
+  });
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -51,21 +55,23 @@ export default function ServidoresPage() {
       let query = supabase
         .schema('transparencia')
         .from('servidores')
-        .select('*');
+        .select('*')
+        .limit(100000);
         
-      if (filters.ano) {
-        query = query.eq('ano', parseInt(filters.ano));
+      if (filters.status === 'ativo') {
+        query = query.eq('ativo', true).is('data_desligamento', null);
+      } else if (filters.status === 'desligado') {
+        query = query.or('ativo.eq.false,data_desligamento.not.is.null');
       }
-      
+
       if (filters.busca) {
         query = query.or(`nome.ilike.%${filters.busca}%,cargo.ilike.%${filters.busca}%,lotacao.ilike.%${filters.busca}%`);
       }
       
-      // Limit to 500 to avoid freezing the browser on huge payrolls
-      const { data: result, error } = await query.order('nome', { ascending: true }).limit(500);
+      const { data: result, error } = await query.order('nome', { ascending: true });
       
       if (!error && result) {
-        setData(result);
+        setData(deduplicateServidores(result));
       } else {
         console.error("Error fetching servidores:", error);
         setData([]);
@@ -73,27 +79,25 @@ export default function ServidoresPage() {
       setLoading(false);
     }
     
-    // Add a small debounce for text search
     const timer = setTimeout(() => {
       fetchData();
     }, 300);
     
     return () => clearTimeout(timer);
-  }, [filters.ano, filters.busca, supabase]);
+  }, [filters.busca, filters.status, supabase]);
 
-  const handleChange = useCallback((field: 'ano' | 'mes' | 'busca', value: string) => {
+  const handleChange = useCallback((field: string, value: string) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
   }, []);
 
   const handleClear = useCallback(() => {
-    setFilters({ ano: '', mes: '', busca: '' });
+    setFilters({ busca: '', status: '' });
   }, []);
 
-  const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}`;
-  const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca);
+  const filterKey = `${filters.busca}-${filters.status}`;
+  const hasActiveFilters = !!(filters.busca || filters.status);
 
   const totalServidores = data.length;
-  const totalFolhaBruta = data.reduce((acc, curr) => acc + (Number(curr.rendimentos) || 0), 0);
 
   const columns = [
     { 
@@ -119,49 +123,35 @@ export default function ServidoresPage() {
       )
     },
     { 
-      header: "Lotação / C.H.", 
+      header: "Lotação", 
       accessor: "lotacao",
-      render: (val: string, row: any) => (
+      render: (val: string) => (
         <div className="max-w-[200px]">
-          <p className="text-xs text-gray-700 line-clamp-2" title={val}>{val || '-'}</p>
-          <p className="text-xs font-medium text-gray-500 mt-1">C.H.: {row.carga_horaria || 'N/D'}</p>
+          <p className="text-xs text-gray-700 line-clamp-2" title={val || '-'}>{val || '-'}</p>
         </div>
       )
     },
     { 
-      header: "Remuneração Bruta", 
-      accessor: "rendimentos", 
-      render: (val: number) => (
-        <div className="text-right">
-          <span className="text-sm text-gray-800 tabular-nums">{formatBRL(Number(val))}</span>
+      header: "Carga Horária", 
+      accessor: "carga_horaria",
+      render: (val: string) => (
+        <div className="text-center">
+          <span className="text-sm text-gray-700 tabular-nums">{val ? `${val}h/sem` : 'N/D'}</span>
         </div>
       )
     },
     { 
-      header: "Descontos (IRRF/Prev)", 
-      accessor: "descontos", 
-      render: (val: number) => (
-        <div className="text-right">
-          <span className="text-sm text-red-600 tabular-nums">-{formatBRL(Number(val))}</span>
-        </div>
+      header: "Admissão", 
+      accessor: "data_admissao",
+      render: (val: string) => (
+        <span className="text-sm text-gray-600">{formatDate(val)}</span>
       )
     },
     { 
-      header: "Líquido a Receber", 
-      accessor: "liquido", 
-      render: (val: number) => (
-        <div className="text-right">
-          <span className="font-semibold text-gray-900 tabular-nums">{formatBRL(Number(val))}</span>
-        </div>
-      )
-    },
-    { 
-      header: "Ficha", 
-      accessor: "acoes", 
-      render: () => (
-        <button className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors">
-          Holerite
-        </button>
+      header: "Desligamento", 
+      accessor: "data_desligamento",
+      render: (val: string) => (
+        <span className="text-sm text-gray-600">{formatDate(val)}</span>
       )
     },
   ];
@@ -169,7 +159,7 @@ export default function ServidoresPage() {
   return (
     <ContentPage
       title="Servidores e Folha de Pagamento"
-      description="Consulte a relação nominal de todos os servidores ativos, inativos e pensionistas, com seus respectivos cargos, lotações e detalhamento da remuneração."
+      description="Consulte a relação nominal de todos os servidores ativos, inativos and pensionistas, com seus respectivos cargos, lotações e detalhamento da remuneração."
       breadcrumb={[
         { label: "Portal da Transparência", href: "/" },
         { label: "Recursos Humanos" },
@@ -178,13 +168,28 @@ export default function ServidoresPage() {
       lastUpdate={today}
     >
       <FilterPanel
-        anos={ANOS}
-        meses={MESES}
-        values={filters}
+        values={filters as any}
         onChange={handleChange}
         onClear={handleClear}
-        anosLoading={anosLoading}
-      />
+        hideAno={true}
+        hideMes={true}
+        searchPlaceholder="Pesquisar por nome, cargo ou matrícula..."
+      >
+        <div className="flex flex-col gap-1 sm:w-44">
+          <label className="text-xs font-medium text-gray-600">
+            Situação
+          </label>
+          <select
+            value={filters.status}
+            onChange={(e) => handleChange('status', e.target.value)}
+            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all h-[42px]"
+          >
+            <option value="">Todos</option>
+            <option value="ativo">Ativos</option>
+            <option value="desligado">Não Ativos</option>
+          </select>
+        </div>
+      </FilterPanel>
 
       {/* Totalizer strip */}
       <div className="mt-4 bg-gray-50 rounded-xl px-6 py-4 flex flex-wrap gap-6 items-center border border-gray-100 mb-4">
@@ -196,19 +201,10 @@ export default function ServidoresPage() {
             <p className="text-xl font-semibold text-gray-800 tabular-nums">{totalServidores}</p>
           )}
         </div>
-        <div className="w-px h-8 bg-gray-200 hidden sm:block" />
-        <div>
-          <p className="text-sm font-medium text-gray-500 mb-0.5">Valor Bruto da Folha (Filtro)</p>
-          {loading ? (
-            <div className="h-7 w-32 bg-gray-200 animate-pulse rounded mt-1"></div>
-          ) : (
-            <p className="text-xl font-semibold text-gray-900 tabular-nums">{formatBRL(totalFolhaBruta)}</p>
-          )}
-        </div>
       </div>
 
       <DataTable 
-        title={`Relação de Pessoal - ${filters.ano}`}
+        title="Quadro Geral de Servidores"
         columns={columns}
         data={data}
         exportable={true}
@@ -221,10 +217,8 @@ export default function ServidoresPage() {
       <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
         <p className="text-sm font-semibold text-blue-800 mb-1">Nota Legal</p>
         <p className="text-sm text-blue-800/80 leading-relaxed">
-          As informações sobre servidores e remuneração são publicadas em cumprimento à Lei de Acesso à Informação 
-          (Lei nº 12.527/2011) e às diretrizes do Tribunal de Contas do Estado do Piauí – PNTP 2026. A remuneração 
-          apresentada engloba subsídios, vencimentos, vantagens pessoais, indenizações e demais acréscimos legais, 
-          deduzidos os descontos obrigatórios (Imposto de Renda e Previdência). 
+          As informações sobre servidores são publicadas em cumprimento à Lei de Acesso à Informação 
+          (Lei nº 12.527/2011) e às diretrizes do Tribunal de Contas do Estado do Piauí – PNTP 2026.
         </p>
       </div>
     </ContentPage>

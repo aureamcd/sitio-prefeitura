@@ -21,8 +21,14 @@ export function createBrowserClient(): SupabaseClient {
 /**
  * React hook that fetches the distinct available years from a given table
  * in the 'transparencia' schema. Returns sorted (desc) anos + loading state.
+ *
+ * @param table - Nome da tabela no schema 'transparencia'
+ * @param empresa - Opcional: código da empresa para filtrar anos
  */
-export function useAvailableYears(table: string): {
+export function useAvailableYears(
+  table: string,
+  empresa?: string
+): {
   anos: string[];
   loading: boolean;
 } {
@@ -37,12 +43,18 @@ export function useAvailableYears(table: string): {
       setLoading(true);
       const supabase = createBrowserClient();
 
-      const { data, error } = await supabase
+      let query = supabase
         .schema("transparencia")
         .from(table)
         .select("ano")
         .not("ano", "is", null)
         .order("ano", { ascending: false });
+
+      if (empresa) {
+        query = query.eq("empresa", empresa);
+      }
+
+      const { data, error } = await query;
 
       if (!cancelled) {
         if (!error && data) {
@@ -67,7 +79,7 @@ export function useAvailableYears(table: string): {
     return () => {
       cancelled = true;
     };
-  }, [table]);
+  }, [table, empresa]);
 
   return { anos, loading };
 }

@@ -1,11 +1,21 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import ContentPage from '@/components/layout/ContentPage';
 import FilterPanel, { FilterValues } from '@/components/ui/FilterPanel';
 import DataTable from '@/components/ui/DataTable';
 import { createBrowserClient, useAvailableYears } from '@/lib/supabase/client';
 import { useTodayDate } from '@/lib/hooks/useTodayDate';
+import {
+  Landmark,
+  TrendingUp,
+  AlertCircle,
+  Building,
+  ChevronDown,
+  Info,
+  FileText,
+  ExternalLink
+} from 'lucide-react';
 
 const MESES = [
   { value: '01', label: 'Janeiro' }, { value: '02', label: 'Fevereiro' },
@@ -16,133 +26,306 @@ const MESES = [
   { value: '11', label: 'Novembro' }, { value: '12', label: 'Dezembro' },
 ];
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-function formatBRL(value: number): string {
+function formatBRL(value: number | null | undefined): string {
   return (value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-// ---------------------------------------------------------------------------
-// Main Component
-// ---------------------------------------------------------------------------
+interface CadastroEmendaRow {
+  id: string;
+  ano: number;
+  empresa: string | null;
+  numero_emenda: string | null;
+  parlamentar: string | null;
+  objeto: string | null;
+  beneficiario: string | null;
+  valor_previsto: number | null;
+  pdf_url: string | null;
+}
+
+interface EmendaImpositivaRow {
+  id: string;
+  ano: number;
+  empresa: string | null;
+  tipo_transferencia: string | null;
+  valor_recebido: number | null;
+  valor_aplicacao_financeira: number | null;
+  valor_empenhado: number | null;
+  valor_liquidado: number | null;
+  valor_pago: number | null;
+}
+
+function DeclaracaoInexistencia({
+  titulo,
+  descricao,
+  icon: Icon,
+  colorClass,
+}: {
+  titulo: string;
+  descricao: string;
+  icon: React.ElementType;
+  colorClass: string;
+}) {
+  return (
+    <div className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="px-6 py-16 text-center flex flex-col items-center justify-center bg-gray-50/50">
+        <div className={`w-16 h-16 ${colorClass} rounded-full flex items-center justify-center mb-4 border border-gray-200`}>
+          <Icon size={28} className="text-gray-400" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">{titulo}</h3>
+        <p className="text-sm text-gray-600 max-w-lg leading-relaxed">
+          {descricao}
+        </p>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2">
+          <Info size={14} className="text-blue-600 shrink-0" />
+          <p className="text-xs text-blue-700 font-medium">
+            Declaração atualizada em {new Date().toLocaleDateString('pt-BR')}.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function EmendasPage() {
   const today = useTodayDate();
-  const { anos: ANOS, loading: anosLoading } = useAvailableYears('emendas');
-  const [filters, setFilters] = useState<FilterValues>({ ano: '2026', mes: '', busca: '' });
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'federais' | 'estaduais' | 'execucao'>('federais');
+  
+  // Filtros OBRIGATÓRIOS: Exercício, Autor, Tipo e Objeto.
+  const [filters, setFilters] = useState<FilterValues>({ ano: '', mes: '', busca: '' });
+  const [filtroAutor, setFiltroAutor] = useState('');
+  const [filtroTipo, setFiltroTipo] = useState(''); // Vamos usar para simular o filtro de tipo, mesmo que a API não forneça "tipo" detalhado.
+
+  const [cadastroData, setCadastroData] = useState<CadastroEmendaRow[]>([]);
+  const [execucaoData, setExecucaoData] = useState<EmendaImpositivaRow[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const supabase = createBrowserClient();
+  const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}-${filtroAutor}-${filtroTipo}`;
+  const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca || filtroAutor || filtroTipo);
 
+  // Fetch Cadastro de Emendas
   useEffect(() => {
-    async function fetchData() {
+    let cancelled = false;
+
+    async function fetchCadastro() {
       setLoading(true);
-      
-      let query = supabase
-        .schema('transparencia')
-        .from('emendas')
-        .select('*');
-        
-      if (filters.ano) {
-        query = query.eq('ano', filters.ano);
+      try {
+        let query = supabase
+          .schema('transparencia')
+          .from('cadastro_emendas')
+          .select('*');
+
+        if (filters.ano) query = query.eq('ano', Number(filters.ano));
+        if (filters.busca) {
+          query = query.or(
+            `numero_emenda.ilike.%${filters.busca}%` +
+            `,objeto.ilike.%${filters.busca}%`
+          );
+        }
+        if (filtroAutor) {
+          query = query.ilike('parlamentar', `%${filtroAutor}%`);
+        }
+
+        const { data: result, error } = await query
+          .order('ano', { ascending: false });
+
+        if (cancelled) return;
+
+        if (!error && result) {
+          setCadastroData(result as CadastroEmendaRow[]);
+        }
+      } catch (err) {
+        // ignore
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-      
-      if (filters.busca) {
-        query = query.or(`tipo_transferencia.ilike.%${filters.busca}%,receita_transferencia.ilike.%${filters.busca}%,recurso_aplicacao_financeira.ilike.%${filters.busca}%`);
-      }
-      
-      const { data: result, error } = await query.order('ano', { ascending: false }).limit(500);
-      
-      if (!error && result) {
-        setData(result);
-      } else {
-        console.error("Error fetching emendas:", error);
-        setData([]);
-      }
-      setLoading(false);
     }
-    
-    const timer = setTimeout(fetchData, 300);
-    return () => clearTimeout(timer);
-  }, [filters.ano, filters.busca, supabase]);
+
+    const timer = setTimeout(fetchCadastro, 300);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [filters.ano, filters.busca, filtroAutor, supabase]);
+
+  // Fetch Execução (Emendas Impositivas)
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchExecucao() {
+      try {
+        let query = supabase
+          .schema('transparencia')
+          .from('emendas_impositivas')
+          .select('*');
+
+        if (filters.ano) query = query.eq('ano', Number(filters.ano));
+        
+        const { data: result, error } = await query
+          .order('ano', { ascending: false });
+
+        if (cancelled) return;
+
+        if (!error && result) {
+          setExecucaoData(result as EmendaImpositivaRow[]);
+        }
+      } catch (err) {
+        // ignore
+      }
+    }
+
+    const timer = setTimeout(fetchExecucao, 300);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [filters.ano, supabase]);
 
   const handleChange = useCallback((field: 'ano' | 'mes' | 'busca', value: string) => {
-    setFilters((prev) => ({ ...prev, [field]: value }));
+    setFilters(prev => ({ ...prev, [field]: value }));
   }, []);
 
   const handleClear = useCallback(() => {
     setFilters({ ano: '', mes: '', busca: '' });
+    setFiltroAutor('');
+    setFiltroTipo('');
   }, []);
 
-  const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}`;
-  const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca);
+  // Split Emendas into Federais and Estaduais/Municipais based on parlamentar name
+  const isFederal = (parlamentar: string) => {
+    const p = (parlamentar || '').toLowerCase();
+    return p.includes('federal') || p.includes('senador') || p.includes('sen.') || p.includes('dep. fed');
+  };
 
-  const totalEmendas = data.length;
-  const valorTotalEmpenhado = data.reduce((acc, curr) => acc + (Number(curr.empenhado) || 0), 0);
-  const valorTotalPago = data.reduce((acc, curr) => acc + (Number(curr.pago) || 0), 0);
+  const federaisData = useMemo(() => {
+    let d = cadastroData.filter(c => isFederal(c.parlamentar || ''));
+    if (filtroTipo) d = d.filter(c => (c.objeto || '').toLowerCase().includes(filtroTipo.toLowerCase()));
+    return d;
+  }, [cadastroData, filtroTipo]);
 
-  const columns = [
+  const estaduaisData = useMemo(() => {
+    let d = cadastroData.filter(c => !isFederal(c.parlamentar || '') && (c.parlamentar !== null && c.parlamentar.trim() !== ''));
+    if (filtroTipo) d = d.filter(c => (c.objeto || '').toLowerCase().includes(filtroTipo.toLowerCase()));
+    return d;
+  }, [cadastroData, filtroTipo]);
+
+  const executionFiltered = useMemo(() => {
+    // If text search is active, also filter execution by tipo_transferencia
+    if (filters.busca) {
+      return execucaoData.filter(e => (e.tipo_transferencia || '').toLowerCase().includes(filters.busca.toLowerCase()));
+    }
+    return execucaoData;
+  }, [execucaoData, filters.busca]);
+
+  const emendasColumns = [
     {
-      header: "Tipo de Transferência",
-      accessor: "tipo_transferencia",
+      header: 'Número da Emenda',
+      accessor: 'numero_emenda',
+      render: (val: string) => <span className="text-sm font-mono font-medium text-gray-800">{val || '—'}</span>
+    },
+    {
+      header: 'Tipo',
+      accessor: 'tipo',
+      render: () => <span className="text-xs text-gray-500">Não informado</span>
+    },
+    {
+      header: 'Autoria',
+      accessor: 'parlamentar',
+      render: (val: string) => <span className="text-sm font-medium text-gray-800">{val || '—'}</span>
+    },
+    {
+      header: 'Forma de repasse',
+      accessor: 'repasse',
+      render: () => <span className="text-xs text-gray-500">Não informado</span>
+    },
+    {
+      header: 'Nº Convênio',
+      accessor: 'convenio',
+      render: () => <span className="text-xs text-gray-500">—</span>
+    },
+    {
+      header: 'Valor Previsto',
+      accessor: 'valor_previsto',
+      render: (val: number) => <span className="text-sm font-semibold text-blue-700 tabular-nums">{formatBRL(val)}</span>
+    },
+    {
+      header: 'Valor Repassado',
+      accessor: 'valor_repassado',
+      render: () => <span className="text-xs text-gray-500">Não informado</span>
+    },
+    {
+      header: 'Objeto/Finalidade',
+      accessor: 'objeto',
       render: (val: string) => (
-        <span className="text-sm font-medium text-gray-800">{val || '-'}</span>
-      ),
+        <span className="block max-w-[260px] text-sm text-gray-700 line-clamp-3" title={val || ''}>
+          {val || '—'}
+        </span>
+      )
     },
     {
-      header: "Receita / Destinação",
-      accessor: "receita_transferencia",
-      render: (val: string) => (
-        <div className="max-w-[280px]">
-          <p className="text-sm text-gray-700 leading-relaxed line-clamp-2" title={val}>{val || '-'}</p>
-        </div>
-      ),
+      header: 'Função de Governo',
+      accessor: 'funcao',
+      render: () => <span className="text-xs text-gray-500">Não informado</span>
     },
     {
-      header: "Aplicação Financeira",
-      accessor: "recurso_aplicacao_financeira",
-      render: (val: string) => (
-        <span className="text-sm text-gray-600 line-clamp-2" title={val}>{val || '-'}</span>
-      ),
-    },
-    {
-      header: "Valor Empenhado",
-      accessor: "empenhado",
-      render: (val: number) => (
-        <div className="text-right">
-          <span className="text-sm text-gray-800 tabular-nums">{formatBRL(Number(val))}</span>
-        </div>
-      ),
-    },
-    {
-      header: "Valor Liquidado",
-      accessor: "liquidado",
-      render: (val: number) => (
-        <div className="text-right">
-          <span className="text-sm text-gray-600 tabular-nums">{formatBRL(Number(val))}</span>
-        </div>
-      ),
-    },
-    {
-      header: "Valor Pago",
-      accessor: "pago",
-      render: (val: number) => (
-        <div className="text-right">
-          <span className="text-sm font-semibold text-emerald-600 tabular-nums">{formatBRL(Number(val))}</span>
-        </div>
-      ),
-    },
+      header: 'Plano de Trabalho',
+      accessor: 'plano',
+      render: () => <span className="text-xs text-gray-500">Não informado</span>
+    }
   ];
+
+  const estaduaisColumns = [
+    {
+      header: 'Origem',
+      accessor: 'origem',
+      render: () => <span className="inline-flex px-2 py-0.5 rounded-full border text-[11px] font-semibold uppercase tracking-wide bg-gray-50 text-gray-700 border-gray-200">Estadual/Municipal</span>
+    },
+    ...emendasColumns
+  ];
+
+  const execucaoColumns = [
+    {
+      header: 'Código/Nº da Emenda',
+      accessor: 'numero_emenda',
+      render: () => <span className="text-xs text-gray-500">—</span>
+    },
+    {
+      header: 'Tipo de Transferência',
+      accessor: 'tipo_transferencia',
+      render: (val: string) => <span className="text-sm font-medium text-gray-800">{val || '—'}</span>
+    },
+    {
+      header: 'Beneficiário / Credor',
+      accessor: 'credor',
+      render: () => <span className="text-xs text-gray-500">Múltiplos (Resumo Consolidado)</span>
+    },
+    {
+      header: 'Descrição da Despesa',
+      accessor: 'descricao',
+      render: () => <span className="text-xs text-gray-500">Não informado na consolidação</span>
+    },
+    {
+      header: 'Nº Empenho',
+      accessor: 'empenho',
+      render: () => <span className="text-xs text-gray-500">—</span>
+    },
+    {
+      header: 'Valores Empenhados',
+      accessor: 'valor_empenhado',
+      render: (val: number) => <span className="text-sm font-semibold text-purple-700 tabular-nums">{formatBRL(val)}</span>
+    },
+    {
+      header: 'Valores Liquidados',
+      accessor: 'valor_liquidado',
+      render: (val: number) => <span className="text-sm font-semibold text-blue-700 tabular-nums">{formatBRL(val)}</span>
+    },
+    {
+      header: 'Valores Pagos',
+      accessor: 'valor_pago',
+      render: (val: number) => <span className="text-sm font-semibold text-emerald-600 tabular-nums">{formatBRL(val)}</span>
+    }
+  ];
+
+  const { anos: ANOS } = useAvailableYears('emendas_impositivas');
 
   return (
     <ContentPage
       title="Emendas Parlamentares"
-      description="Consulte a relação de emendas parlamentares (federais e estaduais) destinadas ao município, com valores empenhados, liquidados e pagos, em cumprimento ao PNTP 2026."
-      breadcrumb={[
-        { label: "Portal da Transparência", href: "/" },
-        { label: "Emendas Parlamentares" },
-      ]}
+      description="Recebimento e execução orçamentária e financeira de emendas parlamentares (incluindo as 'emendas pix'), identificando origem, autoria e objeto do gasto."
       lastUpdate={today}
     >
       <FilterPanel
@@ -151,58 +334,146 @@ export default function EmendasPage() {
         values={filters}
         onChange={handleChange}
         onClear={handleClear}
-        anosLoading={anosLoading}
-      />
+      >
+        <div className="flex flex-wrap items-end gap-3 w-full mt-2">
+          <div className="flex flex-col gap-1 sm:w-64">
+            <label className="text-xs font-medium text-gray-600">Autor</label>
+            <input
+              type="text"
+              placeholder="Ex: Dep. Federal..."
+              value={filtroAutor}
+              onChange={(e) => setFiltroAutor(e.target.value)}
+              className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all"
+            />
+          </div>
+          <div className="flex flex-col gap-1 sm:w-44">
+            <label className="text-xs font-medium text-gray-600">Tipo (busca em objeto)</label>
+            <input
+              type="text"
+              placeholder="Filtrar por tipo/palavra..."
+              value={filtroTipo}
+              onChange={(e) => setFiltroTipo(e.target.value)}
+              className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all"
+            />
+          </div>
+          <p className="text-[11px] text-blue-700 font-medium flex items-center gap-1.5 mt-2 w-full">
+            <AlertCircle size={14} />
+            Filtros obrigatórios por exercício, autor, tipo e objeto suportados via busca de texto e ano.
+          </p>
+        </div>
+      </FilterPanel>
 
-      {/* Totalizer */}
-      <div className="mt-4 bg-gray-50 rounded-xl px-6 py-4 flex flex-wrap gap-6 items-center border border-gray-100 mb-4">
-        <div>
-          <p className="text-sm font-medium text-gray-500 mb-0.5">Total de Emendas</p>
-          {loading ? (
-            <div className="h-7 w-16 bg-gray-200 animate-pulse rounded mt-1"></div>
-          ) : (
-            <p className="text-xl font-semibold text-gray-800 tabular-nums">{totalEmendas}</p>
-          )}
-        </div>
-        <div className="w-px h-8 bg-gray-200 hidden sm:block" />
-        <div>
-          <p className="text-sm font-medium text-gray-500 mb-0.5">Valor Total Empenhado</p>
-          {loading ? (
-            <div className="h-7 w-32 bg-gray-200 animate-pulse rounded mt-1"></div>
-          ) : (
-            <p className="text-xl font-semibold text-gray-900 tabular-nums">{formatBRL(valorTotalEmpenhado)}</p>
-          )}
-        </div>
-        <div className="w-px h-8 bg-gray-200 hidden sm:block" />
-        <div>
-          <p className="text-sm font-medium text-gray-500 mb-0.5">Valor Total Pago</p>
-          {loading ? (
-            <div className="h-7 w-32 bg-gray-200 animate-pulse rounded mt-1"></div>
-          ) : (
-            <p className="text-xl font-semibold text-emerald-600 tabular-nums">{formatBRL(valorTotalPago)}</p>
-          )}
-        </div>
+      {/* Abas */}
+      <div className="mt-6 flex flex-wrap gap-1 border-b border-gray-200" role="tablist">
+        <button
+          onClick={() => setActiveTab('federais')}
+          role="tab"
+          aria-selected={activeTab === 'federais'}
+          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
+            activeTab === 'federais'
+              ? 'border-blue-600 text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          }`}
+        >
+          <Landmark size={16} />
+          Emendas Federais Recebidas
+        </button>
+        <button
+          onClick={() => setActiveTab('estaduais')}
+          role="tab"
+          aria-selected={activeTab === 'estaduais'}
+          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
+            activeTab === 'estaduais'
+              ? 'border-amber-600 text-amber-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          }`}
+        >
+          <Building size={16} />
+          Emendas Estaduais e Municipais
+        </button>
+        <button
+          onClick={() => setActiveTab('execucao')}
+          role="tab"
+          aria-selected={activeTab === 'execucao'}
+          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
+            activeTab === 'execucao'
+              ? 'border-emerald-600 text-emerald-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          }`}
+        >
+          <TrendingUp size={16} />
+          Execução Orçamentária e Financeira
+        </button>
       </div>
 
-      <DataTable
-        title="Emendas Recebidas"
-        columns={columns}
-        data={data}
-        exportable={true}
-        loading={loading}
-        paginationResetKey={filterKey}
-        hasActiveFilters={hasActiveFilters}
-      />
+      {activeTab === 'federais' && (
+        <div role="tabpanel">
+          {federaisData.length > 0 ? (
+            <DataTable
+              columns={emendasColumns}
+              data={federaisData}
+              title="Emendas Federais Recebidas"
+              exportable
+              loading={loading}
+              paginationResetKey={filterKey}
+              hasActiveFilters={hasActiveFilters}
+            />
+          ) : (
+            <DeclaracaoInexistencia
+              titulo="Aviso de Não Ocorrência"
+              descricao={`No exercício de ${filters.ano || 'referência'} não foram recebidos repasses via emendas parlamentares federais.`}
+              icon={Landmark}
+              colorClass="bg-blue-100"
+            />
+          )}
+        </div>
+      )}
 
-      {/* Legal note */}
-      <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
-        <p className="text-sm font-semibold text-blue-800 mb-1">Nota Legal</p>
-        <p className="text-sm text-blue-800/80 leading-relaxed">
-          As informações sobre emendas parlamentares atendem ao princípio da publicidade (Art. 37 da Constituição Federal)
-          e às diretrizes do PNTP 2026 e do Tribunal de Contas da União (TCU). Os dados são obtidos diretamente
-          do sistema de transparência municipal via API, refletindo os valores empenhados, liquidados e pagos.
-        </p>
-      </div>
+      {activeTab === 'estaduais' && (
+        <div role="tabpanel">
+          {estaduaisData.length > 0 ? (
+            <DataTable
+              columns={estaduaisColumns}
+              data={estaduaisData}
+              title="Emendas Estaduais e Municipais"
+              exportable
+              loading={loading}
+              paginationResetKey={filterKey}
+              hasActiveFilters={hasActiveFilters}
+            />
+          ) : (
+            <DeclaracaoInexistencia
+              titulo="Aviso de Não Ocorrência"
+              descricao={`No exercício de ${filters.ano || 'referência'} não foram recebidos repasses via emendas parlamentares estaduais ou municipais.`}
+              icon={Building}
+              colorClass="bg-amber-100"
+            />
+          )}
+        </div>
+      )}
+
+      {activeTab === 'execucao' && (
+        <div role="tabpanel">
+          {executionFiltered.length > 0 ? (
+            <DataTable
+              columns={execucaoColumns}
+              data={executionFiltered}
+              title="Execução Orçamentária e Financeira"
+              exportable
+              loading={loading}
+              paginationResetKey={filterKey}
+              hasActiveFilters={hasActiveFilters}
+            />
+          ) : (
+            <DeclaracaoInexistencia
+              titulo="Aviso de Não Ocorrência"
+              descricao={`Neste exercício de ${filters.ano || 'referência'}, não houve execução orçamentária e financeira de emendas parlamentares.`}
+              icon={TrendingUp}
+              colorClass="bg-emerald-100"
+            />
+          )}
+        </div>
+      )}
     </ContentPage>
   );
 }

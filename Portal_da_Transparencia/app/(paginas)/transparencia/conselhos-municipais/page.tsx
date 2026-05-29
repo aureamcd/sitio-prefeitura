@@ -271,7 +271,7 @@ export default function ConselhosMunicipaisPage() {
 
   const conselho = CONSELHOS[conselhoAtivo];
 
-  const [filters, setFilters] = useState<FilterValues>({ ano: '2026', mes: '', busca: '' });
+  const [filters, setFilters] = useState<FilterValues>({ ano: '2026', mes: '', busca: '', entidade: '' });
 
   const subAbas: { key: AbaKey; label: string; icon: typeof FileText; count: number }[] = [
     { key: 'composicao', label: 'Composição', icon: Users, count: conselho.membros.length },
@@ -306,7 +306,7 @@ export default function ConselhosMunicipaisPage() {
             ]}
             values={filters}
             onChange={(_field, _value) => {}}
-            onClear={() => setFilters({ ano: '2026', mes: '', busca: '' })}
+            onClear={() => setFilters({ ano: '2026', mes: '', busca: '', entidade: '' })}
           />
 
           {/* ── SELEÇÃO DE CONSELHO ── */}

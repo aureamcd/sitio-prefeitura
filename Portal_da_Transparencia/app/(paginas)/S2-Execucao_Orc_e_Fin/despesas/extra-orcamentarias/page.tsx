@@ -9,11 +9,12 @@ import { MESES, formatBRL, formatDateISO } from '@/lib/despesas/types';
 import type { DespesaExtraRow } from '@/lib/despesas/types';
 import { useTodayDate } from '@/lib/hooks/useTodayDate';
 import { ChevronDown } from 'lucide-react';
+import { EMPRESAS } from '@/lib/empresas';
 
 export default function DespesasExtraPage() {
   const today = useTodayDate();
-  const { anos: ANOS, loading: anosLoading } = useAvailableYears('despesas_extra_orcamentarias');
-  const [filters, setFilters] = useState<FilterValues>({ ano: '2026', mes: '', busca: '' });
+  const [filters, setFilters] = useState<FilterValues>({ ano: '2026', mes: '', busca: '', entidade: '' });
+  const { anos: ANOS, loading: anosLoading } = useAvailableYears('despesas_extra_orcamentarias', filters.entidade || undefined);
 
   // Filtros extras
   const [nomenclaturaFilter, setNomenclaturaFilter] = useState('');
@@ -57,6 +58,7 @@ export default function DespesasExtraPage() {
         .select('*');
 
       if (filters.ano) query = query.eq('ano', filters.ano);
+      if (filters.entidade) query = query.eq('empresa', filters.entidade);
       if (filters.busca) {
         query = query.or(
           `descricao.ilike.%${filters.busca}%` +
@@ -70,8 +72,7 @@ export default function DespesasExtraPage() {
       if (nomenclaturaFilter) query = query.eq('nomenclatura', nomenclaturaFilter);
 
       const { data: result, error: err } = await query
-        .order('data', { ascending: false })
-        .limit(500);
+        .order('data', { ascending: false });
 
       if (cancelled) return;
 
@@ -90,19 +91,19 @@ export default function DespesasExtraPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [filters.ano, filters.busca, nomenclaturaFilter, supabase]);
+  }, [filters.ano, filters.entidade, filters.busca, nomenclaturaFilter, supabase]);
 
   // ── Handlers ──
-  const handleChange = useCallback((field: 'ano' | 'mes' | 'busca', value: string) => {
+  const handleChange = useCallback((field: 'ano' | 'mes' | 'busca' | 'entidade', value: string) => {
     setFilters(prev => ({ ...prev, [field]: value }));
   }, []);
 
   const handleClear = useCallback(() => {
-    setFilters({ ano: '', mes: '', busca: '' });
+    setFilters({ ano: '', mes: '', busca: '', entidade: '' });
     setNomenclaturaFilter('');
   }, []);
 
-  const filterKey = `${filters.ano}-${filters.busca}-${nomenclaturaFilter}`;
+  const filterKey = `${filters.ano}-${filters.busca}-${nomenclaturaFilter}-${filters.entidade}`;
   const hasActiveFilters = !!(filters.ano || filters.busca || nomenclaturaFilter);
 
   const totalPago = useMemo(
@@ -132,6 +133,10 @@ export default function DespesasExtraPage() {
       header: 'Tipo',
       accessor: 'nomenclatura',
       render: (_val: string, row: DespesaExtraRow) => <TipoBadge row={row} />,
+    },
+    {
+      header: 'Entidade',
+      accessor: 'empresa_nome',
     },
     {
       header: 'Código',
@@ -219,6 +224,7 @@ export default function DespesasExtraPage() {
         onChange={handleChange}
         onClear={handleClear}
         anosLoading={anosLoading}
+        empresas={EMPRESAS}
       >
         {/* Filtro Nomenclatura */}
         <div className="flex flex-col gap-1 sm:w-64">

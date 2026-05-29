@@ -51,8 +51,7 @@ export default function YearComparison({
           .schema('transparencia')
           .from(supabaseTable)
           .select(`ano, ${valueColumn}`)
-          .not('ano', 'is', null)
-          .limit(10000);
+          .not('ano', 'is', null);
 
         if (cancelled) return;
 

@@ -11,6 +11,7 @@ export function useTodayDate(): string {
   const [date, setDate] = useState('');
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDate(new Date().toISOString().split('T')[0]);
   }, []);
 

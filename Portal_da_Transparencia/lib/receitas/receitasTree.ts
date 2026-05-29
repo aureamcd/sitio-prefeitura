@@ -3,11 +3,26 @@
  * RECEITAS — LÓGICA DA ÁRVORE CONTÁBIL
  * ========================================================
  *
- * Constrói a árvore hierárquica usando `codigo_pai` e `nivel`.
- * Caso esses campos não estejam no banco, são calculados a
- * partir do `codigo_contabil`.
+ * Constrói a árvore hierárquica usando os valores de `nivel`,
+ * `tipo_nivel` e `codigo_pai` armazenados no banco de dados
+ * (importados corretamente da API). Apenas quando esses valores
+ * estão ausentes no DB é feita a computação client-side.
  *
- * Hierarquia: Categoria → Origem → Espécie → Rubrica → Item
+ * O formato de código utilizado é XXXX.XX.X.X.XX (10 dígitos
+ * em 5 grupos), que corresponde à normalização do formato
+ * original da API (1.0.00.00.00.00).
+ *
+ * Hierarquia: Categoria → Origem → Espécie → Rubrica → Alínea → Subalínea
+ *
+ * A computação client-side é feita por `computeParentSafe()`, que
+ * identifica o grupo mais profundo com valor não-zero no código
+ * e o zera (junto com todos os grupos à direita) para obter o pai.
+ * Esta abordagem não depende de regex de nível, sendo robusta a
+ * variações na quantidade de dígitos significativos.
+ *
+ * Quando um nível intermediário (ex: Nível 4) não existe no dataset,
+ * a buildTree() sobe na hierarquia (findExistingParent) até encontrar
+ * o ancestral mais próximo, garantindo que nós não virem raízes órfãs.
  *
  * @module lib/receitas/receitasTree
  */
@@ -15,7 +30,7 @@
 import type { ReceitaNode, RawReceita, FlatTreeNode } from './types';
 
 // ---------------------------------------------------------------------------
-// Helpers — cálculo de hierarquia a partir do codigo_contabil
+// Helpers — normalização e cálculo de hierarquia
 // ---------------------------------------------------------------------------
 
 /** Extrai apenas dígitos do código contábil. */
@@ -23,33 +38,55 @@ function extractDigits(code: string): string {
   return code.replace(/[^\d]/g, '');
 }
 
-/** Garante 11 dígitos (padding com zeros à direita). */
+/** Garante 10 dígitos (padding com zeros à direita). */
 function padCode(clean: string): string {
-  return clean.padEnd(11, '0').slice(0, 11);
+  return clean.padEnd(10, '0').slice(0, 10);
 }
 
-/** Formata 11 dígitos no padrão XXXX.XX.X.X.XX. */
+/**
+ * Formata 11 dígitos no padrão XXXX.XX.X.X.XX.
+ * Ex: "10000000000" → "1000.00.0.0.00"
+ */
 function formatCodigo(clean: string): string {
   return `${clean.slice(0, 4)}.${clean.slice(4, 6)}.${clean[6]}.${clean[7]}.${clean.slice(8, 10)}`;
 }
 
 /**
+ * Normaliza qualquer formato de codigo_contabil para o padrão
+ * XXXX.XX.X.X.XX, que é o mesmo formato usado por
+ * getCodigoPaiFromCodigo(). Isso garante que as chaves do
+ * nodeMap e os códigos dos pais estejam sempre no mesmo formato.
+ *
+ * Ex: "1.0.00.00.00.00" → "1000.00.0.0.00"
+ */
+export function normalizeCodigo(codigo: string): string {
+  const clean = padCode(extractDigits(codigo));
+  return formatCodigo(clean);
+}
+
+/**
  * Determina o nível hierárquico a partir do codigo_contabil.
- * Usa os dígitos para determinar a profundidade: quanto mais
- * zeros à direita, mais alto o nível.
  */
 export function getNivelFromCodigo(codigo: string): number {
   const clean = padCode(extractDigits(codigo));
 
-  // Nível 1: N0000000000 (ex: 1000.00.0.0.00)
-  if (/^\d0{10}$/.test(clean)) return 1;
-  // Nível 2: NN000000000 (ex: 1100.00.0.0.00)
-  if (/^\d{2}0{9}$/.test(clean)) return 2;
-  // Nível 3: NNNN0000000 (ex: 1111.00.0.0.00)
-  if (/^\d{4}0{7}$/.test(clean)) return 3;
-  // Nível 4: NNNN00.0.0.00
-  if (/^\d{6}0{5}$/.test(clean)) return 4;
-  return 5;
+  // Nível 1 (Categoria): N000000000 (ex: 1000.00.0.0.00)
+  if (/^\d0{9}$/.test(clean)) return 1;
+  // Nível 2 (Origem): NN00000000 (ex: 1100.00.0.0.00)
+  if (/^\d{2}0{8}$/.test(clean)) return 2;
+  // Nível 3 (Espécie): NNN0000000 (ex: 1110.00.0.0.00)
+  if (/^\d{3}0{7}$/.test(clean)) return 3;
+  // Nível 4 (Rubrica): NNNN000000 (ex: 1111.00.0.0.00)
+  if (/^\d{4}0{6}$/.test(clean)) return 4;
+  // Nível 5 (Alínea): NNNNNN0000 (ex: 1111.01.0.0.00)
+  if (/^\d{6}0{4}$/.test(clean)) return 5;
+  // Nível 6 (Subalínea): NNNNNNN000 (ex: 1111.01.1.0.00)
+  if (/^\d{7}0{3}$/.test(clean)) return 6;
+  // Nível 7 (Desdobramento 1): NNNNNNNN00 (ex: 1111.01.1.1.00)
+  if (/^\d{8}0{2}$/.test(clean)) return 7;
+  
+  // Nível 8+: Detalhamento completo
+  return 8;
 }
 
 /** Retorna o nome do nível. */
@@ -59,14 +96,65 @@ export function getTipoNivelFromNivel(nivel: number): string {
     case 2: return 'Origem';
     case 3: return 'Espécie';
     case 4: return 'Rubrica';
+    case 5: return 'Alínea';
+    case 6: return 'Subalínea';
+    case 7: return 'Detalhamento';
     default: return 'Item';
   }
+}
+
+/**
+ * Calcula o codigo_pai a partir do codigo_contabil usando a estrutura
+ * de grupos do formato XXXX.XX.X.X.XX, sem depender de regex de nível.
+ *
+ * A lógica identifica o grupo mais profundo com valor não-zero e o
+ * zera (junto com todos os grupos à direita) para obter o pai.
+ *
+ * Grupos do formato XXXX.XX.X.X.XX:
+ *   [0-3, 4 dígitos][4-5, 2 dígitos][6, 1 dígito][7, 1 dígito][8-9, 2 dígitos]
+ *
+ * @returns Código no formato XXXX.XX.X.X.XX ou null (raiz).
+ */
+export function computeParentSafe(codigo: string): string | null {
+  const digits = extractDigits(codigo).padEnd(10, '0').slice(0, 10);
+
+  const groups = [
+    { start: 0, size: 1 }, // Categoria
+    { start: 1, size: 1 }, // Origem
+    { start: 2, size: 1 }, // Espécie
+    { start: 3, size: 1 }, // Rubrica
+    { start: 4, size: 2 }, // Alínea
+    { start: 6, size: 1 }, // Subalínea
+    { start: 7, size: 1 }, // Desdobramento 1
+    { start: 8, size: 2 }, // Detalhamento
+  ];
+
+  let deepestNonZero = -1;
+  for (let i = 0; i < groups.length; i++) {
+    const g = digits.slice(groups[i].start, groups[i].start + groups[i].size);
+    if (g !== '0'.repeat(groups[i].size)) {
+      deepestNonZero = i;
+    }
+  }
+
+  if (deepestNonZero <= 0) return null;
+
+  const parent = digits.split('');
+  for (let i = groups[deepestNonZero].start; i < digits.length; i++) {
+    parent[i] = '0';
+  }
+
+  return formatCodigo(parent.join(''));
 }
 
 /**
  * Calcula o codigo_pai a partir do codigo_contabil.
  * O pai é o código do nível imediatamente superior.
  * Retorna null para nível 1 (raiz).
+ * NOTA: O código retornado está no formato XXXX.XX.X.X.XX.
+ *
+ * @deprecated Use computeParentSafe() — esta função usa detecção de
+ * nível por regex que pode classificar incorretamente alguns códigos.
  */
 export function getCodigoPaiFromCodigo(codigo: string): string | null {
   const clean = padCode(extractDigits(codigo));
@@ -74,41 +162,23 @@ export function getCodigoPaiFromCodigo(codigo: string): string | null {
 
   if (nivel === 1) return null;
 
-  // Nível 2 → pai é nível 1
   if (nivel === 2) {
     return formatCodigo(clean[0].padEnd(11, '0'));
   }
-  // Nível 3 → pai é nível 2
   if (nivel === 3) {
     return formatCodigo(clean.slice(0, 2).padEnd(11, '0'));
   }
-  // Nível 4+ → pai é nível 3
-  return formatCodigo(clean.slice(0, 4).padEnd(11, '0'));
-}
-
-/** Garante que RawReceita tenha nivel, tipo_nivel e codigo_pai preenchidos. */
-function enrichRawReceita(item: RawReceita): {
-  nivel: number;
-  tipo_nivel: string;
-  codigo_pai: string | null;
-} & RawReceita {
-  const nivel =
-    item.nivel && item.nivel > 0
-      ? item.nivel
-      : getNivelFromCodigo(item.codigo_contabil);
-
-  return {
-    ...item,
-    nivel,
-    tipo_nivel:
-      item.tipo_nivel && item.tipo_nivel !== 'undefined'
-        ? item.tipo_nivel
-        : getTipoNivelFromNivel(nivel),
-    codigo_pai:
-      item.codigo_pai != null
-        ? item.codigo_pai
-        : getCodigoPaiFromCodigo(item.codigo_contabil),
-  };
+  if (nivel === 4) {
+    return formatCodigo(clean.slice(0, 4).padEnd(11, '0'));
+  }
+  if (nivel === 5) {
+    return formatCodigo(clean.slice(0, 6).padEnd(11, '0'));
+  }
+  if (nivel === 6) {
+    return formatCodigo(clean.slice(0, 7).padEnd(11, '0'));
+  }
+  // Nível 7+
+  return formatCodigo(clean.slice(0, 8).padEnd(11, '0'));
 }
 
 // ---------------------------------------------------------------------------
@@ -116,21 +186,66 @@ function enrichRawReceita(item: RawReceita): {
 // ---------------------------------------------------------------------------
 
 /**
- * Build a ReceitaNode tree using `codigo_pai` relationship.
- * If codigo_pai / nivel / tipo_nivel are not present in the DB,
- * they are computed client-side from codigo_contabil.
+ * Normaliza codigo_pai do banco (formato simples de 11 dígitos,
+ * ex: "13210100000") para o formato XXXX.XX.X.X.XX.
+ */
+function normalizeDBPai(pai: string): string {
+  const clean = pai.replace(/[^\d]/g, '').padEnd(10, '0').slice(0, 10);
+  return formatCodigo(clean);
+}
+
+/**
+ * Build a ReceitaNode tree using DB-stored hierarchy fields.
+ *
+ * A árvore usa os valores `nivel`, `tipo_nivel` e `codigo_pai`
+ * armazenados no banco (importados corretamente da API). Apenas
+ * quando esses valores estão ausentes é feita a computação
+ * client-side via computeParentSafe().
+ *
+ * Todas as chaves do nodeMap são normalizadas via normalizeCodigo()
+ * para o formato XXXX.XX.X.X.XX.
  */
 export function buildTree(items: RawReceita[]): ReceitaNode[] {
   if (!items.length) return [];
 
-  // 1. Enrich items with computed hierarchy fields if missing
-  const enriched = items.map(enrichRawReceita);
+  // 1. Usa valores do banco; fallback para computação local apenas
+  //    quando o DB não tiver o campo preenchido.
+  const enriched = items.map((item) => {
+    const nivel = item.nivel ?? getNivelFromCodigo(item.codigo_contabil);
+    const tipoNivel = item.tipo_nivel ?? getTipoNivelFromNivel(nivel);
 
-  // 2. Create a map of all nodes keyed by codigo_contabil
+    return {
+      codigo_contabil: item.codigo_contabil,
+      descricao: item.descricao,
+      previsto_atualizado: item.previsto_atualizado,
+      previsto_inicial: item.previsto_inicial,
+      arrecadado_total: item.arrecadado_total,
+      arrecadado_periodo: item.arrecadado_periodo,
+      fonte_recurso: item.fonte_recurso,
+      nivel,
+      tipo_nivel: tipoNivel,
+      // Normaliza codigo_pai do DB (11 dígitos) para XXXX.XX.X.X.XX
+      codigo_pai: item.codigo_pai ? normalizeDBPai(item.codigo_pai) : null,
+    };
+  });
+
+  // 2. Cria nodeMap com chave no formato XXXX.XX.X.X.XX
   const nodeMap = new Map<string, ReceitaNode>();
   const childrenMap = new Map<string, ReceitaNode[]>();
+  const parentCodeMap = new Map<string, string | null>();
 
   for (const item of enriched) {
+    const normalizedKey = normalizeCodigo(item.codigo_contabil);
+
+    if (nodeMap.has(normalizedKey)) {
+      const existing = nodeMap.get(normalizedKey)!;
+      existing.previsto += Number(item.previsto_atualizado) || 0;
+      existing.previstoInicial += Number(item.previsto_inicial) || 0;
+      existing.arrecadado += Number(item.arrecadado_total) || 0;
+      existing.arrecadadoPeriodo += Number(item.arrecadado_periodo) || 0;
+      continue;
+    }
+
     const node: ReceitaNode = {
       codigo: item.codigo_contabil,
       descricao: item.descricao,
@@ -141,45 +256,99 @@ export function buildTree(items: RawReceita[]): ReceitaNode[] {
       arrecadadoPeriodo: Number(item.arrecadado_periodo) || 0,
       fonteRecurso: item.fonte_recurso || null,
       level: Number(item.nivel) || 0,
-      isLeaf: true,  // will be updated below
+      isLeaf: true,
       filhos: [],
     };
-    nodeMap.set(item.codigo_contabil, node);
+    nodeMap.set(normalizedKey, node);
+    parentCodeMap.set(normalizedKey, item.codigo_pai);
   }
 
-  // 3. Build parent-child relationships using codigo_pai
+  // 3. Constrói relações pai-filho
   const roots: ReceitaNode[] = [];
 
-  for (const item of enriched) {
-    const node = nodeMap.get(item.codigo_contabil)!;
+  // Helper: sobe na hierarquia usando computeParentSafe (sem regex de nível)
+  // para encontrar o ancestral mais próximo que existe no dataset.
+  function findExistingParent(codigoContabil: string): string | null {
+    let current = codigoContabil;
+    const visited = new Set<string>();
+    while (current) {
+      if (visited.has(current)) return null; // safety: avoid infinite loop
+      visited.add(current);
+      const parent = computeParentSafe(current);
+      if (!parent) return null;
+      if (nodeMap.has(parent)) return parent;
+      current = parent;
+    }
+    return null;
+  }
 
-    if (!item.codigo_pai || !nodeMap.has(item.codigo_pai)) {
-      // Root node (no parent or parent not in dataset)
+  for (const [normalizedKey, node] of nodeMap.entries()) {
+    const codigo_pai = parentCodeMap.get(normalizedKey);
+
+    if (!codigo_pai) {
       roots.push(node);
-    } else {
-      // Has a parent
-      const parentCode = item.codigo_pai;
+    } else if (nodeMap.has(codigo_pai)) {
+      // Pai direto existe no dataset
+      const parentCode = codigo_pai;
       if (!childrenMap.has(parentCode)) {
         childrenMap.set(parentCode, []);
       }
       childrenMap.get(parentCode)!.push(node);
+    } else {
+      // Pai direto não está no dataset — sobe na hierarquia
+      const ancestor = findExistingParent(node.codigo);
+      if (ancestor) {
+        if (!childrenMap.has(ancestor)) {
+          childrenMap.set(ancestor, []);
+        }
+        childrenMap.get(ancestor)!.push(node);
+      } else {
+        roots.push(node);
+      }
     }
   }
 
-  // 4. Attach children to parents
+  // 4. Anexa filhos aos pais
   for (const [parentCode, children] of childrenMap) {
     const parent = nodeMap.get(parentCode);
     if (parent) {
       parent.filhos = children.sort((a, b) => a.codigo.localeCompare(b.codigo));
       parent.isLeaf = false;
     } else {
-      // Parent not found in current dataset — treat children as roots
       roots.push(...children);
     }
   }
 
-  // 5. Sort roots
+  // 5. Calcula totais hierárquicos bottom-up (Soma dos filhos para os pais)
+  function sumTotals(node: ReceitaNode) {
+    if (node.filhos.length === 0) return;
+
+    let previstoFilhos = 0;
+    let previstoInicialFilhos = 0;
+    let arrecadadoFilhos = 0;
+    let arrecadadoPeriodoFilhos = 0;
+
+    for (const child of node.filhos) {
+      sumTotals(child);
+      previstoFilhos += child.previsto;
+      previstoInicialFilhos += child.previstoInicial;
+      arrecadadoFilhos += child.arrecadado;
+      arrecadadoPeriodoFilhos += child.arrecadadoPeriodo;
+    }
+
+    // Se o nó tem filhos, o seu valor total DEVE ser exatamente a soma dos filhos.
+    // Isso garante consistência matemática perfeita na tabela exibida ao usuário.
+    node.previsto = previstoFilhos;
+    node.previstoInicial = previstoInicialFilhos;
+    node.arrecadado = arrecadadoFilhos;
+    node.arrecadadoPeriodo = arrecadadoPeriodoFilhos;
+  }
+
+  // 6. Ordena raízes e consolida totais
   roots.sort((a, b) => a.codigo.localeCompare(b.codigo));
+  for (const root of roots) {
+    sumTotals(root);
+  }
 
   return roots;
 }

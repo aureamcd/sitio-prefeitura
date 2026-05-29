@@ -302,12 +302,6 @@ export default function TransparenciaPage() {
       {/* ─── Hero + KPIs ─── */}
       <DashboardResumo />
 
-      <div className="absolute top-0 left-0 right-0 h-[3px] flex">
-        <div className="flex-1 bg-[#F7C325]" />
-        <div className="flex-1 bg-[#E53935]" />
-        <div className="flex-1 bg-[#0052CC]" />
-      </div>
-
       {/* ─── Sections ─── */}
       {sections.map((section, index) => (
         <TransparencySection

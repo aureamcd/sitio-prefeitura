@@ -19,6 +19,10 @@ export interface DespesaRow {
   id: string;
   ano: number;
 
+  /* Entidade / Empresa */
+  empresa: string | null;
+  empresa_nome: string | null;
+
   /* Identificação do empenho */
   pkemp: string | null;
   codigo: string | null;
@@ -32,8 +36,10 @@ export interface DespesaRow {
   fornecedor_cpf_cnpj: string | null;
 
   /* Órgão / Unidade */
-  orgao_unidade: string | null;
+  orgao_codigo: string | null;
   orgao_nome: string | null;
+  unidade_codigo: string | null;
+  unidade_nome: string | null;
 
   /* Classificação funcional */
   funcao_codigo: string | null;
@@ -73,7 +79,8 @@ export interface DespesaRow {
   liquidado_ate_data: number | null;
   pago_ate_data: number | null;
 
-  /* Processo / Licitação / Origem */
+  /* Objeto / Processo / Licitação / Origem */
+  objeto: string | null;
   processo: string | null;
   licitacao: string | null;
   origem: string | null;
@@ -135,6 +142,8 @@ export const TIPOS_EMPENHO = [
   { value: 'Estimativo', label: 'Estimativo' },
   { value: 'Global', label: 'Global' },
 ];
+
+export const PAGE_SIZE = 25;
 
 /* ── Helpers ────────────────────────────────────────── */
 

@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/importar-pessoal",
+      "schedule": "0 3 5 * *"
+    }
+  ]
+}

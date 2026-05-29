@@ -24,8 +24,8 @@ export interface DataTableProps {
   pageSize?: number;
   paginationResetKey?: string | number;
   hasActiveFilters?: boolean;
-  emptyMessage?: string;
-  emptyFilteredMessage?: string;
+  emptyMessage?: React.ReactNode;
+  emptyFilteredMessage?: React.ReactNode;
 }
 
 /** Extrai o valor textual de uma célula para o CSV. */
@@ -114,9 +114,21 @@ export default function DataTable({
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-7">
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-        {caption && <p className="text-sm text-gray-600 mt-1">{caption}</p>}
+      <div className="mb-4 flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+          {caption && <p className="text-sm text-gray-600 mt-1">{caption}</p>}
+        </div>
+        {exportable && !loading && data.length > 0 && (
+          <button
+            onClick={handleExport}
+            className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+            aria-label="Exportar dados completos em CSV"
+          >
+            <Download className="w-4 h-4" aria-hidden="true" />
+            CSV
+          </button>
+        )}
       </div>
 
       <div className="overflow-x-auto -mx-6 px-7">
@@ -202,7 +214,7 @@ export default function DataTable({
       </div>
 
       {!loading && data.length > 0 && (
-        <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="mt-4">
           <Pagination
             page={page}
             totalPages={totalPages}
@@ -211,17 +223,6 @@ export default function DataTable({
             endIndex={endIndex}
             total={total}
           />
-
-          {exportable && (
-            <button
-              onClick={handleExport}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
-              aria-label="Exportar dados completos em CSV"
-            >
-              <Download className="w-4 h-4" aria-hidden="true" />
-              CSV
-            </button>
-          )}
         </div>
       )}
     </div>

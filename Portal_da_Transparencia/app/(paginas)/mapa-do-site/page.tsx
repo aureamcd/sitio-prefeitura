@@ -29,9 +29,7 @@ const sections: { title: string; icon?: string; links: SiteLink[] }[] = [
     title: "Execução Orçamentária e Financeira",
     links: [
       { href: "/S2-Execucao_Orc_e_Fin/receitas", label: "Receitas", description: "Previsão, arrecadação, classificação por natureza, dívida ativa e receitas extra-orçamentárias" },
-      { href: "/S2-Execucao_Orc_e_Fin/despesas", label: "Despesas", description: "Empenhos, liquidações, pagamentos por credor e classificação orçamentária" },
-      { href: "/S2-Execucao_Orc_e_Fin/despesas/extra-orcamentarias", label: "Despesas Extra-orçamentárias", description: "Pagamentos que não integram o orçamento anual (cauções, consignações, restituições)" },
-      { href: "/S2-Execucao_Orc_e_Fin/despesas/restos-a-pagar", label: "Restos a Pagar", description: "Despesas empenhadas e não pagas até o final do exercício" },
+      { href: "/S2-Execucao_Orc_e_Fin/despesas", label: "Despesas", description: "Empenhos, liquidações, pagamentos, despesas extra-orçamentárias e restos a pagar" },
       { href: "/S2-Execucao_Orc_e_Fin/renuncias-de-receitas", label: "Renúncias de Receita", description: "Desonerações tributárias, isenções fiscais e beneficiários" },
     ],
   },
@@ -40,7 +38,7 @@ const sections: { title: string; icon?: string; links: SiteLink[] }[] = [
     links: [
       { href: "/S3-Compras_Cont_e_Conven/licitacoes", label: "Licitações", description: "Editais, atas, dispensas, inexigibilidades e licitantes sancionados" },
       { href: "/transparencia/contratos", label: "Contratos", description: "Íntegra dos contratos vigentes, aditivos, fiscais e ordem cronológica de pagamentos" },
-      { href: "/transparencia/convenios", label: "Convênios e Transferências", description: "Transferências voluntárias recebidas e concedidas, acordos e instrumentos" },
+      { href: "/transparencia/convenios", label: "Convênios e Transferências Voluntárias", description: "Transferências voluntárias recebidas (5.1), realizadas (5.2) e acordos sem repasse financeiro (5.3) — PNTP 2026" },
     ],
   },
   {
@@ -53,6 +51,7 @@ const sections: { title: string; icon?: string; links: SiteLink[] }[] = [
     title: "Gestão de Pessoas e Benefícios",
     links: [
       { href: "/transparencia/recursos-humanos", label: "Recursos Humanos", description: "Relação nominal de servidores, cargos, remunerações e terceirizados" },
+      { href: "/transparencia/recursos-humanos/servidores", label: "Servidores Municipais", description: "Lista detalhada de servidores com cargo, lotação e remuneração" },
       { href: "/transparencia/recursos-humanos/servidores", label: "Servidores Municipais", description: "Lista detalhada de servidores com cargo, lotação e remuneração" },
       { href: "/transparencia/recursos-humanos/diarias", label: "Diárias e Passagens", description: "Beneficiários, valores, destinos e motivos de afastamento" },
       { href: "/transparencia/concursos", label: "Concursos e Seleções Públicas", description: "Editais, resultados, aprovados e nomeações" },
