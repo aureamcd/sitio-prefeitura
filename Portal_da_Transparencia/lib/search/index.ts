@@ -17,7 +17,7 @@ const searchItems: SearchResult[] = [
   {
     title: "Portal da Transparencia",
     description: "Acompanhe receitas, despesas, servidores e informacoes publicas do municipio.",
-    href: "https://transparencia.padremarcos.pi.gov.br/transparencia/",
+    href: "https://transparencia.padremarcos.pi.gov.br/",
     category: "Transparencia",
     keywords: ["receitas", "despesas", "contas publicas", "servidores"],
   },

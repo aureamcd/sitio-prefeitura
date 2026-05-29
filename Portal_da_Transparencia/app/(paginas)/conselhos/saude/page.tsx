@@ -62,7 +62,8 @@ export default function ConselhoSaudePage() {
             { nome: 'Exemplo: Dr. Carlos Alves', entidade: 'Representante da Gestão' },
           ]}
           title="Membros do Conselho"
-          caption="Lista nominal dos membros titulares e suplentes do Conselho Municipal de Saúde e suas respectivas representações."
+          caption="Lista nominal dos membros titulares e suplentes do Conselho Municipal de Saúde (CMS) e suas respectivas representações."
+          exportable={true}
         />
       </div>
 

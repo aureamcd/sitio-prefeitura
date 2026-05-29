@@ -63,6 +63,7 @@ export default function ConselhoAssistenciaPage() {
           ]}
           title="Membros do Conselho"
           caption="Lista nominal dos membros titulares e suplentes do Conselho Municipal de Assistência Social (CMAS) e suas respectivas representações."
+          exportable={true}
         />
       </div>
 

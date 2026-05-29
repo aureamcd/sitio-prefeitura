@@ -62,7 +62,8 @@ export default function ConselhoEducacaoPage() {
             { nome: 'Exemplo: Maria de Lourdes', entidade: 'Representante de Pais de Alunos' },
           ]}
           title="Membros do Conselho"
-          caption="Lista nominal dos membros titulares e suplentes do CACS-FUNDEB e suas respectivas representações."
+          caption="Lista nominal dos membros titulares e suplentes do Conselho Municipal de Educação (CME) e suas respectivas representações."
+          exportable={true}
         />
       </div>
 
