@@ -529,11 +529,7 @@ function PrestacaoContasTab({
 
   return (
     <div id="panel-prestacao" role="tabpanel" aria-labelledby="tab-prestacao">
-      {/* Alerta crítico - PDF Pesquisável */}
-      <div className="mt-4 mb-4">
-        <AlertaPdfPesquisavel />
-      </div>
-
+      
       {/* Descrição */}
       <div className="mb-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
         <div className="flex items-start gap-3">
