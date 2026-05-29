@@ -387,11 +387,6 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
         </ul>
       </div>     
 
-      <div className="h-[3px] flex">
-        <div className="flex-1 bg-[#F7C325]" />
-        <div className="flex-1 bg-[#E53935]" />
-        <div className="flex-1 bg-[#0052CC]" />
-      </div> 
     </>    
   );  
 }

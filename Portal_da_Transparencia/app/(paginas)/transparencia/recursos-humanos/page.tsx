@@ -605,9 +605,10 @@ function TerceirizadosTab({
 // ============================================================================
 export default function RecursosHumanosPage() {
   const today = useTodayDate();
+  const currentYear = new Date().getFullYear().toString();
   const [activeTab, setActiveTab] = useState<'servidores' | 'remuneracao' | 'padrao' | 'estagiarios' | 'terceirizados'>('servidores');
   const [filters, setFilters] = useState({
-    ano: '2026',
+    ano: currentYear,
     mes: '',
     busca: '',
     status: '',
@@ -625,8 +626,8 @@ export default function RecursosHumanosPage() {
   }, []);
 
   const handleClear = useCallback(() => {
-    setFilters({ ano: '2026', mes: '', busca: '', status: '' });
-  }, []);
+    setFilters({ ano: currentYear, mes: '', busca: '', status: '' });
+  }, [currentYear]);
 
   const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}-${filters.status}`;
   const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca || filters.status);

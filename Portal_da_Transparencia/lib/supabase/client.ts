@@ -43,33 +43,45 @@ export function useAvailableYears(
       setLoading(true);
       const supabase = createBrowserClient();
 
-      let query = supabase
+      // Para evitar baixar milhares de linhas e travar o navegador,
+      // buscamos apenas o maior e o menor ano e preenchemos o intervalo.
+      let maxQuery = supabase
         .schema("transparencia")
         .from(table)
         .select("ano")
         .not("ano", "is", null)
-        .order("ano", { ascending: false });
+        .order("ano", { ascending: false })
+        .limit(1);
+
+      let minQuery = supabase
+        .schema("transparencia")
+        .from(table)
+        .select("ano")
+        .not("ano", "is", null)
+        .order("ano", { ascending: true })
+        .limit(1);
 
       if (empresa) {
-        query = query.eq("empresa", empresa);
+        maxQuery = maxQuery.eq("empresa", empresa);
+        minQuery = minQuery.eq("empresa", empresa);
       }
 
-      const { data, error } = await query;
+      const { data: maxData, error: maxError } = await maxQuery;
+      const { data: minData, error: minError } = await minQuery;
 
       if (!cancelled) {
-        if (!error && data) {
-          const distinct = [
-            ...new Set(
-              data.map((r: any) => String(r.ano)).filter(Boolean)
-            ),
-          ];
+        if (!maxError && !minError && maxData?.length > 0 && minData?.length > 0) {
+          const maxAno = Number(maxData[0].ano);
+          const minAno = Number(minData[0].ano);
+          
+          const distinct = [];
+          for (let i = maxAno; i >= minAno; i--) {
+            distinct.push(String(i));
+          }
           setAnos(distinct);
         } else {
-          console.error(
-            `Error fetching available years from ${table}:`,
-            error
-          );
-          setAnos([]);
+          // Se estiver vazio ou der erro, mantém o ano atual
+          setAnos([currentYear]);
         }
         setLoading(false);
       }

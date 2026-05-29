@@ -112,7 +112,7 @@ export default function Header(): JSX.Element {
   }
 
   return (
-    <header className="w-full bg-white border-b border-gray-200 shadow-sm print:hidden">
+    <header className="w-full bg-white print:hidden">
 
       {/* 🔷 BARRA AZUL */}
       <div className="w-full bg-[#0B3D91] text-white">
