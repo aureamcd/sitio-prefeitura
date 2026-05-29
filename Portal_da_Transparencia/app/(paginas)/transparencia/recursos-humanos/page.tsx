@@ -63,25 +63,36 @@ function ServidoresTab({
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      let query = supabase
-        .schema('transparencia')
-        .from('servidores')
-        .select('*')
-        .limit(100000);
+      let allData: any[] = [];
+      let page = 0;
+      const pageSize = 1000;
 
-      if (filters.status === 'ativo') {
-        query = query.eq('ativo', true).is('data_desligamento', null);
-      } else if (filters.status === 'desligado') {
-        query = query.or('ativo.eq.false,data_desligamento.not.is.null');
+      while (true) {
+        let query = supabase.schema('transparencia').from('servidores').select('*');
+
+        if (filters.status === 'ativo') {
+          query = query.eq('ativo', true).is('data_desligamento', null);
+        } else if (filters.status === 'desligado') {
+          query = query.or('ativo.eq.false,data_desligamento.not.is.null');
+        }
+
+        if (filters.busca) {
+          query = query.or(`nome.ilike.%${filters.busca}%,cargo.ilike.%${filters.busca}%,lotacao.ilike.%${filters.busca}%`);
+        }
+
+        query = query.order('nome', { ascending: true }).range(page * pageSize, (page + 1) * pageSize - 1);
+
+        const { data: result, error } = await query;
+        if (error || !result || result.length === 0) {
+          break;
+        }
+
+        allData = allData.concat(result);
+        if (result.length < pageSize) break;
+        page++;
       }
 
-      if (filters.busca) {
-        query = query.or(`nome.ilike.%${filters.busca}%,cargo.ilike.%${filters.busca}%,lotacao.ilike.%${filters.busca}%`);
-      }
-
-      const { data: result, error } = await query.order('nome', { ascending: true });
-      if (!error && result) setData(deduplicateServidores(result));
-      else setData([]);
+      setData(deduplicateServidores(allData));
       setLoading(false);
     }
 
@@ -192,20 +203,32 @@ function RemuneracaoTab({
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      let query = supabase
-        .schema('transparencia')
-        .from('remuneracoes')
-        .select('*');
+      let allData: any[] = [];
+      let page = 0;
+      const pageSize = 1000;
 
-      if (filters.ano) query = query.eq('ano', parseInt(filters.ano));
-      if (filters.mes) query = query.eq('mes', parseInt(filters.mes));
-      if (filters.busca) {
-        query = query.or(`nome.ilike.%${filters.busca}%,cargo.ilike.%${filters.busca}%`);
+      while (true) {
+        let query = supabase.schema('transparencia').from('remuneracoes').select('*');
+
+        if (filters.ano) query = query.eq('ano', parseInt(filters.ano));
+        if (filters.mes) query = query.eq('mes', parseInt(filters.mes));
+        if (filters.busca) {
+          query = query.or(`nome.ilike.%${filters.busca}%,cargo.ilike.%${filters.busca}%`);
+        }
+
+        query = query.order('nome', { ascending: true }).range(page * pageSize, (page + 1) * pageSize - 1);
+
+        const { data: result, error } = await query;
+        if (error || !result || result.length === 0) {
+          break;
+        }
+
+        allData = allData.concat(result);
+        if (result.length < pageSize) break;
+        page++;
       }
 
-      const { data: result, error } = await query.order('nome', { ascending: true });
-      if (!error && result) setData(result);
-      else setData([]);
+      setData(allData);
       setLoading(false);
     }
 
@@ -446,21 +469,33 @@ function EstagiariosTab({
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      let query = supabase
-        .schema('transparencia')
-        .from('estagiarios')
-        .select('*');
+      let allData: any[] = [];
+      let page = 0;
+      const pageSize = 1000;
 
-      if (filters.ano) {
-        query = query.eq('ano', parseInt(filters.ano));
-      }
-      if (filters.busca) {
-        query = query.ilike('nome', `%${filters.busca}%`);
+      while (true) {
+        let query = supabase.schema('transparencia').from('estagiarios').select('*');
+
+        if (filters.ano) {
+          query = query.eq('ano', parseInt(filters.ano));
+        }
+        if (filters.busca) {
+          query = query.ilike('nome', `%${filters.busca}%`);
+        }
+
+        query = query.order('nome', { ascending: true }).range(page * pageSize, (page + 1) * pageSize - 1);
+
+        const { data: result, error } = await query;
+        if (error || !result || result.length === 0) {
+          break;
+        }
+
+        allData = allData.concat(result);
+        if (result.length < pageSize) break;
+        page++;
       }
 
-      const { data: result, error } = await query.order('nome', { ascending: true });
-      if (!error && result) setData(result);
-      else setData([]);
+      setData(allData);
       setLoading(false);
     }
 
@@ -528,21 +563,33 @@ function TerceirizadosTab({
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      let query = supabase
-        .schema('transparencia')
-        .from('terceirizados')
-        .select('*');
+      let allData: any[] = [];
+      let page = 0;
+      const pageSize = 1000;
 
-      if (filters.ano) {
-        query = query.eq('ano', parseInt(filters.ano));
-      }
-      if (filters.busca) {
-        query = query.ilike('nome', `%${filters.busca}%`);
+      while (true) {
+        let query = supabase.schema('transparencia').from('terceirizados').select('*');
+
+        if (filters.ano) {
+          query = query.eq('ano', parseInt(filters.ano));
+        }
+        if (filters.busca) {
+          query = query.ilike('nome', `%${filters.busca}%`);
+        }
+
+        query = query.order('nome', { ascending: true }).range(page * pageSize, (page + 1) * pageSize - 1);
+
+        const { data: result, error } = await query;
+        if (error || !result || result.length === 0) {
+          break;
+        }
+
+        allData = allData.concat(result);
+        if (result.length < pageSize) break;
+        page++;
       }
 
-      const { data: result, error } = await query.order('nome', { ascending: true });
-      if (!error && result) setData(result);
-      else setData([]);
+      setData(allData);
       setLoading(false);
     }
 
