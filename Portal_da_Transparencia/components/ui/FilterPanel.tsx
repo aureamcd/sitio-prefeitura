@@ -24,6 +24,7 @@ interface FilterPanelProps<T extends string = 'ano' | 'mes' | 'busca' | 'entidad
   hideMes?: boolean;
   hideBusca?: boolean;
   searchPlaceholder?: string;
+  hideConsolidado?: boolean;
 }
 
 
@@ -40,6 +41,7 @@ export default function FilterPanel<T extends string = 'ano' | 'mes' | 'busca' |
   hideMes = false,
   hideBusca = false,
   searchPlaceholder = 'Pesquisar por código ou descrição...',
+  hideConsolidado = false,
 }: FilterPanelProps<T>) {
   const baseHasFilters = 
     (!hideAno && values.ano !== '') || 
@@ -62,11 +64,11 @@ export default function FilterPanel<T extends string = 'ano' | 'mes' | 'busca' |
                 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
               />
               <select
-                value={values.entidade || ''}
+                value={values.entidade || (hideConsolidado ? '1' : '')}
                 onChange={(e) => onChange('entidade' as T, e.target.value)}
                 className="w-full bg-gray-50 border border-gray-100 rounded-xl pl-9 pr-10 py-2.5 appearance-none text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all"
               >
-                <option value="">Consolidado (Todas as Entidades)</option>
+                {!hideConsolidado && <option value="">Consolidado (Todas as Entidades)</option>}
                 {empresas.map((emp) => (
                   <option key={emp.codigo} value={emp.codigo}>
                     {emp.nome}

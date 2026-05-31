@@ -319,36 +319,8 @@ export function buildTree(items: RawReceita[]): ReceitaNode[] {
     }
   }
 
-  // 5. Calcula totais hierárquicos bottom-up (Soma dos filhos para os pais)
-  function sumTotals(node: ReceitaNode) {
-    if (node.filhos.length === 0) return;
-
-    let previstoFilhos = 0;
-    let previstoInicialFilhos = 0;
-    let arrecadadoFilhos = 0;
-    let arrecadadoPeriodoFilhos = 0;
-
-    for (const child of node.filhos) {
-      sumTotals(child);
-      previstoFilhos += child.previsto;
-      previstoInicialFilhos += child.previstoInicial;
-      arrecadadoFilhos += child.arrecadado;
-      arrecadadoPeriodoFilhos += child.arrecadadoPeriodo;
-    }
-
-    // Se o nó tem filhos, o seu valor total DEVE ser exatamente a soma dos filhos.
-    // Isso garante consistência matemática perfeita na tabela exibida ao usuário.
-    node.previsto = previstoFilhos;
-    node.previstoInicial = previstoInicialFilhos;
-    node.arrecadado = arrecadadoFilhos;
-    node.arrecadadoPeriodo = arrecadadoPeriodoFilhos;
-  }
-
-  // 6. Ordena raízes e consolida totais
+  // 6. Ordena raízes
   roots.sort((a, b) => a.codigo.localeCompare(b.codigo));
-  for (const root of roots) {
-    sumTotals(root);
-  }
 
   return roots;
 }

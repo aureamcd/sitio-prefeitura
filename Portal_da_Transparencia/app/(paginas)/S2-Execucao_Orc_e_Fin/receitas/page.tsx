@@ -21,6 +21,7 @@ import type {
   ReceitaExtraRow,
 } from '@/lib/receitas/types';
 import TreeTable from '@/components/receitas/TreeTable';
+import HistoricoTable from '@/components/receitas/HistoricoTable';
 import {
   MESES,
   formatBRL,
@@ -388,12 +389,21 @@ export default function ReceitasPage() {
   const [receitasExtraError, setReceitasExtraError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
+  const isHistorico = filters.ano === "2023" || filters.ano === "2024" || filters.ano === "2025";
+
   const supabase = createBrowserClient();
   const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}-${filters.entidade}`;
   const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca || filters.entidade);
 
   // --- Fetch receitas (arrecadação) — dados agregados para o dashboard ---
+  // Apenas para anos não-históricos (2026+). Para 2023-2025, o HistoricoTable faz a própria query.
   useEffect(() => {
+    if (isHistorico) {
+      setRawData([]);
+      setLoading(false);
+      setExpanded(new Set());
+      return;
+    }
     let cancelled = false;
 
     async function fetchData() {
@@ -441,7 +451,7 @@ export default function ReceitasPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [filters.ano, filters.entidade, supabase]);
+  }, [filters.ano, filters.entidade, supabase, isHistorico]);
 
   // --- Fetch dívida ativa ---
   useEffect(() => {
@@ -573,6 +583,29 @@ export default function ReceitasPage() {
   // --- Build tree ---
   const tree = useMemo(() => buildTree(rawData), [rawData]);
 
+  // --- Auto-expand levels initially ---
+  useEffect(() => {
+    if (tree.length > 0) {
+      const initialExpanded = new Set<string>();
+      function traverse(nodes: any[]) {
+        for (const node of nodes) {
+          // Expandir Categoria (1), Origem (2), Espécie (3), Rubrica (4)
+          // Isso fará com que o Nível 5 ou 6 já fique visível.
+          if (node.level <= 4) {
+            initialExpanded.add(node.codigo);
+            if (node.filhos && node.filhos.length > 0) {
+              traverse(node.filhos);
+            }
+          }
+        }
+      }
+      traverse(tree);
+      setExpanded(initialExpanded);
+    } else {
+      setExpanded(new Set());
+    }
+  }, [tree]);
+
   // --- Search flattening ---
   const isSearchMode = filters.busca.trim().length > 0;
   const flatList = useMemo(() => {
@@ -584,9 +617,18 @@ export default function ReceitasPage() {
   }, [tree, isSearchMode, filters.busca]);
 
   // --- Totals (from tree) ---
-  const totalPrevistoInicial = tree.reduce((s, n) => s + n.previstoInicial, 0);
-  const totalPrevisto = tree.reduce((s, n) => s + n.previsto, 0);
-  const totalArrecadado = tree.reduce((s, n) => s + n.arrecadado, 0);
+  const totalPrevistoInicial = tree.reduce((s, n) => {
+    const isDeducao = n.codigo.startsWith('9');
+    return s + (isDeducao ? -Math.abs(n.previstoInicial) : n.previstoInicial);
+  }, 0);
+  const totalPrevisto = tree.reduce((s, n) => {
+    const isDeducao = n.codigo.startsWith('9');
+    return s + (isDeducao ? -Math.abs(n.previsto) : n.previsto);
+  }, 0);
+  const totalArrecadado = tree.reduce((s, n) => {
+    const isDeducao = n.codigo.startsWith('9');
+    return s + (isDeducao ? -Math.abs(n.arrecadado) : n.arrecadado);
+  }, 0);
 
   // --- Handlers ---
   const handleChange = useCallback((field: 'ano' | 'mes' | 'busca' | 'entidade', value: string) => {
@@ -628,6 +670,7 @@ export default function ReceitasPage() {
         onClear={handleClear}
         anosLoading={anosLoading}
         empresas={EMPRESAS}
+        hideConsolidado={isHistorico}
       />
 
       {/* Abas lado a lado */}
@@ -679,7 +722,14 @@ export default function ReceitasPage() {
       {/* Tab: Arrecadação */}
       {activeTab === 'arrecadacao' && (
         <div id="panel-arrecadacao" role="tabpanel" aria-labelledby="tab-arrecadacao">
-          <DashboardSummary
+          {isHistorico ? (
+            <HistoricoTable
+              ano={filters.ano}
+              entidade={filters.entidade}
+            />
+          ) : (
+            <>
+              <DashboardSummary
             ano={filters.ano}
             mes={filters.mes}
             loading={loading}
@@ -700,6 +750,8 @@ export default function ReceitasPage() {
             filterKey={filterKey}
             ano={filters.ano}
           />
+            </>
+          )}
         </div>
       )}
 

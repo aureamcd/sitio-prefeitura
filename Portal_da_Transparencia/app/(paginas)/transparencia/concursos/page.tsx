@@ -5,7 +5,7 @@ import ContentPage from '@/components/layout/ContentPage';
 import FilterPanel, { FilterValues } from '@/components/ui/FilterPanel';
 import DataTable from '@/components/ui/DataTable';
 import { useTodayDate } from '@/lib/hooks/useTodayDate';
-import { FileText, Users, ClipboardList, ExternalLink } from 'lucide-react';
+import { FileText, Users, ClipboardList, ExternalLink, ChevronDown } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Static data (mock — será substituído por dados reais do banco futuramente)
@@ -16,6 +16,7 @@ const MOCK_DATA = [
     ano: "2026",
     edital: "001/2026",
     tipo: "Concurso Público",
+    orgao_entidade: "Prefeitura Municipal",
     cargos: "Professor, Médico, Enfermeiro, Assistente Social, Aux. Administrativo",
     vagas: 45,
     situacao: "Em Andamento",
@@ -31,6 +32,7 @@ const MOCK_DATA = [
     ano: "2025",
     edital: "002/2025",
     tipo: "Processo Seletivo Simplificado",
+    orgao_entidade: "Secretaria de Educação",
     cargos: "Motorista Escolar, Vigia, Merendeira",
     vagas: 20,
     situacao: "Homologado",
@@ -46,6 +48,7 @@ const MOCK_DATA = [
     ano: "2024",
     edital: "001/2024",
     tipo: "Concurso Público",
+    orgao_entidade: "Prefeitura Municipal",
     cargos: "Guarda Civil Municipal",
     vagas: 15,
     situacao: "Concluído",
@@ -89,26 +92,35 @@ function getSituacaoBadge(situacao: string) {
 // ---------------------------------------------------------------------------
 export default function ConcursosPage() {
   const today = useTodayDate();
-  const [filters, setFilters] = useState<FilterValues>({ ano: '', mes: '', busca: '', entidade: '' });
+  const [filters, setFilters] = useState({ 
+    ano: '', 
+    mes: '', 
+    busca: '', 
+    entidade: '', 
+    situacao: '', 
+    categoria: '' 
+  });
 
-  const handleChange = useCallback((field: 'ano' | 'mes' | 'busca' | 'entidade', value: string) => {
+  const handleChange = useCallback((field: string, value: string) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
   }, []);
 
   const handleClear = useCallback(() => {
-    setFilters({ ano: '', mes: '', busca: '', entidade: '' });
+    setFilters({ ano: '', mes: '', busca: '', entidade: '', situacao: '', categoria: '' });
   }, []);
 
-  const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}`;
-  const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca);
+  const filterKey = `${filters.ano}-${filters.busca}-${filters.situacao}-${filters.categoria}`;
+  const hasActiveFilters = !!(filters.ano || filters.busca || filters.situacao || filters.categoria);
 
   const filteredData = useMemo(() => {
     return MOCK_DATA.filter((item) => {
       if (filters.ano && item.ano !== filters.ano) return false;
 
-      if (filters.mes) {
-        const itemMes = item.data_publicacao.split('/')[1];
-        if (itemMes !== filters.mes) return false;
+      if (filters.situacao && item.situacao !== filters.situacao) return false;
+
+      if (filters.categoria) {
+        if (filters.categoria === 'Concurso Público' && item.tipo !== 'Concurso Público') return false;
+        if (filters.categoria === 'Processo Seletivo' && !item.tipo.includes('Processo Seletivo')) return false;
       }
 
       if (filters.busca) {
@@ -118,7 +130,8 @@ export default function ConcursosPage() {
           normalize(item.tipo).includes(term) ||
           normalize(item.situacao).includes(term) ||
           normalize(item.cargos).includes(term) ||
-          normalize(item.banca_organizadora).includes(term)
+          normalize(item.banca_organizadora).includes(term) ||
+          normalize(item.orgao_entidade).includes(term)
         );
       }
 
@@ -151,6 +164,20 @@ export default function ConcursosPage() {
       ),
     },
     {
+      header: "Órgão / Entidade",
+      accessor: "orgao_entidade",
+      render: (val: string) => (
+        <span className="text-sm font-medium text-gray-900">{val || "Prefeitura Municipal"}</span>
+      ),
+    },
+    {
+      header: "Vagas",
+      accessor: "vagas",
+      render: (val: number) => (
+        <span className="text-sm font-medium text-gray-900">{val}</span>
+      ),
+    },
+    {
       header: "Banca Organizadora",
       accessor: "banca_organizadora",
       render: (val: string, row: typeof MOCK_DATA[0]) => (
@@ -173,7 +200,7 @@ export default function ConcursosPage() {
       ),
     },
     {
-      header: "Documentos",
+      header: "Documentos disponíveis",
       accessor: "acoes",
       render: (val: string, row: typeof MOCK_DATA[0]) => (
         <div className="flex flex-wrap gap-1.5">
@@ -240,11 +267,57 @@ export default function ConcursosPage() {
     >
       <FilterPanel
         anos={ANOS}
-        meses={MESES}
-        values={filters}
-        onChange={handleChange}
+        hideMes={true}
+        values={{ ...filters, entidade: (filters.situacao || filters.categoria) ? 'active' : '' }}
+        onChange={handleChange as any}
         onClear={handleClear}
-      />
+      >
+        {/* Situação */}
+        <div className="flex flex-col gap-1 sm:w-48">
+          <label className="text-xs font-medium text-gray-600">
+            Situação
+          </label>
+          <div className="relative">
+            <select
+              value={filters.situacao}
+              onChange={(e) => handleChange('situacao', e.target.value)}
+              className="w-full bg-gray-50 border border-gray-100 rounded-xl pl-4 pr-10 py-2.5 appearance-none text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all"
+            >
+              <option value="">Todas</option>
+              <option value="Em Andamento">Em Andamento</option>
+              <option value="Homologado">Homologado</option>
+              <option value="Inscrições Abertas">Inscrições Abertas</option>
+              <option value="Concluído">Concluído</option>
+            </select>
+            <ChevronDown
+              size={14}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+            />
+          </div>
+        </div>
+
+        {/* Categoria */}
+        <div className="flex flex-col gap-1 sm:w-56">
+          <label className="text-xs font-medium text-gray-600">
+            Categoria
+          </label>
+          <div className="relative">
+            <select
+              value={filters.categoria}
+              onChange={(e) => handleChange('categoria', e.target.value)}
+              className="w-full bg-gray-50 border border-gray-100 rounded-xl pl-4 pr-10 py-2.5 appearance-none text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all"
+            >
+              <option value="">Todas</option>
+              <option value="Concurso Público">Concurso Público</option>
+              <option value="Processo Seletivo">Processo Seletivo Simplificado</option>
+            </select>
+            <ChevronDown
+              size={14}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+            />
+          </div>
+        </div>
+      </FilterPanel>
 
       {/* Totalizer strip */}
       <div className="mt-4 bg-gray-50 rounded-xl px-6 py-4 flex flex-wrap gap-6 items-center border border-gray-100 mb-4">
@@ -265,7 +338,6 @@ export default function ConcursosPage() {
         title="Relação de Concursos e Processos Seletivos"
         columns={columns}
         data={filteredData}
-        exportable={true}
         paginationResetKey={filterKey}
         hasActiveFilters={hasActiveFilters}
       />

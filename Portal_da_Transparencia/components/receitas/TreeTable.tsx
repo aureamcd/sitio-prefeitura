@@ -98,10 +98,16 @@ function Row({ node, depth, canExpand, isExpanded, onToggle }: RowProps) {
           )}
           <span>
             <span className={`font-mono text-xs ${logicalDepth === 0 ? 'text-gray-700' : 'text-gray-500'}`}>
-              {node.codigo}
+              {node.codigo.split('-')[0]}
             </span>
             {' - '}
-            {node.descricao} <span className="text-gray-400 font-normal">({levelLabel})</span>
+            {node.descricao}
+            {node.fonteRecurso && (
+              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                Fonte: {node.fonteRecurso}
+              </span>
+            )}
+            <span className="text-gray-400 font-normal ml-1">({levelLabel})</span>
           </span>
         </div>
       </td>
@@ -160,9 +166,15 @@ function SearchRow({ node, level }: { node: ReceitaNode; level: number }) {
           {'·'.repeat(Math.max(0, node.level - 1))}
         </span>
         <span className="font-mono text-xs text-gray-500 mr-2">
-          {node.codigo}
+          {node.codigo.split('-')[0]}
         </span>
-        - {node.descricao} <span className="text-gray-400 font-normal">({getLevelName(node.tipoNivel, Math.max(0, node.level - 1))})</span>
+        - {node.descricao}
+        {node.fonteRecurso && (
+          <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
+            Fonte: {node.fonteRecurso}
+          </span>
+        )}
+        <span className="text-gray-400 font-normal ml-1">({getLevelName(node.tipoNivel, Math.max(0, node.level - 1))})</span>
       </td>
       <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap text-gray-600">
         {formatBRL(node.previstoInicial)}
