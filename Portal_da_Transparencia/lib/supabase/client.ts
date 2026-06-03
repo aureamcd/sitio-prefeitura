@@ -27,7 +27,8 @@ export function createBrowserClient(): SupabaseClient {
  */
 export function useAvailableYears(
   table: string,
-  empresa?: string
+  empresa?: string,
+  column: string = "ano"
 ): {
   anos: string[];
   loading: boolean;
@@ -48,17 +49,17 @@ export function useAvailableYears(
       let maxQuery = supabase
         .schema("transparencia")
         .from(table)
-        .select("ano")
-        .not("ano", "is", null)
-        .order("ano", { ascending: false })
+        .select(column)
+        .not(column, "is", null)
+        .order(column, { ascending: false })
         .limit(1);
 
       let minQuery = supabase
         .schema("transparencia")
         .from(table)
-        .select("ano")
-        .not("ano", "is", null)
-        .order("ano", { ascending: true })
+        .select(column)
+        .not(column, "is", null)
+        .order(column, { ascending: true })
         .limit(1);
 
       if (empresa) {
@@ -71,8 +72,8 @@ export function useAvailableYears(
 
       if (!cancelled) {
         if (!maxError && !minError && maxData?.length > 0 && minData?.length > 0) {
-          const maxAno = Number(maxData[0].ano);
-          const minAno = Number(minData[0].ano);
+          const maxAno = Number((maxData as any[])[0][column]);
+          const minAno = Number((minData as any[])[0][column]);
           
           const distinct = [];
           for (let i = maxAno; i >= minAno; i--) {

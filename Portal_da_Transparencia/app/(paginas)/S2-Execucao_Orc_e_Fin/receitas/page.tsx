@@ -8,6 +8,7 @@ import {
   FileWarning,
   RefreshCcw,
   AlertCircle,
+  ChevronDown,
 } from 'lucide-react';
 import { EMPRESAS } from '@/lib/empresas';
 import Pagination from '@/components/ui/Pagination';
@@ -376,7 +377,7 @@ function ReceitasExtraTable({
 export default function ReceitasPage() {
   const today = useTodayDate();
   const [activeTab, setActiveTab] = useState<'arrecadacao' | 'divida_ativa' | 'receitas_extra'>('arrecadacao');
-  const [filters, setFilters] = useState<FilterValues>({ ano: '2026', mes: '', busca: '', entidade: '' });
+  const [filters, setFilters] = useState<FilterValues & { categoria_economica?: string }>({ ano: '2026', mes: '', busca: '', entidade: '', categoria_economica: '' });
   const { anos: ANOS, loading: anosLoading } = useAvailableYears('receitas', filters.entidade || undefined);
   const [rawData, setRawData] = useState<RawReceita[]>([]);
   const [loading, setLoading] = useState(true);
@@ -425,6 +426,10 @@ export default function ReceitasPage() {
           query = query.eq('ano', Number(filters.ano));
         }
 
+        if (filters.categoria_economica) {
+          query = query.like('codigo_limpo', `${filters.categoria_economica}%`);
+        }
+
         const { data: result, error: queryError } = await query
           .order('codigo_contabil', { ascending: true });
 
@@ -451,7 +456,7 @@ export default function ReceitasPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [filters.ano, filters.entidade, supabase, isHistorico]);
+  }, [filters.ano, filters.entidade, filters.categoria_economica, supabase, isHistorico]);
 
   // --- Fetch dívida ativa ---
   useEffect(() => {
@@ -631,12 +636,12 @@ export default function ReceitasPage() {
   }, 0);
 
   // --- Handlers ---
-  const handleChange = useCallback((field: 'ano' | 'mes' | 'busca' | 'entidade', value: string) => {
+  const handleChange = useCallback((field: any, value: string) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
   }, []);
 
   const handleClear = useCallback(() => {
-    setFilters({ ano: '', mes: '', busca: '', entidade: '' });
+    setFilters({ ano: '', mes: '', busca: '', entidade: '', categoria_economica: '' });
   }, []);
 
   const handleToggle = useCallback((codigo: string) => {
@@ -671,7 +676,28 @@ export default function ReceitasPage() {
         anosLoading={anosLoading}
         empresas={EMPRESAS}
         hideConsolidado={isHistorico}
-      />
+      >
+        {activeTab === 'arrecadacao' && (
+          <div className="flex flex-col gap-1 sm:w-64">
+            <label className="text-xs font-medium text-gray-600">Categoria Econômica</label>
+            <div className="relative">
+              <select
+                value={filters.categoria_economica || ''}
+                onChange={(e) => handleChange('categoria_economica', e.target.value)}
+                className="w-full bg-gray-50 border border-gray-100 rounded-xl pl-4 pr-10 py-2.5 appearance-none text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all"
+              >
+                <option value="">Todas as Categorias</option>
+                <option value="1">1 - Receitas Correntes</option>
+                <option value="2">2 - Receitas de Capital</option>
+                <option value="7">7 - Receitas Correntes Intra-orçamentárias</option>
+                <option value="8">8 - Receitas de Capital Intra-orçamentárias</option>
+                <option value="9">9 - Deduções da Receita</option>
+              </select>
+              <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            </div>
+          </div>
+        )}
+      </FilterPanel>
 
       {/* Abas lado a lado */}
       <div className="mt-6 flex flex-wrap gap-1 border-b border-gray-200" role="tablist" aria-label="Seções de receitas">

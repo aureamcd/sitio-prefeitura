@@ -27,6 +27,7 @@ import {
   DollarSign,
   Building2,
   Download,
+  Gavel,
 } from 'lucide-react';
 import { EMPRESAS } from '@/lib/empresas';
 import Pagination from '@/components/ui/Pagination';
@@ -36,9 +37,9 @@ import DataTable, { ColumnConfig } from '@/components/ui/DataTable';
 // Badge helpers
 // -------------------------------------------------------------------
 function FaseBadge({ row }: { row: DespesaRow }) {
-  const pago = Number(row.valor_pago) || 0;
-  const liquidado = Number(row.valor_liquidado) || 0;
-  const empenhado = Number(row.valor_empenhado) || 0;
+  const pago = Number(row.pago) || 0;
+  const liquidado = Number(row.liquidado) || 0;
+  const empenhado = Number(row.empenhado) || 0;
 
   if (pago > 0) return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-semibold">Pago</span>;
   if (liquidado > 0) return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[11px] font-semibold">Liquidado</span>;
@@ -51,13 +52,12 @@ function FaseBadge({ row }: { row: DespesaRow }) {
 // -------------------------------------------------------------------
 function EmpenhosDashboard({
   ano, mes, loading,
-  totalDotacaoAtualizada, totalEmpenhado, totalLiquidado, totalPago, count,
+  totalEmpenhado, totalLiquidado, totalPago, count,
 }: {
   ano: string; mes: string; loading: boolean;
-  totalDotacaoAtualizada: number; totalEmpenhado: number;
+  totalEmpenhado: number;
   totalLiquidado: number; totalPago: number; count: number;
 }) {
-  const execPct = totalDotacaoAtualizada > 0 ? (totalEmpenhado / totalDotacaoAtualizada) * 100 : 0;
   const pagoPct = totalEmpenhado > 0 ? (totalPago / totalEmpenhado) * 100 : 0;
   const mesLabel = MESES.find((m) => m.value === mes)?.label;
 
@@ -74,9 +74,8 @@ function EmpenhosDashboard({
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
-            { label: 'Dotação Atualizada', value: totalDotacaoAtualizada, color: 'blue' },
             { label: 'Total Empenhado', value: totalEmpenhado, color: 'slate' },
             { label: 'Total Liquidado', value: totalLiquidado, color: 'amber' },
             { label: 'Total Pago', value: totalPago, color: 'emerald' },
@@ -90,30 +89,7 @@ function EmpenhosDashboard({
           ))}
         </div>
 
-        {!loading && totalDotacaoAtualizada > 0 && (
-          <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
-            <div>
-              <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                <span className="font-medium text-gray-700">Execução vs Dotação</span>
-                <span>{execPct.toFixed(1)}% empenhado</span>
-              </div>
-              <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(execPct, 100)}%` }} />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                <span className="font-medium text-gray-700">Estágios da Despesa</span>
-                <span>{pagoPct.toFixed(1)}% pago do empenhado</span>
-              </div>
-              <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-amber-400 to-emerald-500 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(pagoPct, 100)}%` }} />
-              </div>
-            </div>
-          </div>
-        )}
+
 
         <div className="mt-3 pt-3 border-t border-gray-100 flex justify-center">
           <span className="text-xs text-gray-400">{count} registro{count !== 1 ? 's' : ''}</span>
@@ -213,8 +189,8 @@ function generateCSV(rows: DespesaRow[]) {
   const csvRows = rows.map(r => [
     r.numero_empenho || r.pkemp || '',
     formatDateISO(r.data_empenho),
-    r.fornecedor_nome || '',
-    r.fornecedor_cpf_cnpj || '',
+    r.credor_nome || '',
+    r.credor_documento || '',
     r.empresa_nome || '',
     r.orgao_nome || r.orgao_codigo || '',
     r.funcao_nome || '',
@@ -222,9 +198,9 @@ function generateCSV(rows: DespesaRow[]) {
     r.natureza_codigo || '',
     r.fonte_nome || '',
     r.objeto || r.projeto_atividade_nome || '',
-    String(Number(r.valor_empenhado) || 0),
-    String(Number(r.valor_liquidado) || 0),
-    String(Number(r.valor_pago) || 0),
+    String(Number(r.empenhado) || 0),
+    String(Number(r.liquidado) || 0),
+    String(Number(r.pago) || 0),
   ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(';'));
   const csv = `\uFEFF${headers.join(';')}\n${csvRows.join('\n')}`;
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -308,7 +284,6 @@ function EmpenhosTable({
               <th className="px-3 py-3 text-right font-semibold text-gray-700">Empenhado</th>
               <th className="px-3 py-3 text-right font-semibold text-gray-700">Liquidado</th>
               <th className="px-3 py-3 text-right font-semibold text-gray-700">Pago</th>
-              <th className="px-3 py-3 text-center font-semibold text-gray-700">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -330,24 +305,21 @@ function EmpenhosTable({
                       {formatDateISO(row.data_empenho)}
                     </td>
                     <td className="px-3 py-3 max-w-[220px]">
-                      <span className="block truncate font-medium text-gray-800" title={row.fornecedor_nome || ''}>
-                        {row.fornecedor_nome || '—'}
+                      <span className="block truncate font-medium text-gray-800" title={row.credor_nome || ''}>
+                        {row.credor_nome || '—'}
                       </span>
-                      {row.fornecedor_cpf_cnpj && (
-                        <span className="text-[10px] text-gray-400 block truncate">{row.fornecedor_cpf_cnpj}</span>
+                      {row.credor_documento && (
+                        <span className="text-[10px] text-gray-400 block truncate">{row.credor_documento}</span>
                       )}
                     </td>
                     <td className="px-3 py-3 text-right tabular-nums text-gray-800">
-                      {formatBRL(Number(row.valor_empenhado) || 0)}
+                      {formatBRL(Number(row.empenhado) || 0)}
                     </td>
                     <td className="px-3 py-3 text-right tabular-nums text-amber-600">
-                      {formatBRL(Number(row.valor_liquidado) || 0)}
+                      {formatBRL(Number(row.liquidado) || 0)}
                     </td>
                     <td className="px-3 py-3 text-right tabular-nums text-emerald-600 font-semibold">
-                      {formatBRL(Number(row.valor_pago) || 0)}
-                    </td>
-                    <td className="px-3 py-3 text-center">
-                      <FaseBadge row={row} />
+                      {formatBRL(Number(row.pago) || 0)}
                     </td>
                   </tr>
 
@@ -356,13 +328,13 @@ function EmpenhosTable({
                     <tr className="bg-gray-50/70">
                       <td colSpan={8} className="px-6 py-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                          <DetailItem icon={<Building2 size={14} />} label="Entidade" value={row.empresa_nome || '-'} />
-                          <DetailItem icon={<MapPin size={14} />} label="Órgão" value={row.orgao_nome || row.orgao_codigo || '-'} />
+                          <DetailItem icon={<MapPin size={14} />} label="Órgão" value={row.orgao_nome || '-'} />
                           <DetailItem icon={<FolderTree size={14} />} label="Função" value={row.funcao_nome || '-'} />
                           <DetailItem icon={<Tag size={14} />} label="Subfunção" value={row.subfuncao_nome || '-'} />
-                          <DetailItem icon={<BookOpen size={14} />} label="Natureza" value={row.natureza_codigo || '-'} />
-                          <DetailItem icon={<DollarSign size={14} />} label="Fonte de Recursos" value={row.fonte_nome || '-'} />
-                          <DetailItem icon={<FileText size={14} />} label="Objeto" value={row.objeto || row.projeto_atividade_nome || '-'} />
+                          <DetailItem icon={<BookOpen size={14} />} label="Natureza" value={row.natureza_nome || '-'} />
+                          <DetailItem icon={<DollarSign size={14} />} label="Fonte de Recursos" value={row.fonte_codigo_nome || row.fonte_stn_nome || '-'} />
+                          <DetailItem icon={<FileText size={14} />} label="Objeto" value={row.objeto || '-'} />
+                          <DetailItem icon={<Gavel size={14} />} label="Licitação" value={row.licitacao_numero ? `${row.licitacao_modalidade || ''} ${row.licitacao_numero}`.trim() : '-'} />
                         </div>
                       </td>
                     </tr>
@@ -410,7 +382,7 @@ function DetailItem({ icon, label, value }: { icon: React.ReactNode; label: stri
 export default function DespesasPage() {
   const today = useTodayDate();
   const [activeTab, setActiveTab] = useState<'empenhos' | 'extra_orcamentarias' | 'restos_a_pagar'>('empenhos');
-  const [filters, setFilters] = useState<FilterValues>({ ano: '2026', mes: '', busca: '', entidade: '' });
+  const [filters, setFilters] = useState<FilterValues & { natureza?: string; credor?: string; numero_empenho?: string }>({ ano: '2026', mes: '', busca: '', entidade: '', natureza: '', credor: '', numero_empenho: '' });
   const { anos: ANOS, loading: anosLoading } = useAvailableYears('despesas', filters.entidade || undefined);
 
   // Empenhos
@@ -447,13 +419,22 @@ export default function DespesasPage() {
         }
         if (filters.busca) {
           query = query.or(
-            `fornecedor_nome.ilike.%${filters.busca}%` +
+            `credor_nome.ilike.%${filters.busca}%` +
             `,numero_empenho.ilike.%${filters.busca}%` +
             `,pkemp.ilike.%${filters.busca}%` +
             `,orgao_nome.ilike.%${filters.busca}%` +
             `,objeto.ilike.%${filters.busca}%` +
             `,processo.ilike.%${filters.busca}%`
           );
+        }
+        if (filters.natureza) {
+          query = query.or(`natureza_codigo.ilike.%${filters.natureza}%,natureza_nome.ilike.%${filters.natureza}%`);
+        }
+        if (filters.credor) {
+          query = query.or(`credor_nome.ilike.%${filters.credor}%,credor_documento.ilike.%${filters.credor}%`);
+        }
+        if (filters.numero_empenho) {
+          query = query.ilike('numero_empenho', `%${filters.numero_empenho}%`);
         }
         const { data: result, error: queryError } = await query
           .order('data_empenho', { ascending: false });
@@ -469,7 +450,7 @@ export default function DespesasPage() {
     }
     const timer = setTimeout(fetchData, 300);
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [filters.ano, filters.mes, filters.busca, filters.entidade, supabase]);
+  }, [filters.ano, filters.mes, filters.busca, filters.entidade, filters.natureza, filters.credor, filters.numero_empenho, supabase]);
 
   // ── Buscar extra-orçamentárias ──
   useEffect(() => {
@@ -534,16 +515,16 @@ export default function DespesasPage() {
 
   // ── Totals ──
   const totalDotacaoAtualizada = useMemo(() => data.reduce((s, r) => s + (Number(r.dotacao_atualizada) || 0), 0), [data]);
-  const totalEmpenhado = useMemo(() => data.reduce((s, r) => s + (Number(r.valor_empenhado) || 0), 0), [data]);
-  const totalLiquidado = useMemo(() => data.reduce((s, r) => s + (Number(r.valor_liquidado) || 0), 0), [data]);
-  const totalPago = useMemo(() => data.reduce((s, r) => s + (Number(r.valor_pago) || 0), 0), [data]);
+  const totalEmpenhado = useMemo(() => data.reduce((s, r) => s + (Number(r.empenhado) || 0), 0), [data]);
+  const totalLiquidado = useMemo(() => data.reduce((s, r) => s + (Number(r.liquidado) || 0), 0), [data]);
+  const totalPago = useMemo(() => data.reduce((s, r) => s + (Number(r.pago) || 0), 0), [data]);
 
   // ── Handlers ──
-  const handleChange = useCallback((field: 'ano' | 'mes' | 'busca' | 'entidade', value: string) => {
+  const handleChange = useCallback((field: any, value: string) => {
     setFilters(prev => ({ ...prev, [field]: value }));
   }, []);
   const handleClear = useCallback(() => {
-    setFilters({ ano: '', mes: '', busca: '', entidade: '' });
+    setFilters({ ano: '', mes: '', busca: '', entidade: '', natureza: '', credor: '', numero_empenho: '' });
   }, []);
 
   // Extra table columns
@@ -563,7 +544,6 @@ export default function DespesasPage() {
 
   const extraColumns: ColumnConfig[] = [
     { header: 'Tipo', accessor: 'nomenclatura', render: (_v: string, row: DespesaExtraRow) => <TipoBadge row={row} /> },
-    { header: 'Entidade', accessor: 'empresa_nome' },
     { header: 'Nomenclatura', accessor: 'nomenclatura', render: (val: string) => <span className="block max-w-[200px] truncate" title={val || ''}>{val || '-'}</span> },
     { header: 'Descrição', accessor: 'descricao', render: (val: string) => <span className="block max-w-[260px] line-clamp-2" title={val || ''}>{val || '-'}</span> },
     { header: 'Nº Guia', accessor: 'numero_guia', render: (val: string) => <span className="font-mono text-xs">{val || '-'}</span> },
@@ -582,8 +562,6 @@ export default function DespesasPage() {
   }
 
   const restosColumns: ColumnConfig[] = [
-    { header: 'Status', accessor: 'pago', render: (_v: number, row: RestosPagarRow) => <StatusBadge row={row} /> },
-    { header: 'Entidade', accessor: 'empresa_nome' },
     { header: 'Código', accessor: 'codigo', render: (val: string) => <span className="font-mono text-xs">{val || '-'}</span> },
     { header: 'Descrição', accessor: 'descricao', render: (val: string) => <span className="block max-w-[350px] line-clamp-2" title={val || ''}>{val || '-'}</span> },
     { header: 'Empenhado (R$)', accessor: 'empenhado', render: (val: number) => <span className="block text-right tabular-nums">{formatBRL(Number(val))}</span> },
@@ -611,11 +589,46 @@ export default function DespesasPage() {
         anos={ANOS}
         meses={MESES}
         values={filters}
-        onChange={handleChange}
+        onChange={handleChange as any}
         onClear={handleClear}
         anosLoading={anosLoading}
         empresas={EMPRESAS}
-      />
+      >
+        {activeTab === 'empenhos' && (
+          <>
+            <div className="flex flex-col gap-1 sm:w-48">
+              <label className="text-xs font-medium text-gray-600">Classificação Orçamentária</label>
+              <input
+                type="text"
+                value={filters.natureza || ''}
+                onChange={(e) => handleChange('natureza', e.target.value)}
+                placeholder="Ex: 3.3.90"
+                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all"
+              />
+            </div>
+            <div className="flex flex-col gap-1 sm:w-48">
+              <label className="text-xs font-medium text-gray-600">Credor</label>
+              <input
+                type="text"
+                value={filters.credor || ''}
+                onChange={(e) => handleChange('credor', e.target.value)}
+                placeholder="Nome ou CPF/CNPJ"
+                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all"
+              />
+            </div>
+            <div className="flex flex-col gap-1 sm:w-32">
+              <label className="text-xs font-medium text-gray-600">Nº Empenho</label>
+              <input
+                type="text"
+                value={filters.numero_empenho || ''}
+                onChange={(e) => handleChange('numero_empenho', e.target.value)}
+                placeholder="Ex: 123"
+                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all"
+              />
+            </div>
+          </>
+        )}
+      </FilterPanel>
 
       {/* Tabs */}
       <div className="mt-6 flex flex-wrap gap-1 border-b border-gray-200" role="tablist" aria-label="Seções de despesas">
@@ -644,7 +657,6 @@ export default function DespesasPage() {
         <div id="panel-empenhos" role="tabpanel">
           <EmpenhosDashboard
             ano={filters.ano} mes={filters.mes} loading={loading}
-            totalDotacaoAtualizada={totalDotacaoAtualizada}
             totalEmpenhado={totalEmpenhado}
             totalLiquidado={totalLiquidado}
             totalPago={totalPago}

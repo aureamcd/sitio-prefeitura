@@ -1,0 +1,167 @@
+
+        Alternar navegação
+        
+        
+        
+    
+  
+  
+    
+    x
+  
+  
+          Credores
+        
+          Lista de credores de um Órgão em um Exercício/credores/estado/:idUnidadeGestora/:exercicio/lista
+        
+        
+          Lista de todos os Credores de um Município/credores/:idUnidadeGestora/:exercicio/lista
+        
+        
+          Maiores Credores de um Município/credores/:idUnidadeGestora/:exercicio
+        
+        
+          Maiores Credores de um Órgão/credores/estado/:idUnidadeGestora/:exercicio
+        
+        
+          Quantidade de Credores de um Município/credores/:idUnidadeGestora/:exercicio/quantidade
+        
+        
+          Quantidade de Credores de um Órgão do Estado/credores/estado/:idUnidadeGestora/:exercicio/quantidade
+        
+        
+          Tipos possíveis de Credores/credores/tipos
+        
+          Despesas
+        
+          Despesas de um Município Por Exercício e Por Elemento/despesas/:idUnidadeGestora/:exercicio/porElemento
+        
+        
+          Despesas de um Município Por Exercício e Por Função/despesas/:idUnidadeGestora/:exercicio/porFuncao
+        
+        
+          Despesas de um Município Por Exercício e Por Natureza/despesas/:idUnidadeGestora/:exercicio/porNatureza
+        
+        
+          Despesas de um Município/despesas/:idUnidadeGestora
+        
+        
+          Despesas de um Órgão em um Exercício e Por Função/despesas/estado/:idUnidadeGestora/:exercicio/porFuncao
+        
+        
+          Despesas de um Órgão em um Exercício e Por Natureza/despesas/estado/:idUnidadeGestora/:exercicio/porNatureza
+        
+        
+          Despesas de um Órgão Por Exercício e Por Elemento/despesas/estado/:idUnidadeGestora/:exercicio/porElemento
+        
+        
+          Lista de despesas de um Município Por Exercício e Por Função/despesas/:idUnidadeGestora/:exercicio/lista/porFuncao
+        
+        
+          Lista de despesas de um Município Por Exercício e Por Natureza/despesas/:idUnidadeGestora/:exercicio/lista/porNatureza
+        
+        
+          Lista de despesas de um Órgão Por Exercício e Por Função/despesas/estado/:idUnidadeGestora/:exercicio/lista/porFuncao
+        
+        
+          Lista de despesas de um Órgão Por Exercício e Por Natureza/despesas/estado/:idUnidadeGestora/:exercicio/lista/porNatureza
+        
+        
+          Lista de Despesas do Estado/despesas/estado/:idUnidadeGestora?\n        
+        
+          Maiores Despesas de um Município Por Exercício e Por Elemento/despesas/:idUnidadeGestora/:exercicio/maiores/porElemento
+        
+        
+          Maiores Despesas de um Órgão em um Exercício e Por Elemento/despesas/estado/:idUnidadeGestora/:exercicio/maiores/porElemento
+        
+        
+          Total de Despesas dos Municípios do Estado/despesas/total
+        
+          Documentos
+        
+          Documentos de um Município/documentos/:idUnidadeGestora
+        
+        
+          Documentos Digitalizados pelo TCE de um Município/documentos/:idUnidadeGestora/digitalizados
+        
+        
+          Documentos Estaduais/documentos/estado
+        
+        
+          Quantidade total de documentos de um Município/documentos/:idUnidadeGestora/quantidadeTotal
+        
+        
+          Quantidade total de documentos estaduais/documentos/estado/quantidadeTotal
+        
+          Licitacoes
+        
+          Licitações de um Município/licitacoes/:idUnidadeGestora
+        
+        
+          Licitações de uma data específica/licitacoes/:idUnidadeGestora/:esfera/:data
+        
+        
+          Licitações do Estado/licitacoes/estado
+        
+          Orgaos
+        
+          Lista dados consolidados de Receita e Despesa de um Órgão em um Exercício/:idUnidadeGestora/:exercicio
+        
+        
+          Lista todos os Órgãos do Estado do Piauí em um Exercício/orgaos/lista/:exercicio
+        
+          Prefeituras
+        
+          Lista dados consolidados de Receita e Despesa de um Município em um Exercício/:idUnidadeGestora/:exercicio
+        
+        
+          Lista de Municípios filtrados por Nome/prefeituras/:nome
+        
+        
+          Lista Gestor Atual de um Município/prefeituras/:idUnidadeGestora/gestor
+        
+        
+          Lista todos os Municípios do Estado do Piauí/prefeituras
+        
+          Receitas
+        
+          Detalhamento da Receita de um Município em um Exercício/receitas/:idUnidadeGestora/:exercicio
+        
+        
+          Detalhamento da Receita de um Órgao em um Exercício/receitas/estado/:idUnidadeGestora/:exercicio
+        
+        
+          Lista de Receitas de um Município/receitas/:idUnidadeGestora
+        
+        
+          Lista de Receitas do Estado/receitas/estado/:idUnidadeGestora?\n        
+        
+          Quantidade total de receitas de um Município em um exercício/receitas/:idUnidadeGestora/:exercicio/quantidadeTotal
+        
+        
+          Quantidade total de receitas de um Órgão em um exercício/receitas/estado/:idUnidadeGestora/:exercicio/quantidadeTotal
+        
+        
+          Total de Receitas dos Municípios do Estado/receitas/total
+        
+          Servidores
+        
+          Lista de servidores de um Município por Exercício/servidores/:idUnidadeGestora/:exercicio/lista
+        
+        
+          Lista de servidores do TCE/servidores/tce/lista
+        
+        
+          menor mês de registros de folhas de pagamento disponíveis, em até três meses antes da data de execução desta chamada de api/servidores/menorcompetencia
+        
+        
+          Quantidade de servidores do TCE/servidores/tceqtd
+        
+        
+          Quantidade de servidores por Cargo do TCE/servidores/tce
+        
+        
+          Quantidade de servidores por Cargo em um Municipio/servidores/:idUnidadeGestora/:quantidade
+        
+        
+          Quantidade de servidores de um Município/servidores/:idUnidadeGestora/quantidade

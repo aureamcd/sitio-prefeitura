@@ -31,9 +31,8 @@ export interface DespesaRow {
   data_empenho: string | null;
 
   /* Fornecedor / Credor */
-  fornecedor_codigo: string | null;
-  fornecedor_nome: string | null;
-  fornecedor_cpf_cnpj: string | null;
+  credor_nome: string | null;
+  credor_documento: string | null;
 
   /* Órgão / Unidade */
   orgao_codigo: string | null;
@@ -53,10 +52,13 @@ export interface DespesaRow {
 
   /* Fonte / Recurso */
   fonte_codigo: string | null;
-  fonte_nome: string | null;
-  recurso_codigo: string | null;
-  recurso_nome: string | null;
-  fonte_stn: string | null;
+  fonte_codigo_nome: string | null;
+  fonte_stn_codigo: string | null;
+  fonte_stn_nome: string | null;
+  fonte_grupo_codigo: string | null;
+  fonte_grupo_nome: string | null;
+  vinculo_codigo: string | null;
+  vinculo_nome: string | null;
 
   /* Programa / Projeto-Atividade */
   programa_codigo: string | null;
@@ -70,9 +72,9 @@ export interface DespesaRow {
   dotacao_atualizada: number | null;
 
   /* Valores executados */
-  valor_empenhado: number | null;
-  valor_liquidado: number | null;
-  valor_pago: number | null;
+  empenhado: number | null;
+  liquidado: number | null;
+  pago: number | null;
 
   /* Valores acumulados até a data */
   empenhado_ate_data: number | null;
@@ -82,7 +84,9 @@ export interface DespesaRow {
   /* Objeto / Processo / Licitação / Origem */
   objeto: string | null;
   processo: string | null;
-  licitacao: string | null;
+  licitacao_numero: string | null;
+  licitacao_modalidade: string | null;
+  licitacao_descricao: string | null;
   origem: string | null;
 
   created_at: string | null;
