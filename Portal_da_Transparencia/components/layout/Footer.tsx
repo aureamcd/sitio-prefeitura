@@ -182,7 +182,7 @@ export default function TransparencyFooter(): JSX.Element {
                 <Scale size={14} className="text-white/60" />
                 <p className="font-bold text-white text-xs">DPO — Encarregado de Dados:</p>
               </div>
-              <p className="text-gray-300 pl-5">Lorena Barros</p>
+              <p className="text-gray-300 pl-5">Dalva Maria da Silva</p>
               <a
                 href="mailto:lgpd@padremarcos.pi.gov.br"
                 className="flex items-center gap-2 text-[#FFE066] hover:underline font-medium pl-5"

@@ -25,6 +25,7 @@ import {
   Map,
   Activity,
   Book, // Novo ícone para Glossário
+  ClipboardList,
 } from "lucide-react";
 
 import { LucideIcon } from "lucide-react";
@@ -101,7 +102,7 @@ const sections: SectionItem[] = [
   },
 
   {
-    title: "Compras, Contratos e Convênios",
+    title: "Compras, Contratos e Transferências",
     cards: [
       {
         title: "Licitações",
@@ -120,11 +121,12 @@ const sections: SectionItem[] = [
         variant: "highlight",
       },
       {
-        title: "Convênios e Transferências",
+        title: "Transferências e Convênios",
         description:
-          "Transferências voluntárias recebidas e concedidas, acordos sem repasse financeiro e a íntegra dos instrumentos de convênio.",
-        href: "/transparencia/convenios",
+          "Consultas de Receitas da União, Receitas do Estado e transferências financeiras entre entidades municipais.",
+        href: "/transparencia/transferencias",
         Icon: ArrowLeftRight,
+        variant: "highlight",
       },
     ],
   },

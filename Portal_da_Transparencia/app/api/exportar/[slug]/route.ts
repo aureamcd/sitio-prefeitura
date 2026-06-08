@@ -38,11 +38,7 @@ const TABELA_MAP: Record<string, { tabela: string; colunas: string[]; nome: stri
     colunas: ['numero', 'contratado', 'cpf_cnpj', 'objeto', 'data_assinatura', 'data_inicio', 'data_fim', 'valor', 'situacao'],
     nome: 'contratos',
   },
-  convenios: {
-    tabela: 'transferencias_resumo',
-    colunas: ['ano', 'entidade_pagadora', 'entidade_recebedora', 'cnpj_pagadora', 'cnpj_recebedora', 'valor_previsto', 'valor_repasse', 'valor_devolucao'],
-    nome: 'convenios_transferencias',
-  },
+
   servidores: {
     tabela: 'servidores',
     colunas: ['nome', 'matricula', 'cargo', 'lotacao', 'situacao', 'carga_horaria', 'data_admissao', 'data_desligamento', 'ativo'],

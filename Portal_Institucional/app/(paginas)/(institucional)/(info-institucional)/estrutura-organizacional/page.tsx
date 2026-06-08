@@ -96,7 +96,7 @@ export default function EstruturaOrganizacionalPage() {
         { label: "Início", href: "/" },
         { label: "Estrutura Organizacional" },
       ]}
-      lastUpdate="2026-05-15"
+      lastUpdate="2026-06-04"
     >
 
       {/* 1. INTRODUÇÃO */}
@@ -107,9 +107,26 @@ export default function EstruturaOrganizacionalPage() {
             Unidades administrativas e hierarquia da Prefeitura Municipal de Padre Marcos - PI.
           </p>
         </div>
-        <p className="text-gray-600 leading-relaxed max-w-4xl">
-          A estrutura organizacional apresenta a hierarquia das unidades administrativas, incluindo o Gabinete do Prefeito e suas Secretarias Municipais, garantindo a eficiência da gestão pública.
-        </p>
+        {/* Caixa Laranja de Destaque PNTP */}
+        <div className="bg-amber-50/50 border border-amber-100 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-8 max-w-4xl shadow-sm">
+          <div className="bg-white p-4 rounded-2xl shadow-sm text-amber-500 shrink-0">
+            <Info size={32} />
+          </div>
+          <div className="flex-1 text-left">
+            <h3 className="text-amber-900 font-bold mb-2 text-lg">Base Legal da Estrutura Organizacional</h3>
+            <p className="text-sm text-amber-800 leading-relaxed mb-4">
+              A estrutura administrativa e organizacional da Prefeitura Municipal de Padre Marcos é definida por lei e detalha as unidades subordinadas ao Poder Executivo.
+              Para consultar a estrutura completa e as atribuições/competências detalhadas de cada secretaria ou departamento, acesse a legislação vigente:
+            </p>
+            <a 
+              href="#" 
+              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-5 rounded-xl transition-all shadow-md hover:shadow-lg text-sm"
+            >
+              <FileText size={18} />
+              Baixar a íntegra da Lei Complementar Nº 720/2025
+            </a>
+          </div>
+        </div>
 
         <div className="mt-4 bg-white border border-gray-200 rounded-2xl p-6 max-w-xl shadow-sm mx-auto">
           <div className="flex items-start gap-3 text-[#173572]">
@@ -630,18 +647,7 @@ export default function EstruturaOrganizacionalPage() {
         </div>
       </div>
 
-      {/* 5. RODAPÉ INFORMATIVO */}
-      <div className="bg-gray-50 border border-gray-100 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6">
-        <div className="bg-white p-4 rounded-2xl shadow-sm text-amber-500">
-          <Info size={32} />
-        </div>
-        <div className="flex-1 text-center sm:text-left">
-          <p className="text-gray-900 font-bold mb-1">Informações em constante atualização</p>
-          <p className="text-sm text-gray-600 leading-relaxed">
-            A estrutura organizacional é definida por lei e pode sofrer alterações. Para dúvidas específicas sobre as atribuições de cada unidade, consulte a <strong className="text-gray-900 font-bold">Lei de Estrutura Administrativa</strong>.
-          </p>
-        </div>
-      </div>
+
 
     </ContentPage>
   );

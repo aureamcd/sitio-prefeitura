@@ -20,7 +20,7 @@ const sections: { title: string; icon?: string; links: SiteLink[] }[] = [
   {
     title: "Informações Institucionais",
     links: [
-      { href: "/S1-Info_Institucionais/estrutura_organizacional", label: "Estrutura Organizacional", description: "Organograma, secretarias, responsáveis e contatos" },
+      { href: "/estrutura-organizacional", label: "Estrutura Organizacional", description: "Organograma, secretarias, responsáveis e contatos" },
       { href: "/transparencia/legislacao", label: "Legislação e Atos Normativos", description: "Leis, decretos, portarias e atos normativos municipais" },
       { href: "/faq", label: "Perguntas Frequentes (FAQ)", description: "Dúvidas mais comuns sobre serviços e transparência" },
     ],
@@ -34,11 +34,11 @@ const sections: { title: string; icon?: string; links: SiteLink[] }[] = [
     ],
   },
   {
-    title: "Compras, Contratos e Convênios",
+    title: "Compras, Contratos e Transferências",
     links: [
       { href: "/S3-Compras_Cont_e_Conven/licitacoes", label: "Licitações", description: "Editais, atas, dispensas, inexigibilidades e licitantes sancionados" },
       { href: "/transparencia/contratos", label: "Contratos", description: "Íntegra dos contratos vigentes, aditivos, fiscais e ordem cronológica de pagamentos" },
-      { href: "/transparencia/convenios", label: "Convênios e Transferências Voluntárias", description: "Transferências voluntárias recebidas (5.1), realizadas (5.2) e acordos sem repasse financeiro (5.3) — PNTP 2026" },
+      { href: "/transparencia/transferencias", label: "Transferências e Convênios", description: "Consultas de Receitas da União, Receitas do Estado e transferências financeiras entre entidades municipais" },
     ],
   },
   {

@@ -284,7 +284,7 @@ export default async function ESICPage() {
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">
                   Servidora Responsável pelo Atendimento
                 </p>
-                <p className="font-bold text-gray-900">Lorena Barros</p>
+                <p className="font-bold text-gray-900">Dalva Maria da Silva</p>
                 <p className="text-xs text-gray-500 mt-0.5">Serviço de Informação ao Cidadão</p>
               </div>
             </div>

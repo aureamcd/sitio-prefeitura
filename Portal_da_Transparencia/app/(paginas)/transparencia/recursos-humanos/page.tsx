@@ -467,7 +467,7 @@ function EstagiariosTab({
     return () => clearTimeout(timer);
   }, [filters.ano, filters.busca, supabase]);
 
-  const dataAtualizada = new Date().toLocaleDateString('pt-BR');
+  const dataAtualizada = useTodayDate();
   const emptyMsg = (
     <div className="flex flex-col items-center gap-3 py-4">
       <p className="text-gray-700 text-sm max-w-2xl text-center leading-relaxed">
@@ -549,7 +549,7 @@ function TerceirizadosTab({
     return () => clearTimeout(timer);
   }, [filters.ano, filters.busca, supabase]);
 
-  const dataAtualizada = new Date().toLocaleDateString('pt-BR');
+  const dataAtualizada = useTodayDate();
   const emptyMsg = (
     <div className="flex flex-col items-center gap-3 py-4">
       <p className="text-gray-700 text-sm max-w-2xl text-center leading-relaxed">

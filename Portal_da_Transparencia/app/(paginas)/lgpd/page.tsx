@@ -30,7 +30,7 @@ export default function LGPDPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="bg-gray-50 rounded-xl p-4 space-y-1">
               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Nome</span>
-              <p className="text-sm font-semibold text-gray-800">Lorena Barros</p>
+              <p className="text-sm font-semibold text-gray-800">Dalva Maria da Silva</p>
             </div>
             <div className="bg-gray-50 rounded-xl p-4 space-y-1">
               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">E-mail de contato</span>
