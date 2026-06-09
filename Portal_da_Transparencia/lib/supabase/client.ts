@@ -44,44 +44,38 @@ export function useAvailableYears(
       setLoading(true);
       const supabase = createBrowserClient();
 
-      // Para evitar baixar milhares de linhas e travar o navegador,
-      // buscamos apenas o maior e o menor ano e preenchemos o intervalo.
-      let maxQuery = supabase
+      // Buscamos a coluna desejada e extraímos apenas os anos únicos,
+      // filtrando dados inválidos (como anos bizarros < 1900 inseridos por erro humano).
+      let query = supabase
         .schema("transparencia")
         .from(table)
         .select(column)
-        .not(column, "is", null)
-        .order(column, { ascending: false })
-        .limit(1);
-
-      let minQuery = supabase
-        .schema("transparencia")
-        .from(table)
-        .select(column)
-        .not(column, "is", null)
-        .order(column, { ascending: true })
-        .limit(1);
+        .not(column, "is", null);
 
       if (empresa) {
-        maxQuery = maxQuery.eq("empresa", empresa);
-        minQuery = minQuery.eq("empresa", empresa);
+        query = query.eq("empresa", empresa);
       }
 
-      const { data: maxData, error: maxError } = await maxQuery;
-      const { data: minData, error: minError } = await minQuery;
+      const { data, error } = await query;
 
       if (!cancelled) {
-        if (!maxError && !minError && maxData?.length > 0 && minData?.length > 0) {
-          const maxAno = Number((maxData as any[])[0][column]);
-          const minAno = Number((minData as any[])[0][column]);
+        if (!error && data && data.length > 0) {
+          const anosSet = new Set<number>();
           
-          const distinct = [];
-          for (let i = maxAno; i >= minAno; i--) {
-            distinct.push(String(i));
+          for (const row of data as any[]) {
+            const val = Number(row[column]);
+            // Só aceita anos plausíveis (ex: >= 2000 até o ano atual + 2)
+            if (!isNaN(val) && val >= 2000 && val <= new Date().getFullYear() + 2) {
+              anosSet.add(val);
+            }
           }
-          setAnos(distinct);
+          
+          const distinct = Array.from(anosSet)
+            .sort((a, b) => b - a)
+            .map(String);
+            
+          setAnos(distinct.length > 0 ? distinct : [currentYear]);
         } else {
-          // Se estiver vazio ou der erro, mantém o ano atual
           setAnos([currentYear]);
         }
         setLoading(false);

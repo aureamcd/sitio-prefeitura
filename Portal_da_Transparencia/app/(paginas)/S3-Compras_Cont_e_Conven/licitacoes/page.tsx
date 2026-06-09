@@ -51,7 +51,7 @@ function getSituacaoBadge(val: string) {
   return { label: val, className: 'bg-gray-100 text-gray-700 border-gray-200' };
 }
 
-// Hook personalizado para buscar licitações_v2
+// Hook personalizado para buscar licitações
 function useLicitacoesData(filters: FilterValues) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,6 +67,10 @@ function useLicitacoesData(filters: FilterValues) {
         .schema('transparencia')
         .from('licitacoes_v2')
         .select('*, documentos:licitacoes_documentos(*)');
+
+      if (filters.entidade) {
+        query = query.eq('empresa', filters.entidade);
+      }
 
       if (filters.ano) {
         query = query.eq('ano', filters.ano);
@@ -103,7 +107,7 @@ function useLicitacoesData(filters: FilterValues) {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [filters.ano, filters.mes, filters.busca]);
+  }, [filters.ano, filters.mes, filters.busca, filters.entidade, supabase]);
 
   return { data, loading };
 }
@@ -113,9 +117,10 @@ export default function LicitacoesPage() {
     ano: '2026',
     mes: '',
     busca: '',
+    entidade: '',
   });
 
-  const { anos: ANOS, loading: anosLoading } = useAvailableYears('licitacoes_v2');
+  const { anos: ANOS, loading: anosLoading } = useAvailableYears('licitacoes_v2', filters.entidade || undefined);
   const { data, loading } = useLicitacoesData(filters);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -129,18 +134,18 @@ export default function LicitacoesPage() {
   }, []);
 
   const handleChange = useCallback(
-    (field: 'ano' | 'mes' | 'busca', value: string) => {
+    (field: 'ano' | 'mes' | 'busca' | 'entidade', value: string) => {
       setFilters((prev) => ({ ...prev, [field]: value }));
     },
     []
   );
 
   const handleClear = useCallback(() => {
-    setFilters({ ano: '', mes: '', busca: '' });
+    setFilters({ ano: '', mes: '', busca: '', entidade: '' });
   }, []);
 
-  const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}`;
-  const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca);
+  const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}-${filters.entidade}`;
+  const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca || filters.entidade);
 
   const totalEstimado = data.reduce((s, r) => s + (Number(r.valor_estimado) || 0), 0);
 
@@ -150,7 +155,7 @@ export default function LicitacoesPage() {
         header: 'Nº / Modalidade',
         accessor: 'numero',
         render: (val: string, row: any) => {
-          const num = val || row.processo || '-';
+          const num = val || row.proclic || row.nlicitacao || '-';
           const modalidade = row.modalidade || 'Não informado';
           return (
             <div>
@@ -217,18 +222,32 @@ export default function LicitacoesPage() {
           const docs = row.documentos || [];
           const qtd = docs.length;
           return (
-            <button
-              onClick={() => handleOpenDocs(`Licitação ${row.numero || '-'}`, docs)}
-              disabled={qtd === 0}
-              className={`inline-flex items-center gap-1.5 text-sm font-medium transition-colors ${
-                qtd > 0
-                  ? 'text-blue-600 hover:text-blue-800'
-                  : 'text-gray-400 cursor-not-allowed opacity-60'
-              }`}
-            >
-              <FileSearch size={14} />
-              {qtd > 0 ? `Ver Anexos (${qtd})` : 'Sem anexos'}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => handleOpenDocs(`Licitação ${row.numero || '-'}`, docs)}
+                disabled={qtd === 0}
+                className={`inline-flex items-center gap-1.5 text-sm font-medium transition-colors ${
+                  qtd > 0
+                    ? 'text-blue-600 hover:text-blue-800'
+                    : 'text-gray-400 cursor-not-allowed opacity-60'
+                }`}
+              >
+                <FileSearch size={14} />
+                {qtd > 0 ? `Anexos (${qtd})` : 'Sem anexos'}
+              </button>
+              
+              {row.link_tce && (
+                <a 
+                  href={row.link_tce} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100 transition-colors"
+                  title="Abrir detalhes no mural de licitações do TCE"
+                >
+                  Ver no TCE
+                </a>
+              )}
+            </div>
           );
         },
       },
@@ -253,6 +272,7 @@ export default function LicitacoesPage() {
         onChange={handleChange}
         onClear={handleClear}
         anosLoading={anosLoading}
+        empresas={EMPRESAS}
       />
 
       <div className="mt-6">

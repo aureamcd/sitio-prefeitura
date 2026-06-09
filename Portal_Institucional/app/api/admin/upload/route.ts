@@ -36,8 +36,8 @@ export async function POST(request: Request) {
     let folder = "documentos";
     if (tabela) {
       const t = tabela.toLowerCase();
-      if (t === "contratos") folder = "contratos";
-      else if (t === "licitacoes") folder = "licitacoes";
+      if (t.includes("contratos")) folder = "contratos";
+      else if (t.includes("licitacoes")) folder = "licitacoes";
       else if (t === "diarias") folder = "diarias";
       else if (t === "obras") folder = "obras";
       else if (t === "servidores") folder = "servidores";

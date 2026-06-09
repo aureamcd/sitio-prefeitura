@@ -9,6 +9,7 @@ import {
   FileUp, X, Eye,
 } from "lucide-react";
 import { getTableConfig } from "@/lib/admin/transparencia-tables";
+import BatchDocumentManager from "./BatchDocumentManager";
 
 const MAX_PDF_MB = 25;
 
@@ -36,6 +37,7 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
   const supabase = createBrowserClient();
 
   const supportsUpload = hasFileUpload(config.slug);
+  const isV2Upload = config.table.endsWith("_v2");
 
   const emptyForm: Record<string, any> = {};
   config.formFields.forEach((field) => {
@@ -213,66 +215,81 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* ── Seção: Upload PDF (apenas para tabelas com suporte) ── */}
         {supportsUpload && (
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-4">
-            <h2 className="text-sm font-black text-gray-900 uppercase tracking-widest">Arquivo PDF</h2>
+          isV2Upload && mode === "editar" ? (
+            <BatchDocumentManager
+              tabela={config.table}
+              parentId={initialData?.id}
+              ano={form.ano || new Date().getFullYear()}
+            />
+          ) : isV2Upload && mode === "nova" ? (
+            <div className="bg-orange-50 border border-orange-200 rounded-2xl p-6">
+              <p className="text-sm text-orange-800 font-bold flex items-center gap-2">
+                <FileUp size={18} />
+                Para enviar documentos em lote, salve este registro primeiro e depois clique em Editar.
+              </p>
+            </div>
+          ) : (
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-4">
+              <h2 className="text-sm font-black text-gray-900 uppercase tracking-widest">Arquivo PDF</h2>
 
-            {!file && !pdfPreview ? (
-              <label className="group relative flex flex-col items-center justify-center gap-3 border-2 border-dashed border-gray-200 hover:border-[#0B3D91] rounded-2xl p-10 cursor-pointer transition-all hover:bg-blue-50/30">
-                <input
-                  type="file"
-                  accept=".pdf"
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileSelect(f); }}
-                />
-                <div className="p-4 bg-gray-100 group-hover:bg-blue-100 rounded-2xl transition-colors">
-                  <FileUp size={28} className="text-gray-600 group-hover:text-[#0B3D91] transition-colors" />
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-bold text-gray-700">Clique ou arraste o PDF aqui</p>
-                  <p className="text-xs text-gray-600 mt-1">Máximo {MAX_PDF_MB} MB</p>
-                </div>
-              </label>
-            ) : (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-100 rounded-xl">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-600 rounded-xl">
-                      <FileUp size={18} className="text-white" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-blue-900 truncate max-w-xs">
-                        {file ? file.name : form.arquivo_nome || "Arquivo vinculado"}
-                      </p>
-                      <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">
-                        {file ? `${(file.size / 1_000_000).toFixed(2)} MB · Pendente de upload` : "Arquivo salvo"}
-                      </p>
-                    </div>
+              {!file && !pdfPreview ? (
+                <label className="group relative flex flex-col items-center justify-center gap-3 border-2 border-dashed border-gray-200 hover:border-[#0B3D91] rounded-2xl p-10 cursor-pointer transition-all hover:bg-blue-50/30">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileSelect(f); }}
+                  />
+                  <div className="p-4 bg-gray-100 group-hover:bg-blue-100 rounded-2xl transition-colors">
+                    <FileUp size={28} className="text-gray-600 group-hover:text-[#0B3D91] transition-colors" />
                   </div>
-                  <div className="flex items-center gap-2">
-                    {pdfPreview && (
-                      <a
-                        href={pdfPreview}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition"
-                        title="Abrir PDF"
+                  <div className="text-center">
+                    <p className="text-sm font-bold text-gray-700">Clique ou arraste o PDF aqui</p>
+                    <p className="text-xs text-gray-600 mt-1">Máximo {MAX_PDF_MB} MB</p>
+                  </div>
+                </label>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-blue-600 rounded-xl">
+                        <FileUp size={18} className="text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-blue-900 truncate max-w-xs">
+                          {file ? file.name : form.arquivo_nome || "Arquivo vinculado"}
+                        </p>
+                        <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">
+                          {file ? `${(file.size / 1_000_000).toFixed(2)} MB · Pendente de upload` : "Arquivo salvo"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {pdfPreview && (
+                        <a
+                          href={pdfPreview}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition"
+                          title="Abrir PDF"
+                        >
+                          <Eye size={16} />
+                        </a>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => { setFile(null); set("arquivo_r2_url", ""); set("arquivo_nome", ""); }}
+                        className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                        title="Remover arquivo"
                       >
-                        <Eye size={16} />
-                      </a>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => { setFile(null); set("arquivo_r2_url", ""); set("arquivo_nome", ""); }}
-                      className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                      title="Remover arquivo"
-                    >
-                      <X size={16} />
-                    </button>
+                        <X size={16} />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )
         )}
 
         {/* ── Seção: Dados do Registro ── */}

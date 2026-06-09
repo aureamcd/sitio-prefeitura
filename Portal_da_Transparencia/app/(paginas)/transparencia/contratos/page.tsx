@@ -191,18 +191,32 @@ export default function ContratosPage() {
         render: (docs: any[], row: any) => {
           const qtd = docs?.length || 0;
           return (
-            <button
-              onClick={() => handleOpenDocs(`Contrato ${row.numero || '-'}`, docs)}
-              disabled={qtd === 0}
-              className={`inline-flex items-center gap-1.5 text-sm font-medium transition-colors ${
-                qtd > 0
-                  ? 'text-blue-600 hover:text-blue-800'
-                  : 'text-gray-400 cursor-not-allowed opacity-60'
-              }`}
-            >
-              <FileSearch size={14} />
-              {qtd > 0 ? `Ver Anexos (${qtd})` : 'Sem anexos'}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => handleOpenDocs(`Contrato ${row.numero || '-'}`, docs)}
+                disabled={qtd === 0}
+                className={`inline-flex items-center gap-1.5 text-sm font-medium transition-colors ${
+                  qtd > 0
+                    ? 'text-blue-600 hover:text-blue-800'
+                    : 'text-gray-400 cursor-not-allowed opacity-60'
+                }`}
+              >
+                <FileSearch size={14} />
+                {qtd > 0 ? `Ver Anexos (${qtd})` : 'Sem anexos'}
+              </button>
+
+              {row.link_tce && (
+                <a 
+                  href={row.link_tce} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100 transition-colors"
+                  title="Abrir detalhes no mural de contratos do TCE"
+                >
+                  Ver no TCE
+                </a>
+              )}
+            </div>
           );
         },
       },

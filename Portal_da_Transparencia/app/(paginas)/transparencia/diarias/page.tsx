@@ -14,6 +14,7 @@ import {
   FileText,
   Info,
 } from 'lucide-react';
+import Link from 'next/link';
 
 const MESES = [
   { value: '01', label: 'Janeiro' }, { value: '02', label: 'Fevereiro' },
@@ -268,8 +269,8 @@ function PadraoValoresTab() {
       <div className="mt-4 mb-6 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
         <p className="text-sm text-blue-800/80 leading-relaxed">
           Tabela com os valores pagos a título de diárias para servidores municipais,
-          conforme legislação municipal vigente. Os valores variam conforme o destino
-          e a natureza do afastamento.
+          conforme legislação municipal vigente. Os valores variam conforme o destino, a distância
+          e a natureza do cargo.
         </p>
       </div>
 
@@ -280,96 +281,122 @@ function PadraoValoresTab() {
             Padrão de Valores de Diárias
           </h2>
           <p className="text-xs text-gray-500 mt-0.5">
-            Valores por tipo de viagem, em conformidade com a legislação municipal.
+            Valores de diárias praticados conforme o <strong>DECRETO Nº 002/2026</strong>.
           </p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="px-6 py-3 text-left font-semibold text-gray-700">
-                  Tipo de Viagem
+                <th className="px-6 py-4 text-left font-semibold text-gray-700 min-w-[220px] align-middle">
+                  DESLOCAMENTO
                 </th>
-                <th className="px-6 py-3 text-center font-semibold text-gray-700">
-                  Carga Horária
+                <th className="px-6 py-4 text-right font-semibold text-gray-700 min-w-[140px] align-middle">
+                  <div className="flex flex-col items-end">
+                    <span>PREFEITO (A)</span>
+                    <span>MUNICIPAL</span>
+                  </div>
                 </th>
-                <th className="px-6 py-3 text-right font-semibold text-gray-700">
-                  Valor por Diária
+                <th className="px-6 py-4 text-right font-semibold text-gray-700 min-w-[160px] align-middle">
+                  <div className="flex flex-col items-end">
+                    <span>VICE-PREFEITO(A)</span>
+                    <span>SECRETÁRIOS(AS)</span>
+                    <span>MUNICIPAIS</span>
+                  </div>
                 </th>
-                <th className="px-6 py-3 text-left font-semibold text-gray-700">
-                  Base Legal
+                <th className="px-6 py-4 text-right font-semibold text-gray-700 min-w-[180px] align-middle">
+                  <div className="flex flex-col items-end">
+                    <span>DIRETORIA, CHEFIA,</span>
+                    <span>ASSESSORIA, SUPERVISÃO,</span>
+                    <span>COORDENAÇÃO E CARGOS</span>
+                    <span>DE NÍVEL SUPERIOR</span>
+                  </div>
+                </th>
+                <th className="px-6 py-4 text-right font-semibold text-gray-700 min-w-[150px] align-middle">
+                  <div className="flex flex-col items-end">
+                    <span>CARGOS DE NÍVEL</span>
+                    <span>MÉDIO E TÉCNICO</span>
+                  </div>
+                </th>
+                <th className="px-6 py-4 text-right font-semibold text-gray-700 min-w-[150px] align-middle">
+                  <div className="flex flex-col items-end">
+                    <span>MOTORISTAS E</span>
+                    <span>DEMAIS SERVIDORES</span>
+                  </div>
                 </th>
               </tr>
             </thead>
-            <tbody>
-              <tr className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
+            <tbody className="divide-y divide-gray-100">
+              <tr className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <MapPin size={14} className="text-blue-500 shrink-0" />
-                    <span className="font-medium text-gray-900">
-                      Dentro do Estado (PI)
-                    </span>
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-gray-900">Brasília-DF</span>
+                    <span className="text-xs text-gray-500">(capital Federal)</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-center text-gray-600">Até 8h</td>
-                <td className="px-6 py-4 text-right tabular-nums font-semibold text-gray-900">
-                  R$ 120,00
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  Lei Municipal nº 001/2023
-                </td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">1.300,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">800,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">700,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">350,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">250,00</td>
               </tr>
-              <tr className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
+              
+              <tr className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <MapPin size={14} className="text-amber-500 shrink-0" />
-                    <span className="font-medium text-gray-900">
-                      Dentro do Estado (PI)
-                    </span>
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-gray-900">Teresina-PI</span>
+                    <span className="text-xs text-gray-500">(capital do Estado)</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-center text-gray-600">Acima de 8h</td>
-                <td className="px-6 py-4 text-right tabular-nums font-semibold text-gray-900">
-                  R$ 200,00
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  Lei Municipal nº 001/2023
-                </td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">900,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">600,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">400,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">250,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">200,00</td>
               </tr>
-              <tr className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
+              
+              <tr className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <MapPin size={14} className="text-orange-500 shrink-0" />
-                    <span className="font-medium text-gray-900">
-                      Fora do Estado
-                    </span>
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-gray-900">Distância superior a</span>
+                    <span className="text-sm text-gray-700">300 km de Padre Marcos-PI</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-center text-gray-600">Até 8h</td>
-                <td className="px-6 py-4 text-right tabular-nums font-semibold text-gray-900">
-                  R$ 250,00
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  Lei Municipal nº 001/2023
-                </td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">900,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">500,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">300,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">250,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">200,00</td>
               </tr>
-              <tr className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
+
+              <tr className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <MapPin size={14} className="text-orange-500 shrink-0" />
-                    <span className="font-medium text-gray-900">
-                      Fora do Estado
-                    </span>
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-gray-900">Distância superior a</span>
+                    <span className="text-sm text-gray-700">150 km de Padre Marcos-PI</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-center text-gray-600">Acima de 8h</td>
-                <td className="px-6 py-4 text-right tabular-nums font-semibold text-gray-900">
-                  R$ 400,00
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  Lei Municipal nº 001/2023
-                </td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">550,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">450,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">250,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">250,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">200,00</td>
               </tr>
+
+              <tr className="hover:bg-gray-50 transition-colors">
+                <td className="px-6 py-4">
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-gray-900">Distância até 150 km</span>
+                    <span className="text-sm text-gray-700">de Padre Marcos-PI</span>
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">450,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">300,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">250,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">150,00</td>
+                <td className="px-6 py-4 text-right tabular-nums text-gray-800 font-medium">150,00</td>
+              </tr>
+              
               {/* Linha de viagem internacional com aviso */}
               <tr className="border-t border-gray-100 bg-gray-50/50">
                 <td className="px-6 py-4">
@@ -380,12 +407,8 @@ function PadraoValoresTab() {
                     </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-center text-gray-600">—</td>
-                <td className="px-6 py-4 text-right tabular-nums text-purple-700 font-semibold">
-                  NÃO PREVISTO
-                </td>
-                <td className="px-6 py-4 text-sm text-purple-600 font-medium">
-                  Sem previsão legal municipal
+                <td colSpan={5} className="px-6 py-4 text-center text-sm text-purple-700 font-medium tracking-wide">
+                  NÃO HÁ PREVISÃO LEGAL PARA A CONCESSÃO DE DIÁRIAS INTERNACIONAIS
                 </td>
               </tr>
             </tbody>
@@ -402,10 +425,8 @@ function PadraoValoresTab() {
               Viagens Internacionais
             </h3>
             <p className="text-sm text-purple-700/80 leading-relaxed">
-              Informamos que a legislação municipal vigente não prevê o pagamento de
-              diárias para viagens internacionais. Conforme determinação do PNTP 2026
-              (Critério 7.2), esta informação é expressamente comunicada para fins de
-              transparência pública.
+              Informamos expressamente que a legislação municipal vigente não prevê o pagamento de
+              diárias para viagens internacionais.
             </p>
           </div>
         </div>
@@ -418,17 +439,14 @@ function PadraoValoresTab() {
         </p>
         <p className="text-sm text-blue-800/80 leading-relaxed">
           Os valores e regras para concessão de diárias no âmbito do Poder Executivo
-          Municipal estão estabelecidos na Lei Municipal nº 001/2023 (ou legislação
-          específica que dispõe sobre a concessão de diárias e passagens). Para
+          Municipal estão estabelecidos no <strong>DECRETO Nº 002/2026</strong>. Para
           consultar a íntegra da legislação, acesse a seção de{' '}
-          <a
-            href="https://padremarcos.pi.gov.br/leis-normas"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/transparencia/legislacao"
             className="text-blue-600 font-medium underline hover:text-blue-800"
           >
             Leis e Normas Municipais
-          </a>
+          </Link>
           .
         </p>
       </div>
