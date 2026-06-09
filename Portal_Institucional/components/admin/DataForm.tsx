@@ -60,6 +60,7 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
   });
 
   const [file, setFile] = useState<File | null>(null);
+  const [pendingBatchFiles, setPendingBatchFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
@@ -146,13 +147,17 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
     }
 
     let dbError: any = null;
+    let newRecordId: string | null = null;
 
     if (mode === "nova") {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .schema(config.schema)
         .from(config.table)
-        .insert([payload]);
+        .insert([payload])
+        .select()
+        .single();
       dbError = error;
+      if (data) newRecordId = data.id;
     } else {
       const { error } = await supabase
         .schema(config.schema)
@@ -162,14 +167,44 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
       dbError = error;
     }
 
-    setSaving(false);
-
     if (dbError) {
+      setSaving(false);
       console.error("ERRO:", dbError);
       showToast("error", `Erro ao salvar: ${dbError.message}`);
       return;
     }
 
+    // Processar batch files no modo nova
+    if (mode === "nova" && isV2Upload && pendingBatchFiles.length > 0 && newRecordId) {
+      const docTable = config.table === "licitacoes_v2" ? "licitacoes_documentos" : "contratos_documentos";
+      const fkColumn = config.table === "licitacoes_v2" ? "licitacao_id" : "contrato_id";
+      
+      for (const f of pendingBatchFiles) {
+        const formData = new FormData();
+        formData.append("file", f);
+        formData.append("tabela", config.table);
+        formData.append("ano", String(form.ano || new Date().getFullYear()));
+
+        try {
+          const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
+          if (res.ok) {
+            const json = await res.json();
+            await supabase.schema("transparencia").from(docTable).insert([{
+              [fkColumn]: newRecordId,
+              tipo_documento: "Anexo",
+              nome_arquivo: f.name,
+              url_arquivo: json.url,
+              caminho_r2: json.url.split('/').slice(3).join('/'),
+              tamanho: f.size,
+            }]);
+          }
+        } catch (err) {
+          console.error("Erro ao subir", f.name, err);
+        }
+      }
+    }
+
+    setSaving(false);
     showToast("success", mode === "nova" ? "Registro cadastrado!" : "Registro atualizado!");
     setTimeout(() => {
       router.push(`/admin/${config.slug}`);
@@ -213,84 +248,7 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* ── Seção: Upload PDF (apenas para tabelas com suporte) ── */}
-        {supportsUpload && (
-          isV2Upload && mode === "editar" ? (
-            <BatchDocumentManager
-              tabela={config.table}
-              parentId={initialData?.id}
-              ano={form.ano || new Date().getFullYear()}
-            />
-          ) : isV2Upload && mode === "nova" ? (
-            <div className="bg-orange-50 border border-orange-200 rounded-2xl p-6">
-              <p className="text-sm text-orange-800 font-bold flex items-center gap-2">
-                <FileUp size={18} />
-                Para enviar documentos em lote, salve este registro primeiro e depois clique em Editar.
-              </p>
-            </div>
-          ) : (
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-4">
-              <h2 className="text-sm font-black text-gray-900 uppercase tracking-widest">Arquivo PDF</h2>
 
-              {!file && !pdfPreview ? (
-                <label className="group relative flex flex-col items-center justify-center gap-3 border-2 border-dashed border-gray-200 hover:border-[#0B3D91] rounded-2xl p-10 cursor-pointer transition-all hover:bg-blue-50/30">
-                  <input
-                    type="file"
-                    accept=".pdf"
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileSelect(f); }}
-                  />
-                  <div className="p-4 bg-gray-100 group-hover:bg-blue-100 rounded-2xl transition-colors">
-                    <FileUp size={28} className="text-gray-600 group-hover:text-[#0B3D91] transition-colors" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm font-bold text-gray-700">Clique ou arraste o PDF aqui</p>
-                    <p className="text-xs text-gray-600 mt-1">Máximo {MAX_PDF_MB} MB</p>
-                  </div>
-                </label>
-              ) : (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-100 rounded-xl">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-blue-600 rounded-xl">
-                        <FileUp size={18} className="text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-blue-900 truncate max-w-xs">
-                          {file ? file.name : form.arquivo_nome || "Arquivo vinculado"}
-                        </p>
-                        <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">
-                          {file ? `${(file.size / 1_000_000).toFixed(2)} MB · Pendente de upload` : "Arquivo salvo"}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {pdfPreview && (
-                        <a
-                          href={pdfPreview}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition"
-                          title="Abrir PDF"
-                        >
-                          <Eye size={16} />
-                        </a>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => { setFile(null); set("arquivo_r2_url", ""); set("arquivo_nome", ""); }}
-                        className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                        title="Remover arquivo"
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )
-        )}
 
         {/* ── Seção: Dados do Registro ── */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-5">
@@ -395,6 +353,133 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
             })}
           </div>
         </div>
+
+        {/* ── Seção: Upload PDF (apenas para tabelas com suporte) ── */}
+        {supportsUpload && (
+          isV2Upload && mode === "editar" ? (
+            <BatchDocumentManager
+              tabela={config.table}
+              parentId={initialData?.id}
+              ano={form.ano || new Date().getFullYear()}
+            />
+          ) : isV2Upload && mode === "nova" ? (
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-4">
+              <h2 className="text-sm font-black text-gray-900 uppercase tracking-widest flex items-center justify-between">
+                Documentos em Lote
+                {pendingBatchFiles.length > 0 && <span className="bg-blue-100 text-blue-800 py-0.5 px-2 rounded-lg text-xs">{pendingBatchFiles.length} selecionados</span>}
+              </h2>
+              
+              <label className="relative flex flex-col items-center justify-center gap-3 border-2 border-dashed border-blue-200 hover:border-[#0B3D91] rounded-2xl p-8 cursor-pointer transition-all hover:bg-blue-50/30">
+                <input
+                  type="file"
+                  multiple
+                  accept=".pdf"
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      const newFiles = Array.from(e.target.files).filter(f => f.name.toLowerCase().endsWith(".pdf") && f.size <= MAX_PDF_MB * 1_000_000);
+                      setPendingBatchFiles(prev => [...prev, ...newFiles]);
+                    }
+                  }}
+                />
+                <div className="p-4 bg-gray-100 rounded-2xl transition-colors">
+                  <FileUp size={28} className="text-gray-600 transition-colors" />
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-bold text-gray-700">Clique ou arraste múltiplos PDFs aqui</p>
+                  <p className="text-xs text-gray-600 mt-1">Os arquivos serão enviados ao clicar em Salvar Registro.</p>
+                </div>
+              </label>
+
+              {pendingBatchFiles.length > 0 && (
+                <div className="space-y-2 mt-4">
+                  {pendingBatchFiles.map((file, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                      <div className="flex items-center gap-3 overflow-hidden">
+                        <div className="p-2 bg-blue-100 rounded-xl shrink-0">
+                          <FileUp size={16} className="text-blue-700" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-gray-900 truncate" title={file.name}>{file.name}</p>
+                          <p className="text-[10px] text-gray-500 font-bold uppercase">Pendente de envio</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setPendingBatchFiles(prev => prev.filter((_, i) => i !== idx))}
+                        className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                        title="Remover arquivo"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-4">
+              <h2 className="text-sm font-black text-gray-900 uppercase tracking-widest">Arquivo PDF</h2>
+
+              {!file && !pdfPreview ? (
+                <label className="group relative flex flex-col items-center justify-center gap-3 border-2 border-dashed border-gray-200 hover:border-[#0B3D91] rounded-2xl p-10 cursor-pointer transition-all hover:bg-blue-50/30">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileSelect(f); }}
+                  />
+                  <div className="p-4 bg-gray-100 group-hover:bg-blue-100 rounded-2xl transition-colors">
+                    <FileUp size={28} className="text-gray-600 group-hover:text-[#0B3D91] transition-colors" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-bold text-gray-700">Clique ou arraste o PDF aqui</p>
+                    <p className="text-xs text-gray-600 mt-1">Máximo {MAX_PDF_MB} MB</p>
+                  </div>
+                </label>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-blue-600 rounded-xl">
+                        <FileUp size={18} className="text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-blue-900 truncate max-w-xs">
+                          {file ? file.name : form.arquivo_nome || "Arquivo vinculado"}
+                        </p>
+                        <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">
+                          {file ? `${(file.size / 1_000_000).toFixed(2)} MB · Pendente de upload` : "Arquivo salvo"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {pdfPreview && (
+                        <a
+                          href={pdfPreview}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition"
+                          title="Abrir PDF"
+                        >
+                          <Eye size={16} />
+                        </a>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => { setFile(null); set("arquivo_r2_url", ""); set("arquivo_nome", ""); }}
+                        className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                        title="Remover arquivo"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        )}
 
         {/* Ações */}
         <div className="flex flex-col sm:flex-row items-center gap-3 pb-6">

@@ -20,6 +20,7 @@ import {
   MessageCircle,
   Scale,
   Database,
+  Gavel,
 } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { TABELAS_TRANSPARENCIA } from "@/lib/admin/transparencia-tables";
@@ -336,6 +337,42 @@ export default function AdminLayout({
             <span className="flex-1">Leis e Normas</span>
           </Link>
 
+          {/* ── Licitações ── */}
+          <Link
+            href="/admin/licitacoes"
+            onClick={onNavigate}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              pathname.startsWith("/admin/licitacoes")
+                ? "bg-[#0B3D91] text-white font-semibold shadow-md shadow-blue-200"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            <Gavel
+              className={`w-5 h-5 ${
+                pathname.startsWith("/admin/licitacoes") ? "text-white" : "text-orange-600"
+              }`}
+            />
+            <span className="flex-1">Licitações</span>
+          </Link>
+
+          {/* ── Contratos ── */}
+          <Link
+            href="/admin/contratos"
+            onClick={onNavigate}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              pathname.startsWith("/admin/contratos")
+                ? "bg-[#0B3D91] text-white font-semibold shadow-md shadow-blue-200"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            <FileText
+              className={`w-5 h-5 ${
+                pathname.startsWith("/admin/contratos") ? "text-white" : "text-blue-600"
+              }`}
+            />
+            <span className="flex-1">Contratos</span>
+          </Link>
+
           {/* ── Publicações ── */}
           <Link
             href="/admin/publicacoes"
@@ -407,7 +444,7 @@ export default function AdminLayout({
           {/* Sub-items da Transparência */}
           {transparenciaOpen && (
             <div className="ml-4 pl-4 border-l-2 border-gray-100 space-y-0.5">
-              {TABELAS_TRANSPARENCIA.map((t) => {
+              {TABELAS_TRANSPARENCIA.filter(t => t.slug !== 'licitacoes' && t.slug !== 'contratos').map((t) => {
                 const isActive = pathname.startsWith(`/admin/${t.slug}`);
                 const Icon = t.icon;
 

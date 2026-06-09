@@ -24,6 +24,10 @@ export default function BatchDocumentManager({ tabela, parentId, ano }: BatchDoc
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState({ nome_arquivo: "", tipo_documento: "" });
+  const [savingEdit, setSavingEdit] = useState(false);
+
   const supabase = createBrowserClient();
 
   const docTable = tabela === "licitacoes_v2" ? "licitacoes_documentos" : "contratos_documentos";
@@ -98,9 +102,36 @@ export default function BatchDocumentManager({ tabela, parentId, ano }: BatchDoc
   async function handleDelete(id: string) {
     if (!confirm("Tem certeza que deseja apagar este anexo?")) return;
     
-    // Deleta do DB (não do R2 para simplificar/segurança)
-    await supabase.schema("transparencia").from(docTable).delete().eq("id", id);
     setDocs(prev => prev.filter(d => d.id !== id));
+  }
+
+  function startEdit(doc: Documento) {
+    setEditingId(doc.id);
+    setEditForm({ nome_arquivo: doc.nome_arquivo, tipo_documento: doc.tipo_documento });
+  }
+
+  async function saveEdit(id: string) {
+    if (!editForm.nome_arquivo.trim() || !editForm.tipo_documento.trim()) {
+      alert("Nome e tipo são obrigatórios.");
+      return;
+    }
+    setSavingEdit(true);
+    const { error } = await supabase
+      .schema("transparencia")
+      .from(docTable)
+      .update({
+        nome_arquivo: editForm.nome_arquivo,
+        tipo_documento: editForm.tipo_documento,
+      })
+      .eq("id", id);
+      
+    setSavingEdit(false);
+    if (error) {
+      alert("Erro ao salvar: " + error.message);
+      return;
+    }
+    setEditingId(null);
+    setDocs(prev => prev.map(d => d.id === id ? { ...d, ...editForm } : d));
   }
 
   return (
@@ -124,34 +155,78 @@ export default function BatchDocumentManager({ tabela, parentId, ano }: BatchDoc
         </div>
       </label>
 
-      {/* Docs List */}
-      {loading ? (
-        <div className="flex justify-center p-4"><Loader2 className="animate-spin text-gray-400" /></div>
-      ) : docs.length > 0 && (
-        <div className="space-y-2 mt-4">
-          {docs.map(doc => (
-            <div key={doc.id} className="flex items-center justify-between p-3 bg-gray-50 border border-gray-100 rounded-xl">
-              <div className="flex items-center gap-3 overflow-hidden">
-                <div className="p-2 bg-blue-100 rounded-xl shrink-0">
-                  <FileUp size={16} className="text-blue-700" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-bold text-gray-900 truncate" title={doc.nome_arquivo}>{doc.nome_arquivo}</p>
-                  <p className="text-[10px] text-gray-500 font-bold uppercase">{doc.tipo_documento}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1 shrink-0">
-                <a href={doc.url_arquivo} target="_blank" rel="noopener noreferrer" className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition" title="Ver Arquivo">
-                  <ExternalLink size={16} />
-                </a>
-                <button type="button" onClick={() => handleDelete(doc.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Apagar">
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </div>
-          ))}
+        <div className="mt-4 bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50">
+                  <th className="text-left px-4 py-3 text-xs font-bold text-gray-700 uppercase tracking-wider">Nome do Arquivo</th>
+                  <th className="text-left px-4 py-3 text-xs font-bold text-gray-700 uppercase tracking-wider">Tipo</th>
+                  <th className="text-right px-4 py-3 text-xs font-bold text-gray-700 uppercase tracking-wider">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {docs.map(doc => (
+                  <tr key={doc.id} className="hover:bg-gray-50/50 transition-colors">
+                    {editingId === doc.id ? (
+                      <td colSpan={3} className="px-4 py-3">
+                        <div className="flex flex-col sm:flex-row gap-3 w-full">
+                          <input
+                            type="text"
+                            value={editForm.nome_arquivo}
+                            onChange={e => setEditForm({ ...editForm, nome_arquivo: e.target.value })}
+                            className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="Nome do Arquivo"
+                          />
+                          <input
+                            type="text"
+                            value={editForm.tipo_documento}
+                            onChange={e => setEditForm({ ...editForm, tipo_documento: e.target.value })}
+                            className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="Tipo (ex: Edital, Anexo, Contrato)"
+                          />
+                          <div className="flex justify-end gap-2 shrink-0">
+                            <button onClick={() => setEditingId(null)} className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300 transition">Cancelar</button>
+                            <button onClick={() => saveEdit(doc.id)} disabled={savingEdit} className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition flex items-center gap-1">
+                              {savingEdit ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />} Salvar
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                    ) : (
+                      <>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 bg-blue-100 rounded-xl shrink-0">
+                              <FileUp size={16} className="text-blue-700" />
+                            </div>
+                            <p className="text-sm font-bold text-gray-900 truncate max-w-xs" title={doc.nome_arquivo}>{doc.nome_arquivo}</p>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-xs text-gray-600 font-bold uppercase">{doc.tipo_documento}</p>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <button type="button" onClick={() => startEdit(doc)} className="p-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Editar">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                            </button>
+                            <a href={doc.url_arquivo} target="_blank" rel="noopener noreferrer" className="p-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Ver Arquivo">
+                              <ExternalLink size={16} />
+                            </a>
+                            <button type="button" onClick={() => handleDelete(doc.id)} className="p-2 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Apagar">
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      )}
     </div>
   );
 }

@@ -139,12 +139,13 @@ export const TABELAS_TRANSPARENCIA: TableConfig[] = [
     bgColor: "bg-orange-50",
     schema: "transparencia",
     table: "licitacoes_v2",
-    orderBy: { column: "data_abertura", ascending: false },
+    orderBy: { column: "ano", ascending: false },
     columns: [
       { key: "processo", label: "Processo", width: "w-32" },
       { key: "objeto", label: "Objeto", width: "min-w-[250px]" },
       { key: "modalidade", label: "Modalidade", hideMobile: true },
-      { key: "valor_estimado", label: "Valor Estimado", type: "number", monetary: true, hideMobile: true },
+      { key: "data_abertura", label: "Data Abertura", type: "date", hideMobile: true },
+      { key: "valor_estimado", label: "Valor", type: "number", monetary: true, hideMobile: true },
       { key: "situacao", label: "Situação", hideMobile: true },
       { key: "ano", label: "Ano", width: "w-16" },
     ],
@@ -175,13 +176,18 @@ export const TABELAS_TRANSPARENCIA: TableConfig[] = [
     bgColor: "bg-blue-50",
     schema: "transparencia",
     table: "contratos_v2",
-    orderBy: { column: "data_assinatura", ascending: false },
+    orderBy: { column: "ano", ascending: false },
     columns: [
       { key: "numero", label: "Número", width: "w-24" },
       { key: "contratado", label: "Contratado", width: "min-w-[200px]" },
       { key: "objeto", label: "Objeto", width: "min-w-[200px]", hideMobile: true },
+      { key: "data_inicio", label: "Vigência", hideMobile: true, render: (_, row) => {
+          if (!row.data_inicio && !row.data_fim) return "—";
+          const i = row.data_inicio ? fmtDate(row.data_inicio) : "—";
+          const f = row.data_fim ? fmtDate(row.data_fim) : "—";
+          return `${i} até ${f}`;
+      }},
       { key: "valor", label: "Valor", type: "number", monetary: true, hideMobile: true },
-      { key: "situacao", label: "Situação" },
       { key: "ano", label: "Ano", width: "w-16" },
     ],
     mobileColumns: ["contratado", "valor", "ano"],
