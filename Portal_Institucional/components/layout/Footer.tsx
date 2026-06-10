@@ -9,7 +9,7 @@ import {
   MessageSquare, HelpCircle, ShieldCheck, Scale, LibraryBig, FileText
 } from "lucide-react";
 
-import { FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa";
+import { FaInstagram } from "react-icons/fa";
 
 export default function TransparencyFooter(): JSX.Element {
   const linkListClass = "space-y-2 text-xs text-gray-200";
@@ -88,31 +88,13 @@ export default function TransparencyFooter(): JSX.Element {
             </p>
             <div className="flex gap-3">
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/prefeituradepadremarcos?igsh=MWc3OHo2bmNuaHV1Nw=="
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram oficial da Prefeitura de Padre Marcos"
                 className="p-2 bg-white/5 rounded-lg hover:bg-[#FFE066] hover:text-[#173572] transition-all duration-300"
               >
                 <FaInstagram size={18} />
-              </a>
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Facebook da Prefeitura"
-                className="p-2 bg-white/5 rounded-lg hover:bg-[#FFE066] hover:text-[#173572] transition-all duration-300"
-              >
-                <FaFacebook size={18} />
-              </a>
-              <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="YouTube da Prefeitura"
-                className="p-2 bg-white/5 rounded-lg hover:bg-[#FFE066] hover:text-[#173572] transition-all duration-300"
-              >
-                <FaYoutube size={18} />
               </a>
             </div>
           </div>

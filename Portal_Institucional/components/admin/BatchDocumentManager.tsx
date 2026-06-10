@@ -58,10 +58,13 @@ export default function BatchDocumentManager({ tabela, parentId, ano }: BatchDoc
 
     const validFiles = files.filter(f => f.name.toLowerCase().endsWith(".pdf") && f.size <= MAX_PDF_MB * 1_000_000);
     if (validFiles.length < files.length) {
-      alert(`Atenção: Apenas arquivos PDF menores que ${MAX_PDF_MB}MB são suportados. Alguns arquivos foram ignorados.`);
+      alert(`Atenção: Apenas arquivos .PDF de até ${MAX_PDF_MB}MB são permitidos.\nAlguns arquivos foram ignorados.`);
     }
 
     if (validFiles.length === 0) return;
+
+    let hasError = false;
+    let errorMessage = "";
 
     setUploading(true);
     setUploadProgress({ current: 0, total: validFiles.length });
@@ -77,11 +80,14 @@ export default function BatchDocumentManager({ tabela, parentId, ano }: BatchDoc
 
       try {
         const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
-        if (!res.ok) throw new Error("Falha no upload");
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`Servidor: ${text}`);
+        }
         const json = await res.json();
 
         // Save to DB
-        await supabase.schema("transparencia").from(docTable).insert([{
+        const { error: dbErr } = await supabase.schema("transparencia").from(docTable).insert([{
           [fkColumn]: parentId,
           tipo_documento: "Anexo", // Padrão
           nome_arquivo: file.name,
@@ -90,12 +96,19 @@ export default function BatchDocumentManager({ tabela, parentId, ano }: BatchDoc
           tamanho: file.size,
         }]);
 
-      } catch (err) {
+        if (dbErr) throw new Error(`Banco: ${dbErr.message}`);
+
+      } catch (err: any) {
+        hasError = true;
+        errorMessage += `${file.name}: ${err.message}\n`;
         console.error("Erro ao subir", file.name, err);
       }
     }
 
     setUploading(false);
+    if (hasError) {
+      alert("Houve erros no upload de alguns arquivos:\n\n" + errorMessage);
+    }
     fetchDocs();
   }
 

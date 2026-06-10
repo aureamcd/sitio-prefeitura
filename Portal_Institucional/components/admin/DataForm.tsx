@@ -60,7 +60,7 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
   });
 
   const [file, setFile] = useState<File | null>(null);
-  const [pendingBatchFiles, setPendingBatchFiles] = useState<File[]>([]);
+  const [pendingBatchFiles, setPendingBatchFiles] = useState<{ file: File; name: string; type: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
@@ -178,10 +178,12 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
     if (mode === "nova" && isV2Upload && pendingBatchFiles.length > 0 && newRecordId) {
       const docTable = config.table === "licitacoes_v2" ? "licitacoes_documentos" : "contratos_documentos";
       const fkColumn = config.table === "licitacoes_v2" ? "licitacao_id" : "contrato_id";
-      
-      for (const f of pendingBatchFiles) {
+      let hasUploadError = false;
+      let errorMessages: string[] = [];
+
+      for (const item of pendingBatchFiles) {
         const formData = new FormData();
-        formData.append("file", f);
+        formData.append("file", item.file);
         formData.append("tabela", config.table);
         formData.append("ano", String(form.ano || new Date().getFullYear()));
 
@@ -189,19 +191,41 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
           const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
           if (res.ok) {
             const json = await res.json();
-            await supabase.schema("transparencia").from(docTable).insert([{
+            const { error: dbErr } = await supabase.schema("transparencia").from(docTable).insert([{
               [fkColumn]: newRecordId,
-              tipo_documento: "Anexo",
-              nome_arquivo: f.name,
+              tipo_documento: item.type || "Anexo",
+              nome_arquivo: item.name || item.file.name,
               url_arquivo: json.url,
               caminho_r2: json.url.split('/').slice(3).join('/'),
-              tamanho: f.size,
+              tamanho: item.file.size,
             }]);
+            
+            if (dbErr) {
+              hasUploadError = true;
+              errorMessages.push(`Banco (${item.name}): ${dbErr.message}`);
+            }
+          } else {
+            hasUploadError = true;
+            const errText = await res.text();
+            errorMessages.push(`Servidor (${item.name}): ${errText}`);
           }
-        } catch (err) {
-          console.error("Erro ao subir", f.name, err);
+        } catch (err: any) {
+          hasUploadError = true;
+          errorMessages.push(`Rede (${item.name}): ${err.message}`);
         }
       }
+
+      setSaving(false);
+      if (hasUploadError) {
+        alert("Registro salvo, mas houve erro ao enviar alguns arquivos:\n\n" + errorMessages.join("\n"));
+        showToast("error", "Registro salvo com falhas nos anexos!");
+      } else {
+        showToast("success", "Registro e anexos salvos com sucesso!");
+      }
+      setTimeout(() => {
+        router.push(`/admin/${config.slug}`);
+      }, 2000);
+      return;
     }
 
     setSaving(false);
@@ -377,7 +401,14 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
                   className="hidden"
                   onChange={(e) => {
                     if (e.target.files) {
-                      const newFiles = Array.from(e.target.files).filter(f => f.name.toLowerCase().endsWith(".pdf") && f.size <= MAX_PDF_MB * 1_000_000);
+                      const allFiles = Array.from(e.target.files);
+                      const validFiles = allFiles.filter(f => f.name.toLowerCase().endsWith(".pdf") && f.size <= MAX_PDF_MB * 1_000_000);
+                      
+                      if (validFiles.length < allFiles.length) {
+                        alert(`Atenção: Apenas arquivos .PDF de até ${MAX_PDF_MB}MB são permitidos.\nAlguns arquivos foram ignorados.`);
+                      }
+
+                      const newFiles = validFiles.map(f => ({ file: f, name: f.name.replace(/\.[^/.]+$/, ""), type: "Anexo" }));
                       setPendingBatchFiles(prev => [...prev, ...newFiles]);
                     }
                   }}
@@ -392,28 +423,60 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
               </label>
 
               {pendingBatchFiles.length > 0 && (
-                <div className="space-y-2 mt-4">
-                  {pendingBatchFiles.map((file, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 border border-gray-100 rounded-xl">
-                      <div className="flex items-center gap-3 overflow-hidden">
-                        <div className="p-2 bg-blue-100 rounded-xl shrink-0">
-                          <FileUp size={16} className="text-blue-700" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-bold text-gray-900 truncate" title={file.name}>{file.name}</p>
-                          <p className="text-[10px] text-gray-500 font-bold uppercase">Pendente de envio</p>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setPendingBatchFiles(prev => prev.filter((_, i) => i !== idx))}
-                        className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                        title="Remover arquivo"
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
-                  ))}
+                <div className="mt-4 bg-white border border-gray-200 rounded-2xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-100 bg-gray-50">
+                          <th className="text-left px-4 py-3 text-xs font-bold text-gray-700 uppercase tracking-wider">Nome do Arquivo</th>
+                          <th className="text-left px-4 py-3 text-xs font-bold text-gray-700 uppercase tracking-wider">Tipo</th>
+                          <th className="text-right px-4 py-3 text-xs font-bold text-gray-700 uppercase tracking-wider">Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-50">
+                        {pendingBatchFiles.map((item, idx) => (
+                          <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
+                            <td className="px-4 py-3">
+                              <input
+                                type="text"
+                                value={item.name}
+                                onChange={e => {
+                                  const newFiles = [...pendingBatchFiles];
+                                  newFiles[idx].name = e.target.value;
+                                  setPendingBatchFiles(newFiles);
+                                }}
+                                className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                placeholder="Nome do Arquivo"
+                              />
+                            </td>
+                            <td className="px-4 py-3">
+                              <input
+                                type="text"
+                                value={item.type}
+                                onChange={e => {
+                                  const newFiles = [...pendingBatchFiles];
+                                  newFiles[idx].type = e.target.value;
+                                  setPendingBatchFiles(newFiles);
+                                }}
+                                className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                placeholder="Tipo (ex: Edital, Anexo)"
+                              />
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              <button
+                                type="button"
+                                onClick={() => setPendingBatchFiles(prev => prev.filter((_, i) => i !== idx))}
+                                className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition inline-flex items-center justify-center"
+                                title="Remover arquivo"
+                              >
+                                <X size={16} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </div>
