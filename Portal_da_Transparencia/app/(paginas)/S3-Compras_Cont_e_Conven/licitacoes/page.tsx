@@ -6,7 +6,19 @@ import FilterPanel, { FilterValues } from '@/components/ui/FilterPanel';
 import DataTable from '@/components/ui/DataTable';
 import { createBrowserClient, useAvailableYears } from '@/lib/supabase/client';
 import { EMPRESAS } from '@/lib/empresas';
-import { FileSearch, Info } from 'lucide-react';
+import {
+  FileSearch,
+  Info,
+  Gavel,
+  FileX,
+  FileCheck,
+  AlertTriangle,
+  CheckCircle2,
+  ClipboardList,
+  FileText,
+  Download,
+  ShieldAlert,
+} from 'lucide-react';
 import DocumentListModal from '@/components/ui/DocumentListModal';
 
 const MESES = [
@@ -17,6 +29,31 @@ const MESES = [
   { value: '09', label: 'Setembro' },{ value: '10', label: 'Outubro' },
   { value: '11', label: 'Novembro' },{ value: '12', label: 'Dezembro' },
 ];
+
+const MODALIDADES = [
+  { value: 'Pregão', label: 'Pregão' },
+  { value: 'Concorrência', label: 'Concorrência' },
+  { value: 'Tomada de Preços', label: 'Tomada de Preços' },
+  { value: 'Convite', label: 'Convite' },
+  { value: 'Concurso', label: 'Concurso' },
+  { value: 'Leilão', label: 'Leilão' },
+  { value: 'Chamada Pública', label: 'Chamada Pública' },
+  { value: 'Dispensa', label: 'Dispensa' },
+  { value: 'Inexigibilidade', label: 'Inexigibilidade' },
+];
+
+const SITUACOES = [
+  { value: 'Aberta', label: 'Aberta' },
+  { value: 'Homologada', label: 'Homologada' },
+  { value: 'Em Andamento', label: 'Em Andamento' },
+  { value: 'Concluída', label: 'Concluída' },
+  { value: 'Fracassada', label: 'Fracassada' },
+  { value: 'Deserta', label: 'Deserta' },
+  { value: 'Suspensa', label: 'Suspensa' },
+  { value: 'Cancelada', label: 'Cancelada' },
+];
+
+type TabType = 'licitacoes' | 'dispensa_inexigibilidade' | 'atas_srp' | 'sancionados';
 
 function formatBRL(value: number): string {
   return (value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -51,15 +88,14 @@ function getSituacaoBadge(val: string) {
   return { label: val, className: 'bg-gray-100 text-gray-700 border-gray-200' };
 }
 
-// Hook personalizado para buscar licitações
-function useLicitacoesData(filters: FilterValues) {
+// ─── Hook de busca ───
+function useLicitacoesData(filters: FilterValues & { modalidade?: string; situacao?: string }, activeTab: TabType) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createBrowserClient();
 
   useEffect(() => {
     let cancelled = false;
-
     async function fetchData() {
       setLoading(true);
 
@@ -68,6 +104,17 @@ function useLicitacoesData(filters: FilterValues) {
         .from('licitacoes_v2')
         .select('*, documentos:licitacoes_documentos(*)');
 
+      // Filtro por aba
+      if (activeTab === 'dispensa_inexigibilidade') {
+        query = query.or(
+          'modalidade.in.("Dispensa","Inexigibilidade"),situacao.ilike.*Dispensa*'
+        );
+      } else if (activeTab === 'atas_srp') {
+        query = query.eq('carona', 'sim');
+      }
+      // Aba 'licitacoes' mostra TODOS os processos (sem excluir nada)
+
+      // Filtros comuns
       if (filters.entidade) {
         query = query.eq('empresa', filters.entidade);
       }
@@ -81,9 +128,17 @@ function useLicitacoesData(filters: FilterValues) {
         query = query.ilike('data_abertura', `${prefix}%`);
       }
 
+      if (filters.modalidade) {
+        query = query.ilike('modalidade', `%${filters.modalidade}%`);
+      }
+
+      if (filters.situacao) {
+        query = query.ilike('situacao', `%${filters.situacao}%`);
+      }
+
       if (filters.busca) {
         query = query.or(
-          `objeto.ilike.%${filters.busca}%,numero.ilike.%${filters.busca}%,modalidade.ilike.%${filters.busca}%`
+          `objeto.ilike.%${filters.busca}%,numero.ilike.%${filters.busca}%,modalidade.ilike.%${filters.busca}%,processo.ilike.%${filters.busca}%`
         );
       }
 
@@ -107,21 +162,74 @@ function useLicitacoesData(filters: FilterValues) {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [filters.ano, filters.mes, filters.busca, filters.entidade, supabase]);
+  }, [filters.ano, filters.mes, filters.busca, filters.entidade, filters.modalidade, filters.situacao, activeTab, supabase]);
 
   return { data, loading };
 }
 
 export default function LicitacoesPage() {
-  const [filters, setFilters] = useState<FilterValues>({
-    ano: '2026',
+  const [activeTab, setActiveTab] = useState<TabType>('licitacoes');
+  const [pcaData, setPcaData] = useState<any[]>([]);
+  const [sancionadosData, setSancionadosData] = useState<any[]>([]);
+  const [loadingPca, setLoadingPca] = useState(true);
+  const [loadingSanc, setLoadingSanc] = useState(true);
+
+  // Carregar PCA
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchPCA() {
+      setLoadingPca(true);
+      const { data } = await supabase
+        .schema('transparencia')
+        .from('plano_contratacoes_anual')
+        .select('*')
+        .order('ano', { ascending: false });
+      if (!cancelled) { setPcaData(data || []); setLoadingPca(false); }
+    }
+    fetchPCA();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Carregar Sancionados
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchSanc() {
+      setLoadingSanc(true);
+      const { data } = await supabase
+        .schema('transparencia')
+        .from('sancionados')
+        .select('*')
+        .order('ano', { ascending: false });
+      if (!cancelled) { setSancionadosData(data || []); setLoadingSanc(false); }
+    }
+    fetchSanc();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Agrupar sancionados por ano
+  const sancionadosPorAno = useMemo(() => {
+    const map: Record<number, any[]> = {};
+    sancionadosData.forEach(item => {
+      const ano = item.ano || 0;
+      if (!map[ano]) map[ano] = [];
+      map[ano].push(item);
+    });
+    return map;
+  }, [sancionadosData]);
+
+  const anosSancionados = [2023, 2024, 2025, 2026];
+  const [filters, setFilters] = useState<FilterValues & { modalidade?: string; situacao?: string }>({
+    ano: '',
     mes: '',
     busca: '',
     entidade: '',
+    modalidade: '',
+    situacao: '',
   });
 
   const { anos: ANOS, loading: anosLoading } = useAvailableYears('licitacoes_v2', filters.entidade || undefined);
-  const { data, loading } = useLicitacoesData(filters);
+  const supabase = createBrowserClient();
+  const { data, loading } = useLicitacoesData(filters, activeTab);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
@@ -134,33 +242,33 @@ export default function LicitacoesPage() {
   }, []);
 
   const handleChange = useCallback(
-    (field: 'ano' | 'mes' | 'busca' | 'entidade', value: string) => {
+    (field: 'ano' | 'mes' | 'busca' | 'entidade' | 'modalidade' | 'situacao', value: string) => {
       setFilters((prev) => ({ ...prev, [field]: value }));
     },
     []
   );
 
   const handleClear = useCallback(() => {
-    setFilters({ ano: '', mes: '', busca: '', entidade: '' });
+    setFilters({ ano: '', mes: '', busca: '', entidade: '', modalidade: '', situacao: '' });
   }, []);
 
-  const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}-${filters.entidade}`;
-  const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca || filters.entidade);
+  const filterKey = `${activeTab}-${filters.ano}-${filters.mes}-${filters.busca}-${filters.entidade}-${filters.modalidade}-${filters.situacao}`;
+  const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca || filters.entidade || filters.modalidade || filters.situacao);
 
-  const totalEstimado = data.reduce((s, r) => s + (Number(r.valor_estimado) || 0), 0);
+  const totalEstimado = useMemo(() => data.reduce((s, r) => s + (Number(r.valor_estimado) || 0), 0), [data]);
 
-  const licitacaoColumns = useMemo(
+  // ─── Colunas base (comuns a todas as abas) ───
+  const colunasBase = useMemo(
     () => [
       {
         header: 'Nº / Modalidade',
         accessor: 'numero',
         render: (val: string, row: any) => {
           const num = val || row.proclic || row.nlicitacao || '-';
-          const modalidade = row.modalidade || 'Não informado';
           return (
             <div>
               <p className="text-sm font-semibold text-gray-900">{num}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{modalidade}</p>
+              <p className="text-xs text-gray-500 mt-0.5">{row.modalidade || '—'}</p>
             </div>
           );
         },
@@ -170,7 +278,7 @@ export default function LicitacoesPage() {
         accessor: 'objeto',
         render: (val: string) => (
           <span
-            className="block max-w-[260px] text-sm text-gray-700"
+            className="block max-w-[280px] text-sm text-gray-700"
             style={{
               display: '-webkit-box',
               WebkitLineClamp: 2,
@@ -193,25 +301,22 @@ export default function LicitacoesPage() {
         ),
       },
       {
-        header: 'Valor Estimado',
+        header: 'Valor (Estimado / Homologado)',
         accessor: 'valor_estimado',
-        render: (val: number) => (
-          <span className="block text-right tabular-nums text-sm font-semibold text-gray-800">
-            {formatBRL(Number(val))}
-          </span>
-        ),
-      },
-      {
-        header: 'Situação',
-        accessor: 'situacao',
-        render: (val: string) => {
-          const badge = getSituacaoBadge(val);
+        render: (val: number, row: any) => {
+          const est = Number(val) || 0;
+          const hom = Number(row.valor_homologado) || 0;
           return (
-            <span
-              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${badge.className}`}
-            >
-              {badge.label}
-            </span>
+            <div className="text-right">
+              <p className="text-sm font-semibold text-gray-800 tabular-nums">
+                {formatBRL(est)}
+              </p>
+              {hom > 0 && (
+                <p className="text-xs text-emerald-600 tabular-nums mt-0.5">
+                  Homologado: {formatBRL(hom)}
+                </p>
+              )}
+            </div>
           );
         },
       },
@@ -235,11 +340,11 @@ export default function LicitacoesPage() {
                 <FileSearch size={14} />
                 {qtd > 0 ? `Anexos (${qtd})` : 'Sem anexos'}
               </button>
-              
+
               {row.link_tce && (
-                <a 
-                  href={row.link_tce} 
-                  target="_blank" 
+                <a
+                  href={row.link_tce}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100 transition-colors"
                   title="Abrir detalhes no mural de licitações do TCE"
@@ -255,11 +360,64 @@ export default function LicitacoesPage() {
     [handleOpenDocs]
   );
 
+  // Coluna de Situação (só aparece fora da aba Dispensa/Inexigibilidade)
+  const colunaSituacao = useMemo(
+    () => ({
+      header: 'Situação',
+      accessor: 'situacao',
+      render: (val: string) => {
+        const badge = getSituacaoBadge(val);
+        return (
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${badge.className}`}
+          >
+            {badge.label}
+          </span>
+        );
+      },
+    }),
+    []
+  );
+
+  // Colunas dinâmicas por aba
+  const columns = useMemo(() => {
+    if (activeTab === 'dispensa_inexigibilidade') {
+      // Sem coluna de Situação
+      return colunasBase;
+    }
+    // Licitações e Atas SRP: com Situação
+    return [
+      ...colunasBase.slice(0, 4), // Nº/Modalidade, Objeto, Data, Valor
+      colunaSituacao,
+      ...colunasBase.slice(4), // Documentos
+    ];
+  }, [activeTab, colunasBase, colunaSituacao]);
+
+  // ─── Info legal de cada aba ───
+  const tabLegalInfo: Record<TabType, { title: string; desc: string }> = {
+    licitacoes: {
+      title: 'Nota Legal — Critérios 8.1, 8.2 e 8.3',
+      desc: 'Os processos licitatórios são conduzidos em conformidade com a Lei nº 14.133/2021 (Nova Lei de Licitações e Contratos Administrativos) e normas do TCE-PI. Os editais, termos de referência, atas, pareceres e demais documentos estão disponíveis para consulta e download em PDF.',
+    },
+    dispensa_inexigibilidade: {
+      title: 'Nota Legal — Critério 8.4',
+      desc: 'Os processos de dispensa e inexigibilidade de licitação são disponibilizados conforme o art. 74 e 75 da Lei nº 14.133/2021, com a íntegra dos documentos que os fundamentam, incluindo o ato de ratificação e o parecer jurídico.',
+    },
+    atas_srp: {
+      title: 'Nota Legal — Critério 8.5',
+      desc: 'As atas de adesão a registros de preços (SRP) de outros órgãos/entidades, conhecidas como "caronas", são divulgadas com a íntegra dos documentos conforme exigido pelo PNTP 2026.',
+    },
+    sancionados: {
+      title: 'Nota Legal — Critério 8.7',
+      desc: 'A relação de licitantes e/ou contratados sancionados administrativamente pelo Poder ou órgão é divulgada conforme recomendação do PNTP 2026. Não havendo registros de sanções, esta declaração é atualizada anualmente.',
+    },
+  };
+
   return (
     <ContentPage
       showSearch={false}
       title="Licitações"
-      description="Acompanhe os processos licitatórios, editais e resultados da prefeitura em tempo real."
+      description="Acompanhe os processos licitatórios, dispensas, inexigibilidades e atas de adesão a registros de preços."
       breadcrumb={[
         { label: 'Portal da Transparência', href: '/' },
         { label: 'Licitações' },
@@ -273,10 +431,150 @@ export default function LicitacoesPage() {
         onClear={handleClear}
         anosLoading={anosLoading}
         empresas={EMPRESAS}
-      />
+      >
+        {/* Filtro de Modalidade */}
+        <div className="flex flex-col gap-1 sm:w-48">
+          <label className="text-xs font-medium text-gray-600">Modalidade</label>
+          <div className="relative">
+            <select
+              value={filters.modalidade || ''}
+              onChange={(e) => handleChange('modalidade', e.target.value)}
+              className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 appearance-none text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all"
+            >
+              <option value="">Todas</option>
+              {MODALIDADES.map((m) => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Filtro de Situação */}
+        <div className="flex flex-col gap-1 sm:w-44">
+          <label className="text-xs font-medium text-gray-600">Situação</label>
+          <div className="relative">
+            <select
+              value={filters.situacao || ''}
+              onChange={(e) => handleChange('situacao', e.target.value)}
+              className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 appearance-none text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all"
+            >
+              <option value="">Todas</option>
+              {SITUACOES.map((s) => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </FilterPanel>
+
+      {/* ═══ SEÇÃO PCA (8.6) ═══ */}
+      <div className="mt-8 mb-6 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className="p-3 bg-sky-100 rounded-xl shrink-0">
+            <FileText size={24} className="text-sky-600" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg font-bold text-gray-900">Plano de Contratações Anual (PCA)</h2>
+            <p className="text-sm text-gray-600 mt-1">
+              Critério 8.6 (Recomendado) — Planejamento anual de contratações do município.
+            </p>
+
+            {loadingPca ? (
+              <div className="mt-3 h-16 bg-gray-100 animate-pulse rounded-xl" />
+            ) : pcaData.length > 0 ? (
+              <div className="mt-4 space-y-3">
+                {pcaData.map((pca) => (
+                  <div key={pca.id} className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-sky-50 border border-sky-100 rounded-xl">
+                    <div className="flex-1">
+                      <p className="text-sm font-bold text-gray-900">
+                        PCA {pca.ano}
+                      </p>
+                      {pca.responsavel && (
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-gray-600">
+                          <span><strong>Responsável:</strong> {pca.responsavel}{pca.cargo_responsavel ? ` (${pca.cargo_responsavel})` : ''}</span>
+                          {pca.frequencia_atualizacao && <span><strong>Atualização:</strong> {pca.frequencia_atualizacao}</span>}
+                          {pca.data_publicacao && <span><strong>Publicado em:</strong> {formatDateISO(pca.data_publicacao)}</span>}
+                        </div>
+                      )}
+                      {!pca.responsavel && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          {pca.data_publicacao ? `Publicado em ${formatDateISO(pca.data_publicacao)}` : ''}
+                        </p>
+                      )}
+                    </div>
+                    {pca.arquivo_url ? (
+                      <a
+                        href={pca.arquivo_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-sky-200 rounded-xl text-sm font-semibold text-sky-700 hover:bg-sky-100 transition shrink-0"
+                      >
+                        <Download size={16} />
+                        Baixar Planilha
+                      </a>
+                    ) : (
+                      <p className="text-xs text-gray-400 italic">Arquivo não disponível</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-3 p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                <p className="text-sm text-gray-600 italic">
+                  O Plano de Contratações Anual deste exercício está em elaboração e será publicado assim que finalizado.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
       <div className="mt-6">
-        {/* Totalizer */}
+        {/* ─── Tabs ─── */}
+        <div className="flex flex-wrap gap-1 border-b border-gray-200" role="tablist" aria-label="Seções de licitações">
+          <button
+            onClick={() => setActiveTab('licitacoes')}
+            role="tab"
+            aria-selected={activeTab === 'licitacoes'}
+            className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'licitacoes' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <Gavel size={16} />Licitações
+          </button>
+          <button
+            onClick={() => setActiveTab('dispensa_inexigibilidade')}
+            role="tab"
+            aria-selected={activeTab === 'dispensa_inexigibilidade'}
+            className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'dispensa_inexigibilidade' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <FileX size={16} />Dispensa / Inexigibilidade
+          </button>
+          <button
+            onClick={() => setActiveTab('atas_srp')}
+            role="tab"
+            aria-selected={activeTab === 'atas_srp'}
+            className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'atas_srp' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <FileCheck size={16} />Atas SRP (Caronas)
+          </button>
+          <button
+            onClick={() => setActiveTab('sancionados')}
+            role="tab"
+            aria-selected={activeTab === 'sancionados'}
+            className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'sancionados' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <ShieldAlert size={16} />Licitantes Sancionados
+          </button>
+        </div>
+
+        {/* Totalizadores */}
         <div className="mt-4 bg-white border border-gray-100 rounded-2xl px-6 py-4 flex flex-wrap gap-6 items-center shadow-sm mb-4">
           <div>
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-0.5">
@@ -303,8 +601,10 @@ export default function LicitacoesPage() {
               </p>
             )}
           </div>
+
         </div>
 
+        {/* Aviso de documentos */}
         <div className="mb-4 flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50 px-5 py-3">
           <Info size={16} className="text-blue-500 shrink-0 mt-0.5" />
           <div>
@@ -312,31 +612,160 @@ export default function LicitacoesPage() {
               Documentos Anexados
             </p>
             <p className="text-xs text-blue-700/80 mt-0.5">
-              Clique em "Ver Anexos" para visualizar e baixar Editais, Avisos, Homologações e Atas de cada processo.
+              Clique em "Ver Anexos" para visualizar e baixar Editais, Avisos, Homologações, Atas e demais documentos de cada processo.
             </p>
           </div>
         </div>
 
-        <DataTable
-          title="Processos Licitatórios"
-          columns={licitacaoColumns}
-          data={data}
-          exportable={true}
-          loading={loading}
-          paginationResetKey={filterKey}
-          hasActiveFilters={hasActiveFilters}
-        />
+        {/* Tabela */}
+        {activeTab === 'sancionados' ? (
+          <div className="space-y-6">
+            {/* Declaração de Inexistência com Checklist Anual */}
+            <div className="bg-white border border-amber-200 rounded-2xl overflow-hidden">
+              <div className="bg-amber-50 px-6 py-4 border-b border-amber-100">
+                <div className="flex items-center gap-3">
+                  <ClipboardList size={20} className="text-amber-700" />
+                  <h3 className="text-sm font-black text-amber-900 uppercase tracking-wider">
+                    Critério 8.7 — Checklist de Verificação Anual
+                  </h3>
+                </div>
+              </div>
+              <div className="p-6">
+                <p className="text-sm text-gray-700 mb-5">
+                  Marque abaixo para cada ano se o município <strong>verificou a inexistência</strong> 
+                  de licitantes ou contratados sancionados administrativamente. 
+                  Esta declaração serve como comprovante de transparência ativa para o PNTP 2026.
+                </p>
 
-        {/* Nota Legal */}
+                <div className="space-y-3">
+                  {anosSancionados.map((ano) => {
+                    const registros = sancionadosPorAno[ano] || [];
+                    return (
+                      <div key={ano} className="border border-gray-200 rounded-xl overflow-hidden">
+                        <div className="flex items-center justify-between px-5 py-3.5 bg-gray-50 border-b border-gray-100">
+                          <div className="flex items-center gap-3">
+                            <div className={`p-1.5 rounded-lg ${registros.length > 0 ? 'bg-red-100' : 'bg-green-100'}`}>
+                              {registros.length > 0 ? (
+                                <AlertTriangle size={16} className="text-red-600" />
+                              ) : (
+                                <CheckCircle2 size={16} className="text-green-600" />
+                              )}
+                            </div>
+                            <span className="text-sm font-bold text-gray-900">{ano}</span>
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                              registros.length > 0 
+                                ? 'bg-red-100 text-red-700' 
+                                : 'bg-green-100 text-green-700'
+                            }`}>
+                              {registros.length > 0 
+                                ? `${registros.length} registro(s)` 
+                                : 'Nenhum sancionado'}
+                            </span>
+                          </div>
+                          {/* Status visual */}
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-500">
+                              {registros.length > 0 
+                                ? '✅ Verificado' 
+                                : '✅ Inexistência confirmada'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Se tem registros, mostra a tabela */}
+                        {registros.length > 0 && (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b border-gray-100 bg-red-50/50">
+                                  <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-700 uppercase">Empresa</th>
+                                  <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-700 uppercase">CNPJ</th>
+                                  <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-700 uppercase">Tipo Sanção</th>
+                                  <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-700 uppercase">Período</th>
+                                  <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-700 uppercase">Motivo</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-gray-50">
+                                {registros.map((r) => (
+                                  <tr key={r.id} className="hover:bg-gray-50/50 transition-colors">
+                                    <td className="px-4 py-3 font-medium text-gray-900">{r.empresa_nome}</td>
+                                    <td className="px-4 py-3 text-gray-600">{r.cnpj || '—'}</td>
+                                    <td className="px-4 py-3">
+                                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">
+                                        {r.tipo_sancao}
+                                      </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-gray-600 text-xs">
+                                      {r.data_inicio ? formatDateISO(r.data_inicio) : '—'}
+                                      {r.data_fim ? ` até ${formatDateISO(r.data_fim)}` : ''}
+                                    </td>
+                                    <td className="px-4 py-3 text-gray-600 max-w-[200px] truncate" title={r.motivo}>{r.motivo || '—'}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+
+                        {/* Se não tem registros, mostra mensagem */}
+                        {registros.length === 0 && (
+                          <div className="px-5 py-3">
+                            <p className="text-xs text-gray-500 italic">
+                              ✓ Não há licitantes ou contratados sancionados administrativamente no exercício de {ano}.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Resumo */}
+            <div className="bg-green-50 border border-green-200 rounded-xl px-6 py-4">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 size={18} className="text-green-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-bold text-green-900">
+                    Declaração de Transparência Ativa
+                  </p>
+                  <p className="text-sm text-green-800 mt-1">
+                    O Município de Padre Marcos declara, para os devidos fins de cumprimento do 
+                    Programa Nacional de Transparência Pública (PNTP 2026), que realizou a verificação 
+                    dos exercícios de {anosSancionados[0]} a {anosSancionados[anosSancionados.length - 1]} 
+                    quanto à existência de licitantes ou contratados sancionados administrativamente. 
+                    {sancionadosData.length === 0 
+                      ? ' Não foram encontrados registros de sanções administrativas no período.'
+                      : ` Foram encontrados ${sancionadosData.length} registro(s) de sanção(ões), listados acima.`}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <DataTable
+            title={
+              activeTab === 'licitacoes' ? 'Processos Licitatórios' :
+              activeTab === 'dispensa_inexigibilidade' ? 'Dispensas e Inexigibilidades' :
+              'Atas de Adesão a Registros de Preços (SRP)'
+            }
+            columns={columns}
+            data={data}
+            exportable={true}
+            loading={loading}
+            paginationResetKey={filterKey}
+            hasActiveFilters={hasActiveFilters}
+          />
+        )}
+
+        {/* Nota Legal dinâmica */}
         <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
           <p className="text-sm font-semibold text-blue-800 mb-1">
-            Nota Legal — Critérios 8.1, 8.2 e 8.3
+            {tabLegalInfo[activeTab].title}
           </p>
           <p className="text-sm text-blue-800/80 leading-relaxed">
-            Os processos licitatórios são conduzidos em conformidade com a Lei nº 14.133/2021
-            (Nova Lei de Licitações e Contratos Administrativos) e normas do TCE-PI.
-            Os editais, termos de referência, atas, pareceres e demais documentos estão
-            disponíveis para consulta e download em PDF.
+            {tabLegalInfo[activeTab].desc}
           </p>
         </div>
       </div>

@@ -146,6 +146,34 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
       if (form.arquivo_nome) payload.arquivo_nome = form.arquivo_nome;
     }
 
+    // ── Verificação de duplicata (apenas licitações) ──
+    if (mode === "nova" && config.slug === "licitacoes") {
+      const numero = payload.numero;
+      const ano = payload.ano;
+      if (numero && ano) {
+        try {
+          const { data: existente, error: dupError } = await supabase
+            .schema(config.schema)
+            .from(config.table)
+            .select('id')
+            .eq('numero', numero)
+            .eq('ano', ano)
+            .maybeSingle();
+
+          if (dupError) {
+            console.warn("Erro ao verificar duplicata:", dupError);
+          } else if (existente) {
+            setSaving(false);
+            showToast("error", `Já existe uma licitação com o número "${numero}" e ano "${ano}". Edite o registro existente.`);
+            return;
+          }
+        } catch (dupErr: any) {
+          console.warn("Falha na verificação de duplicata:", dupErr);
+          // Continua mesmo se falhar a verificação
+        }
+      }
+    }
+
     let dbError: any = null;
     let newRecordId: string | null = null;
 
@@ -169,8 +197,10 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
 
     if (dbError) {
       setSaving(false);
-      console.error("ERRO:", dbError);
-      showToast("error", `Erro ao salvar: ${dbError.message}`);
+      console.error("❌ ERRO AO SALVAR:", JSON.stringify(dbError, null, 2));
+      // Mostra o erro completo pro admin
+      const detalhe = dbError.code ? `[${dbError.code}] ` : '';
+      showToast("error", `${detalhe}${dbError.message}`);
       return;
     }
 

@@ -119,7 +119,9 @@ export default function EstruturaOrganizacionalPage() {
               Para consultar a estrutura completa e as atribuições/competências detalhadas de cada secretaria ou departamento, acesse a legislação vigente:
             </p>
             <a 
-              href="#" 
+              href="https://pub-dc316bdb1d204c4fa9d36b369c385b97.r2.dev/leis/2025/Lei%20Complementar%20720-2025%20-%20nova%20estrutura%20administrativa%20PADRE%20MARCOS.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-5 rounded-xl transition-all shadow-md hover:shadow-lg text-sm"
             >
               <FileText size={18} />

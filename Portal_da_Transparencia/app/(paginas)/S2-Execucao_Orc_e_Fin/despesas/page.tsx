@@ -28,6 +28,10 @@ import {
   Building2,
   Download,
   Gavel,
+  ShoppingCart,
+  Award,
+  Megaphone,
+  AlertCircle,
 } from 'lucide-react';
 import { EMPRESAS } from '@/lib/empresas';
 import Pagination from '@/components/ui/Pagination';
@@ -381,7 +385,7 @@ function DetailItem({ icon, label, value }: { icon: React.ReactNode; label: stri
 // -------------------------------------------------------------------
 export default function DespesasPage() {
   const today = useTodayDate();
-  const [activeTab, setActiveTab] = useState<'empenhos' | 'extra_orcamentarias' | 'restos_a_pagar'>('empenhos');
+  const [activeTab, setActiveTab] = useState<'empenhos' | 'extra_orcamentarias' | 'restos_a_pagar' | 'aquisicoes_bens' | 'patrocinio' | 'publicidade'>('empenhos');
   const [filters, setFilters] = useState<FilterValues & { natureza?: string; credor?: string; numero_empenho?: string }>({ ano: '2026', mes: '', busca: '', entidade: '', natureza: '', credor: '', numero_empenho: '' });
   const { anos: ANOS, loading: anosLoading } = useAvailableYears('despesas', filters.entidade || undefined);
 
@@ -650,6 +654,24 @@ export default function DespesasPage() {
           }`}>
           <Clock size={16} />Restos a Pagar
         </button>
+        <button onClick={() => setActiveTab('aquisicoes_bens')} role="tab" aria-selected={activeTab === 'aquisicoes_bens'}
+          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
+            activeTab === 'aquisicoes_bens' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}>
+          <ShoppingCart size={16} />Aquisições de Bens
+        </button>
+        <button onClick={() => setActiveTab('patrocinio')} role="tab" aria-selected={activeTab === 'patrocinio'}
+          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
+            activeTab === 'patrocinio' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}>
+          <Award size={16} />Patrocínio
+        </button>
+        <button onClick={() => setActiveTab('publicidade')} role="tab" aria-selected={activeTab === 'publicidade'}
+          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
+            activeTab === 'publicidade' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}>
+          <Megaphone size={16} />Publicidade
+        </button>
       </div>
 
       {/* Tab: Empenhos */}
@@ -709,6 +731,70 @@ export default function DespesasPage() {
             emptyFilteredMessage="Nenhum encontrado para os filtros selecionados."
             pageSize={PAGE_SIZE}
           />
+        </div>
+      )}
+
+      {/* Tab: Aquisições de Bens */}
+      {activeTab === 'aquisicoes_bens' && (
+        <div id="panel-aquisicoes" role="tabpanel" className="mt-6">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center">
+            <div className="flex justify-center mb-4">
+              <div className="p-3 rounded-full bg-gray-100">
+                <ShoppingCart size={32} className="text-gray-400" />
+              </div>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">Aquisições de Bens</h3>
+            <p className="text-sm text-gray-500 max-w-lg mx-auto leading-relaxed">
+              Não há registros de aquisições de bens com detalhamento por item (preço unitário e quantidade) disponíveis no momento para os exercícios de <strong>2023, 2024, 2025 e 2026</strong>.
+              Esta seção será atualizada assim que os dados forem estruturados conforme o critério 4.4 do PNTP 2026.
+            </p>
+            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-xs font-medium text-amber-700">
+              <AlertCircle size={14} />
+              Critério 4.4 — Em adequação
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Patrocínio */}
+      {activeTab === 'patrocinio' && (
+        <div id="panel-patrocinio" role="tabpanel" className="mt-6">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center">
+            <div className="flex justify-center mb-4">
+              <div className="p-3 rounded-full bg-gray-100">
+                <Award size={32} className="text-gray-400" />
+              </div>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">Despesas de Patrocínio</h3>
+            <p className="text-sm text-gray-500 max-w-lg mx-auto leading-relaxed">
+              Não foram realizadas despesas com patrocínio nos exercícios de <strong>2023, 2024, 2025 e 2026</strong>.
+            </p>
+            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-xs font-medium text-blue-700">
+              <AlertCircle size={14} />
+              Critério 4.5 — Inexistência de despesas
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Publicidade */}
+      {activeTab === 'publicidade' && (
+        <div id="panel-publicidade" role="tabpanel" className="mt-6">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center">
+            <div className="flex justify-center mb-4">
+              <div className="p-3 rounded-full bg-gray-100">
+                <Megaphone size={32} className="text-gray-400" />
+              </div>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">Contratos de Publicidade</h3>
+            <p className="text-sm text-gray-500 max-w-lg mx-auto leading-relaxed">
+              Não foram realizadas despesas com contratos de publicidade nos exercícios de <strong>2023, 2024, 2025 e 2026</strong>.
+            </p>
+            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-xs font-medium text-blue-700">
+              <AlertCircle size={14} />
+              Critério 4.6 — Inexistência de despesas
+            </div>
+          </div>
         </div>
       )}
 

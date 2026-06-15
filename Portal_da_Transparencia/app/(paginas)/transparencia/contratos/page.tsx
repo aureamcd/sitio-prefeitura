@@ -6,7 +6,7 @@ import FilterPanel, { FilterValues } from '@/components/ui/FilterPanel';
 import DataTable from '@/components/ui/DataTable';
 import { createBrowserClient, useAvailableYears } from '@/lib/supabase/client';
 import { EMPRESAS } from '@/lib/empresas';
-import { FileText, FileSearch, Info } from 'lucide-react';
+import { FileText, FileSearch, Info, CalendarDays } from 'lucide-react';
 import DocumentListModal from '@/components/ui/DocumentListModal';
 
 const MESES = [
@@ -75,6 +75,8 @@ function useContratosData(filters: FilterValues) {
 }
 
 export default function ContratosPage() {
+  const [activeTab, setActiveTab] = useState<'contratos' | 'ordem_cronologica'>('contratos');
+
   const [filters, setFilters] = useState<FilterValues>({
     ano: '2026',
     mes: '',
@@ -142,6 +144,17 @@ export default function ContratosPage() {
               <p className="text-xs text-gray-500 mt-0.5">{row.cpf_cnpj}</p>
             )}
           </div>
+        ),
+      },
+      {
+        header: 'Fiscal',
+        accessor: 'fiscal_nome',
+        render: (val: string) => (
+          <span className="text-sm text-gray-700">
+            {val || (
+              <span className="text-xs text-gray-400 italic">Não informado</span>
+            )}
+          </span>
         ),
       },
       {
@@ -243,6 +256,24 @@ export default function ContratosPage() {
         anosLoading={anosLoading}
       />
 
+      {/* Tabs */}
+      <div className="mt-6 flex flex-wrap gap-1 border-b border-gray-200" role="tablist" aria-label="Seções de contratos">
+        <button onClick={() => setActiveTab('contratos')} role="tab" aria-selected={activeTab === 'contratos'}
+          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
+            activeTab === 'contratos' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}>
+          <FileText size={16} />Contratos e Aditivos
+        </button>
+        <button onClick={() => setActiveTab('ordem_cronologica')} role="tab" aria-selected={activeTab === 'ordem_cronologica'}
+          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
+            activeTab === 'ordem_cronologica' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}>
+          <CalendarDays size={16} />Ordem Cronológica de Pagamentos
+        </button>
+      </div>
+
+      {/* Tab: Contratos */}
+      {activeTab === 'contratos' && (
       <div className="mt-6">
         <div className="mt-4 bg-white border border-gray-100 rounded-2xl px-6 py-4 flex flex-wrap gap-6 items-center shadow-sm mb-4">
           <div>
@@ -292,6 +323,21 @@ export default function ContratosPage() {
           emptyFilteredMessage="Nenhum contrato encontrado para os filtros selecionados."
         />
       </div>
+      )}
+
+      {/* Tab: Ordem Cronológica de Pagamentos */}
+      {activeTab === 'ordem_cronologica' && (
+        <OrdemCronologicaTab ano={filters.ano} mes={filters.mes} busca={filters.busca} />
+      )}
+
+      {/* Nota Legal */}
+      <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
+        <p className="text-sm font-semibold text-blue-800 mb-1">Fundamentação Legal</p>
+        <p className="text-sm text-blue-800/80 leading-relaxed">
+          Os contratos e a ordem cronológica de pagamentos são publicados em conformidade com a Lei nº 14.133/2021
+          (Nova Lei de Licitações e Contratos Administrativos), Lei de Transparência (LC nº 131/2009) e o PNTP 2026.
+        </p>
+      </div>
 
       <DocumentListModal
         isOpen={modalOpen}
@@ -300,5 +346,194 @@ export default function ContratosPage() {
         documentos={modalDocs}
       />
     </ContentPage>
+  );
+}
+
+// ===================================================================
+// COMPONENTE: Ordem Cronológica de Pagamentos
+// ===================================================================
+
+function OrdemCronologicaTab({ ano, mes, busca }: { ano: string; mes: string; busca: string }) {
+  const supabase = createBrowserClient();
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchData() {
+      setLoading(true);
+      try {
+        let query = supabase
+          .schema('transparencia')
+          .from('ordem_cronologica_pagamentos')
+          .select('*');
+
+        if (ano) query = query.eq('ano', ano);
+        if (mes) {
+          query = query.eq('mes', parseInt(mes));
+        }
+        if (busca) {
+          query = query.or(
+            `fornecedor.ilike.%${busca}%,empenho.ilike.%${busca}%,historico.ilike.%${busca}%`
+          );
+        }
+
+        const { data: result, error } = await query
+          .order('data_pagamento', { ascending: false, nullsFirst: false })
+          .order('ano', { ascending: false });
+
+        if (cancelled) return;
+        if (error) {
+          console.error('Erro ao carregar ordem cronológica:', error);
+          setData([]);
+        } else {
+          setData(result || []);
+        }
+      } catch (err) {
+        if (!cancelled) setData([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    const timer = setTimeout(fetchData, 300);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [ano, mes, busca, supabase]);
+
+  const totalPago = useMemo(() => data.reduce((s, r) => s + (Number(r.valor_pago) || 0), 0), [data]);
+  const totalPendente = data.filter((r) => !r.data_pagamento).length;
+
+  const ocpColumns = useMemo(
+    () => [
+      {
+        header: 'Fornecedor',
+        accessor: 'fornecedor',
+        render: (val: string, row: any) => (
+          <div className="max-w-[200px]">
+            <p className="text-sm font-semibold text-gray-900 line-clamp-2" title={val || ''}>
+              {val || '—'}
+            </p>
+            {row.cpf_cnpj_fornecedor && (
+              <p className="text-xs text-gray-500 mt-0.5">{row.cpf_cnpj_fornecedor}</p>
+            )}
+          </div>
+        ),
+      },
+      {
+        header: 'Empenho',
+        accessor: 'empenho',
+        render: (val: string) => (
+          <span className="text-xs font-mono text-gray-700">{val || '—'}</span>
+        ),
+      },
+      {
+        header: 'Vencimento',
+        accessor: 'data_vencimento',
+        render: (val: string, row: any) => {
+          const venc = val ? new Date(val) : null;
+          const pago = row.data_pagamento ? new Date(row.data_pagamento) : null;
+          const atrasado = venc && pago && pago > venc;
+          return (
+            <div className="text-sm text-gray-600 whitespace-nowrap">
+              <span>{formatDate(val)}</span>
+              {atrasado && (
+                <span className="ml-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-red-50 text-red-700 text-[10px] font-semibold">
+                  Atrasado
+                </span>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        header: 'Data Pagamento',
+        accessor: 'data_pagamento',
+        render: (val: string) => (
+          <span className="text-sm text-gray-700 whitespace-nowrap">
+            {val ? formatDate(val) : (
+              <span className="text-xs text-amber-600 font-medium">Pendente</span>
+            )}
+          </span>
+        ),
+      },
+      {
+        header: 'Valor Pago',
+        accessor: 'valor_pago',
+        render: (val: number) => (
+          <span className="block text-right tabular-nums text-sm font-semibold text-gray-800">
+            {formatBRL(Number(val))}
+          </span>
+        ),
+      },
+    ],
+    []
+  );
+
+  const filterKey = `${ano}-${mes}-${busca}`;
+  const hasActiveFilters = !!(ano || mes || busca);
+
+  return (
+    <div className="mt-6">
+      {/* Stats */}
+      <div className="mt-4 bg-white border border-teal-100 rounded-2xl px-6 py-4 flex flex-wrap gap-6 items-center shadow-sm mb-4">
+        <div>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-0.5">
+            Total de Pagamentos
+          </p>
+          {loading ? (
+            <div className="h-7 w-16 bg-gray-200 animate-pulse rounded mt-1" />
+          ) : (
+            <p className="text-xl font-semibold text-gray-800 tabular-nums">{data.length}</p>
+          )}
+        </div>
+        <div className="w-px h-8 bg-gray-200 hidden sm:block" />
+        <div>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-0.5">
+            Total Pago
+          </p>
+          {loading ? (
+            <div className="h-7 w-32 bg-gray-200 animate-pulse rounded mt-1" />
+          ) : (
+            <p className="text-xl font-semibold text-teal-700 tabular-nums">{formatBRL(totalPago)}</p>
+          )}
+        </div>
+        <div className="w-px h-8 bg-gray-200 hidden sm:block" />
+        <div>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-0.5">
+            Pendentes
+          </p>
+          {loading ? (
+            <div className="h-7 w-16 bg-gray-200 animate-pulse rounded mt-1" />
+          ) : (
+            <p className={`text-xl font-semibold tabular-nums ${totalPendente > 0 ? 'text-amber-600' : 'text-gray-800'}`}>{totalPendente}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Info sobre justificativas */}
+      <div className="mb-4 flex items-start gap-3 rounded-xl border border-teal-100 bg-teal-50 px-5 py-3">
+        <Info size={16} className="text-teal-500 shrink-0 mt-0.5" />
+        <div>
+          <p className="text-xs font-bold text-teal-800 uppercase tracking-wider">
+            Ordem Cronológica de Pagamentos — Critério 9.4 do PNTP 2026
+          </p>
+          <p className="text-xs text-teal-700/80 mt-0.5">
+            Os pagamentos são apresentados em ordem cronológica, conforme determina a Lei nº 14.133/2021.
+            As justificativas para eventuais alterações na ordem cronológica estão registradas nos detalhes de cada pagamento.
+          </p>
+        </div>
+      </div>
+
+      <DataTable
+        title="Ordem Cronológica de Pagamentos"
+        columns={ocpColumns}
+        data={data}
+        exportable={true}
+        loading={loading}
+        paginationResetKey={filterKey}
+        hasActiveFilters={hasActiveFilters}
+        emptyMessage="Não há registros de pagamentos na ordem cronológica para o período informado."
+        emptyFilteredMessage="Nenhum pagamento encontrado para os filtros selecionados."
+      />
+    </div>
   );
 }

@@ -15,7 +15,6 @@
     "@vercel/speed-insights": "^2.0.0",
     "dotenv": "^17.4.2",
     "html2canvas": "^1.4.1",
-    "rss-parser": "^3.13.0",
     "jspdf": "^4.2.1",
     "lucide-react": "^1.7.0",
     "next": "16.2.2",
@@ -23,7 +22,9 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-icons": "^5.6.0",
-    "slugify": "^1.6.9"
+    "rss-parser": "^3.13.0",
+    "slugify": "^1.6.9",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -38,7 +39,7 @@
   },
   "optionalDependencies": {
     "@next/swc-linux-x64-gnu": "^16.2.6",
-    "@next/swc-win32-x64-msvc": "^16.2.6",
-    "@next/swc-win32-x64-gnu": "^16.2.6"
+    "@next/swc-win32-x64-gnu": "^16.2.6",
+    "@next/swc-win32-x64-msvc": "^16.2.6"
   }
 }
