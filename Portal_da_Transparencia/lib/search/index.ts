@@ -165,7 +165,7 @@ const searchItems: SearchResult[] = [
   {
     title: "e-SIC — Serviço de Informação ao Cidadão",
     description: "Sistema para solicitar informações com base na Lei de Acesso à Informação (LAI).",
-    href: "/ESIC",
+    href: "https://padremarcos.pi.gov.br/esic",
     category: "Atendimento",
     keywords: ["esic", "sic", "lai", "informacao", "pedido", "acesso a informacao", "lei 12527"],
   },
@@ -202,7 +202,7 @@ const searchItems: SearchResult[] = [
   {
     title: "Estrutura Organizacional",
     description: "Organograma e relação das secretarias e órgãos municipais com seus responsáveis.",
-    href: "/S1-Info_Institucionais/estrutura_organizacional",
+    href: "https://padremarcos.pi.gov.br/estrutura-organizacional",
     category: "Informações Institucionais",
     keywords: ["estrutura", "organograma", "secretaria", "orgao", "prefeito", "gestor"],
   },

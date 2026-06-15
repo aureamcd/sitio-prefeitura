@@ -58,13 +58,15 @@ export default function AcessoInformacaoPage() {
           <p className="text-gray-600 leading-relaxed">
             O pedido pode ser feito de forma eletrônica pelo sistema do Portal da Transparência.
           </p>
-          <Link
-            href="/esic"
+          <a
+            href="https://padremarcos.pi.gov.br/esic"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#173572] text-white rounded-xl font-bold text-sm hover:bg-[#122a5a] transition shadow-sm"
           >
             <Send size={16} />
             Fazer solicitação via e-SIC
-          </Link>
+          </a>
         </section>
 
         {/* 3. SIC PRESENCIAL */}

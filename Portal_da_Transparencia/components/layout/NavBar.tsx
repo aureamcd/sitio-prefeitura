@@ -13,7 +13,6 @@ import {
 import {
   Home,
   Folder,
-  FileText,
   MessageSquare,
   Phone,
   X,
@@ -23,7 +22,7 @@ import {
 
 type MenuKey = "atividades" | "conselhos" | null;
 type MenuItem = { href: string; label: string };
-type FixedItem = { href: string; label: string; icon: ReactElement };
+type FixedItem = { href: string; label: string; icon: ReactElement; external?: boolean };
 
 interface NavbarProps {
   mobileOpen: boolean;
@@ -51,8 +50,7 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
   ];
 
   const fixedItems: FixedItem[] = [
-    { href: "/page", label: "Transparência", icon: <FileText size={18} aria-hidden="true" /> },
-    { href: "/esic", label: "E-SIC", icon: <MessageSquare size={18} aria-hidden="true" /> },
+    { href: "https://padremarcos.pi.gov.br/esic", label: "E-SIC", external: true, icon: <MessageSquare size={18} aria-hidden="true" /> },
     { href: "/ouvidoria", label: "Ouvidoria", icon: <MessageSquare size={18} aria-hidden="true" /> },
     { href: "/contato", label: "Contato", icon: <Phone size={18} aria-hidden="true" /> },
   ];
@@ -244,10 +242,17 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
             {fixedItems.map((item) => (
               <li key={item.href} role="none">
-                <Link href={item.href} className={linkClass(item.href)}>
-                  {item.icon}
-                  {item.label}
-                </Link>
+                {item.external ? (
+                  <a href={item.href} target="_blank" rel="noopener noreferrer" className={linkClass(item.href)}>
+                    {item.icon}
+                    {item.label}
+                  </a>
+                ) : (
+                  <Link href={item.href} className={linkClass(item.href)}>
+                    {item.icon}
+                    {item.label}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
@@ -378,10 +383,17 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
 
           {fixedItems.map((item) => (
             <li key={item.href}>
-              <Link href={item.href} onClick={() => setMobileOpen(false)} className={mobileLinkClass(item.href)}>
-                {item.icon}
-                {item.label}
-              </Link>
+              {item.external ? (
+                <a href={item.href} target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className={mobileLinkClass(item.href)}>
+                  {item.icon}
+                  {item.label}
+                </a>
+              ) : (
+                <Link href={item.href} onClick={() => setMobileOpen(false)} className={mobileLinkClass(item.href)}>
+                  {item.icon}
+                  {item.label}
+                </Link>
+              )}
             </li>
           ))}
         </ul>

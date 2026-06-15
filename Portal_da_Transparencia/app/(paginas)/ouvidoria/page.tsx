@@ -350,7 +350,7 @@ export default async function OuvidoriaPage() {
               A <strong>Ouvidoria</strong> recebe manifestações de natureza subjetiva (elogios, reclamações, denúncias).
             </p>
             <p className="text-[#173572] text-[15px] leading-relaxed">
-              Para pedidos de dados técnicos ou documentos específicos, utilize o <a href="/esic" className="font-bold underline decoration-2 underline-offset-2 hover:text-[#0f2847] transition-colors">e-SIC (Acesso à Informação)</a>.
+              Para pedidos de dados técnicos ou documentos específicos, utilize o <a href="https://padremarcos.pi.gov.br/esic" target="_blank" rel="noopener noreferrer" className="font-bold underline decoration-2 underline-offset-2 hover:text-[#0f2847] transition-colors">e-SIC (Acesso à Informação)</a>.
             </p>
           </div>
         </div>

@@ -9,7 +9,7 @@ import {
   MessageSquare, HelpCircle, ShieldCheck, Scale, LibraryBig, FileText
 } from "lucide-react";
 
-import { FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa";
+import { FaInstagram } from "react-icons/fa";
 
 export default function TransparencyFooter(): JSX.Element {
   const linkListClass = "space-y-2 text-xs text-gray-200";
@@ -86,31 +86,13 @@ export default function TransparencyFooter(): JSX.Element {
             </p>
             <div className="flex gap-3">
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/prefeituradepadremarcos?igsh=MWc3OHo2bmNuaHV1Nw=="
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram oficial da Prefeitura de Padre Marcos"
                 className="p-2 bg-white/5 rounded-lg hover:bg-[#FFE066] hover:text-[#173572] transition-all duration-300"
               >
                 <FaInstagram size={18} />
-              </a>
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Facebook da Prefeitura"
-                className="p-2 bg-white/5 rounded-lg hover:bg-[#FFE066] hover:text-[#173572] transition-all duration-300"
-              >
-                <FaFacebook size={18} />
-              </a>
-              <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="YouTube da Prefeitura"
-                className="p-2 bg-white/5 rounded-lg hover:bg-[#FFE066] hover:text-[#173572] transition-all duration-300"
-              >
-                <FaYoutube size={18} />
               </a>
             </div>
           </div>
@@ -124,13 +106,14 @@ export default function TransparencyFooter(): JSX.Element {
           <ul className={linkListClass}>
             {[
               { href: "/", label: "Portal", icon: TrendingUp },
-              { href: "/receitas", label: "Receitas", icon: DollarSign },
-              { href: "/despesas", label: "Despesas", icon: DollarSign },
-              { href: "/licitacoes", label: "Licitações e Contratos", icon: Gavel },
-              { href: "/rh", label: "Recursos Humanos", icon: Users },
-              { href: "/relatorios", label: "Relatórios e Contas", icon: FileBarChart },
-              { href: "/obras", label: "Obras", icon: HardHat },
-              { href: "/convenios", label: "Convênios", icon: Handshake },
+              { href: "/S2-Execucao_Orc_e_Fin/receitas", label: "Receitas", icon: DollarSign },
+              { href: "/S2-Execucao_Orc_e_Fin/despesas", label: "Despesas", icon: DollarSign },
+              { href: "/S3-Compras_Cont_e_Conven/licitacoes", label: "Licitações", icon: Gavel },
+              { href: "/transparencia/contratos", label: "Contratos", icon: Handshake },
+              { href: "/transparencia/recursos-humanos", label: "Recursos Humanos", icon: Users },
+              { href: "/transparencia/relatorios", label: "Relatórios e Contas", icon: FileBarChart },
+              { href: "/transparencia/obras", label: "Obras", icon: HardHat },
+              { href: "/transparencia/transferencias", label: "Convênios", icon: Handshake },
             ].map((item) => (
               <li key={item.href}>
                 <Link href={item.href} className="flex items-center gap-2 hover:text-white hover:pl-1 transition-all">
@@ -149,8 +132,8 @@ export default function TransparencyFooter(): JSX.Element {
           </h3>
           <ul className={linkListClass}>
             {[
-              { href: "/lai", label: "Lei de Acesso à Informação", icon: LibraryBig },
-              { href: "/esic", label: "e-SIC (Solicitar LAI)", icon: MessageSquare },
+              { href: "/acesso-informacao", label: "Lei de Acesso à Informação", icon: LibraryBig },
+              { href: "https://padremarcos.pi.gov.br/esic", label: "e-SIC (Solicitar LAI)", icon: MessageSquare },
               { href: "/ouvidoria", label: "Ouvidoria", icon: Mail },
               { href: "/carta-servicos", label: "Carta de Serviços", icon: Info },
               { href: "/faq", label: "Perguntas Frequentes", icon: HelpCircle },
@@ -238,7 +221,7 @@ export default function TransparencyFooter(): JSX.Element {
             Dados disponibilizados conforme Lei de Acesso à Informação (Lei nº 12.527/2011)
           </p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
-            <p>Atualização: <strong className="text-gray-200">10/12/2025</strong></p>
+            <p>Atualização: <strong className="text-gray-200">{new Date().toLocaleDateString('pt-BR')}</strong></p>
             <p>Fonte: <strong className="text-gray-200">Sistema Contábil Municipal</strong></p>
             <p className="hidden md:block">Frequência: diária</p>
           </div>

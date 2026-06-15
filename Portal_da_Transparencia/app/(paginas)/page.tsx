@@ -254,7 +254,7 @@ const sections: SectionItem[] = [
         title: "e-SIC (Serviço de Informação ao Cidadão)",
         description:
           "Sistema eletrônico para solicitar informações com base na LAI, prazos de resposta, autoridades competentes e relatórios estatísticos anuais.",
-        href: "/LAI",
+        href: "https://padremarcos.pi.gov.br/esic",
         Icon: Info,
         variant: "highlight",
       },
@@ -262,7 +262,7 @@ const sections: SectionItem[] = [
         title: "Informações Classificadas e Desclassificadas",
         description:
           "Rol de documentos classificados com grau de sigilo ou informações desclassificadas nos últimos 12 meses.",
-        href: "/ESIC",
+        href: "/informacoes-classificadas",
         Icon: Inbox,
         variant: "highlight",
       },

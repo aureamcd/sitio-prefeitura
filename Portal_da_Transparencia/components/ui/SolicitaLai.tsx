@@ -39,8 +39,10 @@ export default function SolicitaLai(): JSX.Element {
           </div>
 
           {/* Botão */}
-          <Link
-            href="/esic"
+          <a
+            href="https://padremarcos.pi.gov.br/esic"
+            target="_blank"
+            rel="noopener noreferrer"
             aria-label="Fazer solicitação de informação via Lei de Acesso à Informação"
             className="
               shrink-0 inline-block bg-[#173572] text-white
@@ -50,7 +52,7 @@ export default function SolicitaLai(): JSX.Element {
             "
           >
             Fazer Solicitação LAI
-          </Link>
+          </a>
 
         </div>
       </section>

@@ -20,7 +20,7 @@ const sections: { title: string; icon?: string; links: SiteLink[] }[] = [
   {
     title: "Informações Institucionais",
     links: [
-      { href: "/estrutura-organizacional", label: "Estrutura Organizacional", description: "Organograma, secretarias, responsáveis e contatos" },
+      { href: "https://padremarcos.pi.gov.br/estrutura-organizacional", label: "Estrutura Organizacional", external: true, description: "Organograma, secretarias, responsáveis e contatos" },
       { href: "/transparencia/legislacao", label: "Legislação e Atos Normativos", description: "Leis, decretos, portarias e atos normativos municipais" },
       { href: "/faq", label: "Perguntas Frequentes (FAQ)", description: "Dúvidas mais comuns sobre serviços e transparência" },
     ],
@@ -85,8 +85,8 @@ const sections: { title: string; icon?: string; links: SiteLink[] }[] = [
     title: "Acesso à Informação e Controle Social",
     links: [
       { href: "/LAI", label: "Lei de Acesso à Informação", description: "Direitos, prazos e procedimentos para acesso a informações públicas" },
-      { href: "/ESIC", label: "e-SIC (Solicitar Informação)", description: "Sistema eletrônico para pedidos de acesso à informação" },
-      { href: "/ESIC/consultar", label: "Consultar Manifestação e-SIC", description: "Acompanhe o andamento do seu pedido de informação" },
+      { href: "https://padremarcos.pi.gov.br/esic", external: true, label: "e-SIC (Solicitar Informação)", description: "Sistema eletrônico para pedidos de acesso à informação" },
+      { href: "https://padremarcos.pi.gov.br/esic/consultar", external: true, label: "Consultar Manifestação e-SIC", description: "Acompanhe o andamento do seu pedido de informação" },
       { href: "/ouvidoria", label: "Ouvidoria Municipal", description: "Canal para denúncias, reclamações, sugestões e elogios" },
       { href: "/ouvidoria/consultar", label: "Consultar Manifestação Ouvidoria", description: "Acompanhe o andamento da sua manifestação" },
       { href: "/regulamentacao-lai", label: "Regulamentação da LAI", description: "Decreto municipal que regulamenta a Lei de Acesso à Informação" },
