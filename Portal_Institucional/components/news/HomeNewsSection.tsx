@@ -8,13 +8,6 @@ const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-const PRIORIDADE_INDEX: Record<string, number> = {
-    hero: 0,
-    destaque: 1,
-    normal: 2,
-    baixa: 3,
-};
-
 type Noticia = {
     id: string;
     titulo: string;
@@ -23,7 +16,6 @@ type Noticia = {
     slug: string;
     data: string;
     destaque?: string | string[];
-    prioridade?: string;
 };
 
 function formatDate(data: string) {
@@ -45,22 +37,12 @@ function optimizeImage(url: string | undefined) {
 export default async function HomeNewsSection() {
     const { data } = await supabase
         .from("noticias")
-        .select("id, titulo, resumo, imagem, slug, data, destaque, prioridade")
+        .select("id, titulo, resumo, imagem, slug, data, destaque")
         .eq("status", "publicado")
         .order("data", { ascending: false })
-        .limit(15);
+        .limit(4);
 
-    const todasNoticias = data || [];
-
-    // Ordena por prioridade (hero → destaque → normal → baixa) e depois por data (mais recente primeiro)
-    const ordenadas = [...todasNoticias].sort((a, b) => {
-        const pa = PRIORIDADE_INDEX[a.prioridade || "normal"] ?? 3;
-        const pb = PRIORIDADE_INDEX[b.prioridade || "normal"] ?? 3;
-        if (pa !== pb) return pa - pb;
-        return new Date(b.data).getTime() - new Date(a.data).getTime();
-    });
-
-    const noticias = ordenadas.slice(0, 4);
+    const noticias = data || [];
 
     if (noticias.length === 0) {
         return (
