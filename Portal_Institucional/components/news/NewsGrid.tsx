@@ -8,6 +8,13 @@ const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+const PRIORIDADE_INDEX: Record<string, number> = {
+    hero: 0,
+    destaque: 1,
+    normal: 2,
+    baixa: 3,
+};
+
 type Noticia = {
     id: string;
     titulo: string;
@@ -17,17 +24,28 @@ type Noticia = {
     data: string;
     destaque?: string | string[];
     imagem_posicao?: string;
+    prioridade?: string;
 };
 
 export default async function NewsGrid() {
     const { data } = await supabase
         .from("noticias")
-        .select("id, titulo, resumo, imagem, slug, data, destaque, imagem_posicao")
+        .select("id, titulo, resumo, imagem, slug, data, destaque, imagem_posicao, prioridade")
         .eq("status", "publicado")
         .order("data", { ascending: false })
-        .range(4, 23); // Pula as 4 do destaque, pega até 20 seguintes
+        .limit(30);
 
-    const noticias = data || [];
+    const todasNoticias = data || [];
+
+    // Ordena por prioridade (hero → destaque → normal → baixa) e depois por data
+    const ordenadas = [...todasNoticias].sort((a, b) => {
+        const pa = PRIORIDADE_INDEX[a.prioridade || "normal"] ?? 3;
+        const pb = PRIORIDADE_INDEX[b.prioridade || "normal"] ?? 3;
+        if (pa !== pb) return pa - pb;
+        return new Date(b.data).getTime() - new Date(a.data).getTime();
+    });
+
+    const noticias = ordenadas.slice(4, 24); // Pula as 4 da home, pega até 20
 
     if (noticias.length === 0) return null;
 
