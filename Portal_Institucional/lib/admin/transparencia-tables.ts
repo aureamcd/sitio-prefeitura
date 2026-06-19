@@ -139,7 +139,7 @@ export const TABELAS_TRANSPARENCIA: TableConfig[] = [
     bgColor: "bg-orange-50",
     schema: "transparencia",
     table: "licitacoes_v2",
-    orderBy: { column: "created_at", ascending: false },
+    orderBy: { column: "numero", ascending: false },
     columns: [
       { key: "numero", label: "Nº Licitação", width: "w-32" },
       { key: "objeto", label: "Objeto", width: "min-w-[250px]" },
@@ -184,7 +184,7 @@ export const TABELAS_TRANSPARENCIA: TableConfig[] = [
     bgColor: "bg-blue-50",
     schema: "transparencia",
     table: "contratos_v2",
-    orderBy: { column: "created_at", ascending: false },
+    orderBy: { column: "numero", ascending: false },
     columns: [
       { key: "numero", label: "Número", width: "w-24" },
       { key: "contratado", label: "Contratado", width: "min-w-[200px]" },
