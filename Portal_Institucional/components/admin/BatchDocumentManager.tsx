@@ -15,6 +15,7 @@ type Documento = {
   nome_arquivo: string;
   url_arquivo: string;
   tipo_documento: string;
+  caminho_r2?: string;
 };
 
 const MAX_PDF_MB = 50;
