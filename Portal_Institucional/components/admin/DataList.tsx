@@ -44,11 +44,18 @@ export default function DataList({ slug }: Props) {
   async function fetchAll() {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .schema(config.schema)
         .from(config.table)
         .select("*")
-        .order(config.orderBy.column, { ascending: config.orderBy.ascending });
+        .limit(5000);
+
+      const orders = Array.isArray(config.orderBy) ? config.orderBy : [config.orderBy];
+      for (const o of orders) {
+        query = query.order(o.column, { ascending: o.ascending });
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         showToast("error", "Erro ao carregar dados: " + error.message);

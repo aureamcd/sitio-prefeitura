@@ -39,8 +39,8 @@ export type TableConfig = {
   bgColor: string;
   schema: "transparencia";
   table: string;
-  /** Default order */
-  orderBy: { column: string; ascending: boolean };
+  /** Default order (can be single or multiple) */
+  orderBy: { column: string; ascending: boolean } | { column: string; ascending: boolean }[];
   /** Columns for list view */
   columns: ColumnDef[];
   /** Default visible columns on mobile */
@@ -139,7 +139,7 @@ export const TABELAS_TRANSPARENCIA: TableConfig[] = [
     bgColor: "bg-orange-50",
     schema: "transparencia",
     table: "licitacoes_v2",
-    orderBy: { column: "numero", ascending: false },
+    orderBy: [{ column: "ano", ascending: false }, { column: "numero", ascending: false }],
     columns: [
       { key: "numero", label: "Nº Licitação", width: "w-32" },
       { key: "objeto", label: "Objeto", width: "min-w-[250px]" },
@@ -184,7 +184,7 @@ export const TABELAS_TRANSPARENCIA: TableConfig[] = [
     bgColor: "bg-blue-50",
     schema: "transparencia",
     table: "contratos_v2",
-    orderBy: { column: "numero", ascending: false },
+    orderBy: [{ column: "ano", ascending: false }, { column: "numero", ascending: false }],
     columns: [
       { key: "numero", label: "Número", width: "w-24" },
       { key: "contratado", label: "Contratado", width: "min-w-[200px]" },
