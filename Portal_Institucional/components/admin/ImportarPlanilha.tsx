@@ -126,7 +126,7 @@ export default function ImportarPlanilha() {
                     </div>
                     <div className="bg-white rounded-xl p-3 text-center border border-gray-100">
                       <p className="text-2xl font-black text-amber-700">{resultado.atualizadas}</p>
-                      <p className="text-[10px] text-gray-600 font-bold uppercase tracking-wider">Atualizadas</p>
+                      <p className="text-[10px] text-gray-600 font-bold uppercase tracking-wider">Ignoradas (Já existem)</p>
                     </div>
                   </div>
                   {resultado.erros.length > 0 && (
@@ -225,7 +225,7 @@ export default function ImportarPlanilha() {
                       <li>Exporte a planilha de licitações do <strong>TCE-PI</strong> (formato .xlsx)</li>
                       <li>Faça o upload do arquivo ao lado</li>
                       <li>O sistema identifica automaticamente as colunas e insere no banco</li>
-                      <li>Licitações já existentes são <strong>atualizadas</strong> (não duplicadas)</li>
+                      <li>Licitações já existentes são <strong>ignoradas</strong> (não duplicadas e não sobrescritas)</li>
                     </ol>
                   </div>
 

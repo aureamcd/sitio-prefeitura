@@ -179,14 +179,8 @@ export async function POST(request: Request) {
         }
 
         if (existingId) {
-          const { error } = await supabase
-            .schema("transparencia")
-            .from("licitacoes_v2")
-            .update(record)
-            .eq("id", existingId);
-
-          if (error) throw new Error(`Update ${existingId}: ${error.message}`);
-          atualizadas++;
+          // O usuário pediu para não atualizar registros existentes, apenas pular
+          atualizadas++; // Podemos usar 'atualizadas' para significar 'ignoradas/já existentes' ou criar uma nova variável. Vamos manter atualizadas para reaproveitar a UI, mas ela significa ignoradas agora.
         } else {
           const { error } = await supabase
             .schema("transparencia")
