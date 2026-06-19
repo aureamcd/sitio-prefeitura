@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 import * as xlsx from "xlsx";
+import { normalizarModalidade, normalizarSituacao } from "@/lib/admin/normalizar";
 
 function parseDate(dateStr: string | undefined | null): string | null {
   if (!dateStr || dateStr.toString().trim() === "") return null;
@@ -158,12 +159,12 @@ export async function POST(request: Request) {
           proclic: proclic || null,
           numero: numeroLimpo || null,
           processo: numeroLimpo || null,
-          modalidade: modalidade || null,
+          modalidade: normalizarModalidade(modalidade) || null,
           tipo_licitacao: tipoObjeto || null,
           data_abertura: dataAbertura,
           data_encerramento: dataEncerramento,
           objeto: objeto || null,
-          situacao: situacao || null,
+          situacao: normalizarSituacao(situacao) || null,
           valor_estimado: valor,
           valor_homologado: valorHomologado,
           empresa: empresaCode,

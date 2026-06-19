@@ -40,17 +40,24 @@ const MODALIDADES = [
   { value: 'Chamada Pública', label: 'Chamada Pública' },
   { value: 'Dispensa', label: 'Dispensa' },
   { value: 'Inexigibilidade', label: 'Inexigibilidade' },
+  { value: 'Adesão', label: 'Adesão' },
+  { value: 'Credenciamento', label: 'Credenciamento' },
 ];
 
 const SITUACOES = [
-  { value: 'Aberta', label: 'Aberta' },
+  { value: 'Finalizada', label: 'Finalizada' },
   { value: 'Homologada', label: 'Homologada' },
+  { value: 'Aberta', label: 'Aberta' },
   { value: 'Em Andamento', label: 'Em Andamento' },
-  { value: 'Concluída', label: 'Concluída' },
+  { value: 'Encerrada', label: 'Encerrada' },
+  { value: 'Divulgada', label: 'Divulgada' },
+  { value: 'Não Finalizada', label: 'Não Finalizada' },
+  { value: 'Cancelada', label: 'Cancelada' },
   { value: 'Fracassada', label: 'Fracassada' },
   { value: 'Deserta', label: 'Deserta' },
   { value: 'Suspensa', label: 'Suspensa' },
-  { value: 'Cancelada', label: 'Cancelada' },
+  { value: 'Revogada', label: 'Revogada' },
+  { value: 'Anulada', label: 'Anulada' },
 ];
 
 type TabType = 'licitacoes' | 'dispensa_inexigibilidade' | 'atas_srp' | 'sancionados';
@@ -70,13 +77,19 @@ function formatDateISO(dateStr: string | null): string {
 }
 
 const SITUACAO_BADGE: Record<string, { label: string; className: string }> = {
+  finalizada: { label: 'Finalizada', className: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
   aberta: { label: 'Aberta', className: 'bg-blue-100 text-blue-800 border-blue-200' },
   homologada: { label: 'Homologada', className: 'bg-green-100 text-green-800 border-green-200' },
   fracassada: { label: 'Fracassada', className: 'bg-red-100 text-red-800 border-red-200' },
   deserta: { label: 'Deserta', className: 'bg-red-100 text-red-800 border-red-200' },
   'em andamento': { label: 'Em Andamento', className: 'bg-amber-100 text-amber-800 border-amber-200' },
-  concluida: { label: 'Concluída', className: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+  encerrada: { label: 'Encerrada', className: 'bg-slate-100 text-slate-800 border-slate-200' },
+  divulgada: { label: 'Divulgada', className: 'bg-sky-100 text-sky-800 border-sky-200' },
+  'não finalizada': { label: 'Não Finalizada', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+  cancelada: { label: 'Cancelada', className: 'bg-red-100 text-red-800 border-red-200' },
   suspensa: { label: 'Suspensa', className: 'bg-orange-100 text-orange-800 border-orange-200' },
+  revogada: { label: 'Revogada', className: 'bg-rose-100 text-rose-800 border-rose-200' },
+  anulada: { label: 'Anulada', className: 'bg-rose-100 text-rose-800 border-rose-200' },
 };
 
 function getSituacaoBadge(val: string) {

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import * as XLSX from "xlsx";
+import { normalizarModalidade, normalizarSituacao } from "@/lib/admin/normalizar";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -152,11 +153,11 @@ export async function POST(request: Request) {
           contratado: contratado || null,
           objeto: objeto || null,
           valor: valor,
-          situacao: situacao || null,
+          situacao: normalizarSituacao(situacao) || null,
           data_assinatura: dataAssinatura,
           data_inicio: dataInicio,
           data_fim: dataFim,
-          modalidade: modalidade || null,
+          modalidade: normalizarModalidade(modalidade) || null,
           link_tce: linkTce || null,
         };
 
