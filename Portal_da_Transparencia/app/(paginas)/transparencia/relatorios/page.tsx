@@ -14,6 +14,13 @@ import {
   Download,
   Eye,
   FilterX,
+  Target,
+  BarChart3,
+  Building2,
+  Receipt,
+  FileSpreadsheet,
+  BookOpen,
+  Gavel,
 } from 'lucide-react';
 
 const MESES = [
@@ -375,12 +382,294 @@ function JulgamentoContasTab() {
 }
 
 // ============================================================================
+// Aba 5: Plano Estratégico Institucional — Critério 11.7
+// ============================================================================
+function PlanoEstrategicoTab() {
+  return (
+    <div id="panel-plano-estrategico" role="tabpanel">
+      <div className="mb-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
+        <div className="flex items-start gap-3">
+          <Target size={18} className="text-blue-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-blue-800 mb-1">Plano Estratégico Institucional — Critério 11.7</p>
+            <p className="text-sm text-blue-800/80 leading-relaxed">
+              O Plano Estratégico Institucional define a missão, visão, valores, objetivos estratégicos
+              e metas da administração municipal. Sua divulgação permite ao cidadão conhecer o
+              planejamento de longo prazo e acompanhar o cumprimento das metas estabelecidas.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <DeclaracaoInexistencia
+        titulo="Aviso de Não Ocorrência — Plano Estratégico Institucional"
+        descricao="Não há Plano Estratégico Institucional registrado no banco de dados do portal. O documento será publicado assim que for elaborado e aprovado pela administração municipal, em conformidade com o planejamento estratégico do Município."
+        icon={Target}
+        colorClass="bg-violet-100"
+      />
+
+      <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
+        <p className="text-sm font-semibold text-blue-800 mb-1">Base Legal — Critério 11.7</p>
+        <p className="text-sm text-blue-800/80 leading-relaxed">
+          A publicação do Plano Estratégico Institucional atende ao disposto na Lei de Acesso
+          à Informação (Lei nº 12.527/2011, Art. 8º) e na Lei de Responsabilidade Fiscal
+          (LC nº 101/2000), permitindo o controle social sobre o planejamento e os resultados
+          da gestão municipal.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// Aba 6: Demonstrações Financeiras Trimestrais — Critério 11.12
+// ============================================================================
+function DemonstracoesFinanceirasTab() {
+  return (
+    <div id="panel-demonstracoes" role="tabpanel">
+      <div className="mb-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
+        <div className="flex items-start gap-3">
+          <BarChart3 size={18} className="text-blue-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-blue-800 mb-1">Demonstrações Financeiras Trimestrais — Critério 11.12</p>
+            <p className="text-sm text-blue-800/80 leading-relaxed">
+              As Demonstrações Financeiras Trimestrais apresentam os balancetes contábeis do
+              Município a cada trimestre, incluindo o balanço patrimonial, a demonstração de
+              variações patrimoniais e demais demonstrações exigidas pela Lei nº 4.320/1964.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <DeclaracaoInexistencia
+        titulo="Aviso de Não Ocorrência — Demonstrações Financeiras Trimestrais"
+        descricao="Não há demonstrações financeiras trimestrais registradas no banco de dados do portal. Os balancetes trimestrais serão publicados nesta seção assim que forem disponibilizados pela Secretaria Municipal de Finanças."
+        icon={BarChart3}
+        colorClass="bg-teal-100"
+      />
+
+      <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
+        <p className="text-sm font-semibold text-blue-800 mb-1">Base Legal — Critério 11.12</p>
+        <p className="text-sm text-blue-800/80 leading-relaxed">
+          A publicação das demonstrações financeiras trimestrais atende ao Art. 84 da Lei nº
+          4.320/1964, ao Art. 48 da LC nº 101/2000 (LRF) e à LC nº 131/2009 (Lei da
+          Transparência), garantindo o acompanhamento da execução orçamentária e financeira
+          ao longo do exercício.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// Aba 7: Orçamento do Consórcio Público — Critério 11.11
+// ============================================================================
+function OrcamentoConsorcioTab() {
+  return (
+    <div id="panel-consorcio" role="tabpanel">
+      <div className="mb-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
+        <div className="flex items-start gap-3">
+          <Building2 size={18} className="text-blue-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-blue-800 mb-1">Orçamento do Consórcio Público — Critério 11.11</p>
+            <p className="text-sm text-blue-800/80 leading-relaxed">
+              O Orçamento do Consórcio Público apresenta a estimativa da receita e a fixação
+              da despesa para o exercício atual dos consórcios dos quais o Município participa,
+              em conformidade com a Lei nº 11.107/2005 (Lei dos Consórcios Públicos).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <DeclaracaoInexistencia
+        titulo="Aviso de Não Ocorrência — Orçamento do Consórcio Público"
+        descricao="Não há orçamento de consórcio público registrado no banco de dados do portal. Caso o Município integre algum consórcio público, o respectivo orçamento será publicado nesta seção."
+        icon={Building2}
+        colorClass="bg-orange-100"
+      />
+
+      <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
+        <p className="text-sm font-semibold text-blue-800 mb-1">Base Legal — Critério 11.11</p>
+        <p className="text-sm text-blue-800/80 leading-relaxed">
+          A divulgação do orçamento do consórcio público atende ao disposto na Lei nº
+          11.107/2005 (Lei dos Consórcios Públicos), no Decreto nº 6.017/2007 e na
+          Lei de Responsabilidade Fiscal (LC nº 101/2000).
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// Aba 8: Demonstrações Financeiras com Pareceres — Critério 11.13
+// ============================================================================
+function DemonstracoesContabeisTab() {
+  return (
+    <div id="panel-demonstracoes-contabeis" role="tabpanel">
+      <div className="mb-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
+        <div className="flex items-start gap-3">
+          <Receipt size={18} className="text-blue-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-blue-800 mb-1">Demonstrações Financeiras Contábeis — Critério 11.13</p>
+            <p className="text-sm text-blue-800/80 leading-relaxed">
+              As demonstrações financeiras (contábeis) devem ser acompanhadas dos pareceres
+              do Conselho Fiscal e da auditoria independente, quando aplicável, garantindo
+              a transparência e a credibilidade das informações contábeis do Município.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <DeclaracaoInexistencia
+        titulo="Aviso de Não Ocorrência — Demonstrações Financeiras com Pareceres"
+        descricao="Não há demonstrações financeiras contábeis acompanhadas de pareceres do Conselho Fiscal ou de auditoria independente registradas no banco de dados do portal. Os documentos serão publicados assim que forem disponibilizados."
+        icon={Receipt}
+        colorClass="bg-indigo-100"
+      />
+
+      <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
+        <p className="text-sm font-semibold text-blue-800 mb-1">Base Legal — Critério 11.13</p>
+        <p className="text-sm text-blue-800/80 leading-relaxed">
+          A publicação das demonstrações financeiras acompanhadas dos pareceres do Conselho
+          Fiscal e da auditoria independente atende ao disposto na Lei nº 4.320/1964,
+          na Lei Complementar nº 101/2000 (LRF) e nas normas brasileiras de contabilidade
+          aplicadas ao setor público (NBC TSP).
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// Aba 9: Outras Demonstrações (Critérios 11.14 a 11.19)
+// ============================================================================
+function OutrasDemonstracoesTab() {
+  return (
+    <div id="panel-outras-demonstracoes" role="tabpanel">
+      <div className="mb-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
+        <div className="flex items-start gap-3">
+          <FileSpreadsheet size={18} className="text-blue-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-blue-800 mb-1">Outras Demonstrações e Relatórios — Critérios 11.14 a 11.19</p>
+            <p className="text-sm text-blue-800/80 leading-relaxed">
+              Esta seção reúne as demais demonstrações e relatórios exigidos pela matriz de
+              transparência, incluindo orçamento de investimentos, demonstrações contábeis
+              auditadas em formato editável e relatórios de comitês estatutários.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 11.14 */}
+      <div className="mt-6 mb-3">
+        <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider px-1">
+          <span className="inline-flex items-center gap-1">
+            <BookOpen size={14} /> Critério 11.14 — Orçamento de Investimentos
+          </span>
+        </h3>
+      </div>
+      <DeclaracaoInexistencia
+        titulo="Aviso de Não Ocorrência — Orçamento de Investimentos"
+        descricao="Não há orçamento de investimentos registrado no banco de dados do portal. O documento integra a Lei Orçamentária Anual e será destacado nesta seção quando disponível."
+        icon={BookOpen}
+        colorClass="bg-cyan-100"
+      />
+
+      {/* 11.15 */}
+      <div className="mt-8 mb-3">
+        <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider px-1">
+          <span className="inline-flex items-center gap-1">
+            <FileSpreadsheet size={14} /> Critério 11.15 — Demonstrações Contábeis Auditadas (Formato Editável)
+          </span>
+        </h3>
+      </div>
+      <DeclaracaoInexistencia
+        titulo="Aviso de Não Ocorrência — Demonstrações Contábeis Auditadas"
+        descricao="Não há demonstrações contábeis auditadas em formato eletrônico editável registradas no banco de dados do portal. Os documentos serão publicados quando disponibilizados em formato XLS/XLSX ou CSV."
+        icon={FileSpreadsheet}
+        colorClass="bg-purple-100"
+      />
+
+      {/* 11.16 */}
+      <div className="mt-8 mb-3">
+        <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider px-1">
+          <span className="inline-flex items-center gap-1">
+            <FileText size={14} /> Critério 11.16 — Relatório do Comitê de Auditoria Estatutário
+          </span>
+        </h3>
+      </div>
+      <DeclaracaoInexistencia
+        titulo="Aviso de Não Ocorrência — Relatório do Comitê de Auditoria"
+        descricao="Não há relatório anual do Comitê de Auditoria Estatutário registrado no banco de dados do portal. O documento será publicado quando elaborado pelo comitê."
+        icon={FileText}
+        colorClass="bg-pink-100"
+      />
+
+      {/* 11.17 */}
+      <div className="mt-8 mb-3">
+        <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider px-1">
+          <span className="inline-flex items-center gap-1">
+            <FileText size={14} /> Critério 11.17 — Atas do Comitê de Auditoria Estatutário
+          </span>
+        </h3>
+      </div>
+      <DeclaracaoInexistencia
+        titulo="Aviso de Não Ocorrência — Atas do Comitê de Auditoria"
+        descricao="Não há atas das reuniões do Comitê de Auditoria Estatutário registradas no banco de dados do portal. As atas serão publicadas quando disponibilizadas."
+        icon={FileText}
+        colorClass="bg-pink-100"
+      />
+
+      {/* 11.18 */}
+      <div className="mt-8 mb-3">
+        <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider px-1">
+          <span className="inline-flex items-center gap-1">
+            <Gavel size={14} /> Critério 11.18 — Atas do Comitê de Elegibilidade
+          </span>
+        </h3>
+      </div>
+      <DeclaracaoInexistencia
+        titulo="Aviso de Não Ocorrência — Atas do Comitê de Elegibilidade"
+        descricao="Não há atas do Comitê de Elegibilidade Estatutário ou Comitê de Pessoas, Elegibilidade, Sucessão e Remuneração registradas no banco de dados do portal."
+        icon={Gavel}
+        colorClass="bg-rose-100"
+      />
+
+      {/* 11.19 */}
+      <div className="mt-8 mb-3">
+        <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider px-1">
+          <span className="inline-flex items-center gap-1">
+            <BarChart3 size={14} /> Critério 11.19 — Relatório Integrado ou de Sustentabilidade
+          </span>
+        </h3>
+      </div>
+      <DeclaracaoInexistencia
+        titulo="Aviso de Não Ocorrência — Relatório Integrado ou de Sustentabilidade"
+        descricao="Não há relatório integrado ou de sustentabilidade registrado no banco de dados do portal. O documento será publicado quando for elaborado pela administração municipal."
+        icon={BarChart3}
+        colorClass="bg-emerald-100"
+      />
+
+      <div className="mt-8 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
+        <p className="text-sm font-semibold text-blue-800 mb-1">Base Legal — Critérios 11.14 a 11.19</p>
+        <p className="text-sm text-blue-800/80 leading-relaxed">
+          Estes critérios atendem à Lei nº 4.320/1964, à Lei Complementar nº 101/2000 (LRF),
+          à Lei nº 6.404/1976 (Lei das S.A.) e às normas de contabilidade aplicadas ao
+          setor público. Aplicam-se especialmente a estatais dependentes e independentes,
+          sendo também recomendados para os demais Poderes e órgãos.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
 // Main Page
 // ============================================================================
 export default function RelatoriosPage() {
   const { anos: ANOS } = useAvailableYears('relatorios');
   const today = useTodayDate();
-  const [activeTab, setActiveTab] = useState<'planejamento' | 'lrf' | 'prestacao' | 'julgamento'>('planejamento');
+  const [activeTab, setActiveTab] = useState<'planejamento' | 'lrf' | 'prestacao' | 'julgamento' | 'plano-estrategico' | 'demonstracoes' | 'consorcio' | 'demonstracoes-contabeis' | 'outras-demonstracoes'>('planejamento');
   const [filters, setFilters] = useState<FilterValues>({ ano: '', mes: '', busca: '', entidade: '' });
 
   const handleChange = useCallback((field: 'ano' | 'mes' | 'busca' | 'entidade', value: string) => {
@@ -397,7 +686,7 @@ export default function RelatoriosPage() {
   return (
     <ContentPage
       title="Planejamento e Prestação de Contas"
-      description="Consulte as peças de planejamento orçamentário (PPA, LDO, LOA), relatórios da LRF (RGF, RREO), prestação de contas anual e julgamento das contas municipais pelo TCE-PI e Câmara."
+      description="Consulte as peças de planejamento orçamentário (PPA, LDO, LOA), relatórios da LRF (RGF, RREO), prestação de contas anual, julgamento das contas municipais, plano estratégico institucional, demonstrações financeiras trimestrais, orçamento do consórcio público e demais demonstrações contábeis e relatórios."
       breadcrumb={[
         { label: 'Portal da Transparência', href: '/' },
         { label: 'Planejamento e Prestação de Contas' },
@@ -430,6 +719,36 @@ export default function RelatoriosPage() {
           }`}>
           <Scale size={16} /> Julgamento das Contas
         </button>
+        <button onClick={() => setActiveTab('plano-estrategico')} role="tab" aria-selected={activeTab === 'plano-estrategico'}
+          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
+            activeTab === 'plano-estrategico' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          }`}>
+          <Target size={16} /> Plano Estratégico
+        </button>
+        <button onClick={() => setActiveTab('demonstracoes')} role="tab" aria-selected={activeTab === 'demonstracoes'}
+          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
+            activeTab === 'demonstracoes' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          }`}>
+          <BarChart3 size={16} /> Dem. Financeiras
+        </button>
+        <button onClick={() => setActiveTab('consorcio')} role="tab" aria-selected={activeTab === 'consorcio'}
+          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
+            activeTab === 'consorcio' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          }`}>
+          <Building2 size={16} /> Consórcio
+        </button>
+        <button onClick={() => setActiveTab('demonstracoes-contabeis')} role="tab" aria-selected={activeTab === 'demonstracoes-contabeis'}
+          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
+            activeTab === 'demonstracoes-contabeis' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          }`}>
+          <Receipt size={16} /> Dem. Contábeis
+        </button>
+        <button onClick={() => setActiveTab('outras-demonstracoes')} role="tab" aria-selected={activeTab === 'outras-demonstracoes'}
+          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
+            activeTab === 'outras-demonstracoes' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          }`}>
+          <FileSpreadsheet size={16} /> Outras Dem.
+        </button>
       </div>
 
       {activeTab === 'planejamento' && (
@@ -438,6 +757,11 @@ export default function RelatoriosPage() {
       {activeTab === 'lrf' && <LrfTab />}
       {activeTab === 'prestacao' && <PrestacaoContasTab />}
       {activeTab === 'julgamento' && <JulgamentoContasTab />}
+      {activeTab === 'plano-estrategico' && <PlanoEstrategicoTab />}
+      {activeTab === 'demonstracoes' && <DemonstracoesFinanceirasTab />}
+      {activeTab === 'consorcio' && <OrcamentoConsorcioTab />}
+      {activeTab === 'demonstracoes-contabeis' && <DemonstracoesContabeisTab />}
+      {activeTab === 'outras-demonstracoes' && <OutrasDemonstracoesTab />}
     </ContentPage>
   );
 }
