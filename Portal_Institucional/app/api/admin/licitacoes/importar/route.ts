@@ -134,9 +134,16 @@ export async function POST(request: Request) {
         const orgao = colMap["orgao"] ? String(row[colMap["orgao"]] || "").trim() : "";
         const linkTce = colMap["link_tce"] ? String(row[colMap["link_tce"]] || "").trim() : "";
 
-        if (!numero && !objeto) continue; // skip empty rows
+        // Limpar o número para salvar apenas ex: "002/2026" em vez de "Pregão nº 002/2026"
+        let numeroLimpo = numero;
+        const matchNum = numero.match(/(\d+)[/-](\d{4})/);
+        if (matchNum) {
+          numeroLimpo = `${matchNum[1].padStart(3, '0')}/${matchNum[2]}`;
+        }
 
-        const anoStr = parseDate(dataAberturaRaw)?.split("-")[0] || new Date().getFullYear().toString();
+        if (!numeroLimpo && !objeto) continue; // skip empty rows
+
+        const anoStr = parseDate(dataAberturaRaw)?.split("-")[0] || (matchNum ? matchNum[2] : new Date().getFullYear().toString());
         const ano = parseInt(anoStr, 10);
 
         const dataAbertura = parseDate(dataAberturaRaw);
@@ -149,8 +156,8 @@ export async function POST(request: Request) {
         const record = {
           ano: isNaN(ano) ? new Date().getFullYear() : ano,
           proclic: proclic || null,
-          numero: numero || null,
-          processo: numero || null,
+          numero: numeroLimpo || null,
+          processo: numeroLimpo || null,
           modalidade: modalidade || null,
           tipo_licitacao: tipoObjeto || null,
           data_abertura: dataAbertura,

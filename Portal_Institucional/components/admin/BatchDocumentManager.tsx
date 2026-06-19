@@ -112,10 +112,36 @@ export default function BatchDocumentManager({ tabela, parentId, ano }: BatchDoc
     fetchDocs();
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm("Tem certeza que deseja apagar este anexo?")) return;
+  async function handleDelete(doc: Documento) {
+    if (!confirm("Tem certeza que deseja apagar este anexo? Ele será excluído do banco e da nuvem.")) return;
     
-    setDocs(prev => prev.filter(d => d.id !== id));
+    // 1. Tenta apagar do Supabase
+    const { error } = await supabase
+      .schema("transparencia")
+      .from(docTable)
+      .delete()
+      .eq("id", doc.id);
+
+    if (error) {
+      alert("Erro ao excluir do banco: " + error.message);
+      return;
+    }
+
+    // 2. Tenta apagar do R2 se houver caminho
+    if (doc.caminho_r2) {
+      try {
+        await fetch("/api/admin/delete-file", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ caminho_r2: doc.caminho_r2 }),
+        });
+      } catch (e) {
+        console.error("Erro ao excluir do R2", e);
+      }
+    }
+
+    // 3. Atualiza UI
+    setDocs(prev => prev.filter(d => d.id !== doc.id));
   }
 
   function startEdit(doc: Documento) {
@@ -227,7 +253,7 @@ export default function BatchDocumentManager({ tabela, parentId, ano }: BatchDoc
                             <a href={doc.url_arquivo} target="_blank" rel="noopener noreferrer" className="p-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Ver Arquivo">
                               <ExternalLink size={16} />
                             </a>
-                            <button type="button" onClick={() => handleDelete(doc.id)} className="p-2 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Apagar">
+                            <button type="button" onClick={() => handleDelete(doc)} className="p-2 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Apagar">
                               <Trash2 size={16} />
                             </button>
                           </div>
