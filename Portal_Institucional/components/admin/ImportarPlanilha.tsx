@@ -14,7 +14,11 @@ type Resultado = {
   erros: string[];
 };
 
-export default function ImportarPlanilha() {
+type ImportarPlanilhaProps = {
+  endpoint?: string;
+};
+
+export default function ImportarPlanilha({ endpoint = "/api/admin/licitacoes/importar" }: ImportarPlanilhaProps) {
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -33,7 +37,7 @@ export default function ImportarPlanilha() {
     formData.append("file", file);
 
     try {
-      const res = await fetch("/api/admin/licitacoes/importar", {
+      const res = await fetch(endpoint, {
         method: "POST",
         body: formData,
       });

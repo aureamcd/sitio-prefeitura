@@ -6,6 +6,8 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
+import ImportarPlanilha from "@/components/admin/ImportarPlanilha";
+
 export default async function TransparenciaListPage({ params }: Props) {
   const { slug } = await params;
 
@@ -15,6 +17,9 @@ export default async function TransparenciaListPage({ params }: Props) {
 
   return (
     <div className="space-y-6">
+      {slug === "contratos" && (
+        <ImportarPlanilha endpoint="/api/admin/contratos/importar" />
+      )}
       <DataList slug={slug} />
     </div>
   );
