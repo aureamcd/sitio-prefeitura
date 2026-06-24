@@ -11,7 +11,7 @@ import {
 import { getTableConfig } from "@/lib/admin/transparencia-tables";
 import BatchDocumentManager from "./BatchDocumentManager";
 
-const MAX_PDF_MB = 25;
+const MAX_PDF_MB = Number.MAX_SAFE_INTEGER;
 
 type Toast = { type: "success" | "error"; msg: string };
 
@@ -435,7 +435,7 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
                       const validFiles = allFiles.filter(f => f.name.toLowerCase().endsWith(".pdf") && f.size <= MAX_PDF_MB * 1_000_000);
                       
                       if (validFiles.length < allFiles.length) {
-                        alert(`Atenção: Apenas arquivos .PDF de até ${MAX_PDF_MB}MB são permitidos.\nAlguns arquivos foram ignorados.`);
+                        alert(`Atenção: Apenas arquivos .PDF são permitidos.\nAlguns arquivos foram ignorados.`);
                       }
 
                       const newFiles = validFiles.map(f => ({ file: f, name: f.name.replace(/\.[^/.]+$/, ""), type: "Anexo" }));
@@ -527,7 +527,7 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
                   </div>
                   <div className="text-center">
                     <p className="text-sm font-bold text-gray-700">Clique ou arraste o PDF aqui</p>
-                    <p className="text-xs text-gray-600 mt-1">Máximo {MAX_PDF_MB} MB</p>
+                    <p className="text-xs text-gray-600 mt-1">Sem limite de tamanho</p>
                   </div>
                 </label>
               ) : (

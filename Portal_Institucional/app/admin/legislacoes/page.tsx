@@ -145,7 +145,7 @@ export default function AdminLegislacoesPage() {
     const files = Array.from(e.target.files);
 
     // ── Validação prévia: tipo e tamanho ──
-    const MAX_BYTES = 50 * 1_000_000; // 50 MB
+    const MAX_BYTES = Number.MAX_SAFE_INTEGER; // Sem limite
     const invalidFiles = files.filter(f => !f.name.toLowerCase().endsWith('.pdf'));
     const oversizedFiles = files.filter(f => f.size > MAX_BYTES);
     if (invalidFiles.length > 0) {

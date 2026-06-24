@@ -46,7 +46,7 @@ type Props = {
   categoriaInicial?: CategoriaForm;
 };
 
-const MAX_PDF_MB = 25;
+const MAX_PDF_MB = Number.MAX_SAFE_INTEGER;
 
 type Toast = { type: "success" | "error"; msg: string };
 
@@ -132,10 +132,6 @@ export default function DocumentoForm({ initialData, mode, categoriaInicial }: P
   async function handleFileSelect(f: File) {
     if (!f.name.toLowerCase().endsWith(".pdf")) {
       showToast("error", "Apenas arquivos PDF são aceitos.");
-      return;
-    }
-    if (f.size > MAX_PDF_MB * 1_000_000) {
-      showToast("error", `O arquivo excede ${MAX_PDF_MB} MB.`);
       return;
     }
     setFile(f);
@@ -342,7 +338,7 @@ export default function DocumentoForm({ initialData, mode, categoriaInicial }: P
                 </div>
                 <div className="text-center">
                   <p className="text-sm font-bold text-gray-700">Clique ou arraste o PDF aqui</p>
-                  <p className="text-xs text-gray-600 mt-1">Máximo {MAX_PDF_MB} MB</p>
+                  <p className="text-xs text-gray-600 mt-1">Sem limite de tamanho</p>
                 </div>
               </label>
             ) : (

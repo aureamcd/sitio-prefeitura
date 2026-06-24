@@ -215,7 +215,7 @@ export default function AdminPublicarPage() {
                     </div>
                     <div className="text-center">
                       <p className="text-sm font-bold text-gray-700">Clique ou arraste o arquivo PDF aqui</p>
-                      <p className="text-xs text-gray-400 mt-1">Tamanho máximo: 50MB</p>
+                      <p className="text-xs text-gray-400 mt-1">Sem limite de tamanho</p>
                     </div>
                   </div>
                 </div>
