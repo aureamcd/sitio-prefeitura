@@ -18,7 +18,7 @@ export default async function EditarLegislacaoPage(props: { params: Promise<{ id
     return (
       <div className="flex flex-col items-center justify-center py-32 gap-4 text-gray-700">
         <AlertTriangle size={40} className="text-amber-400" />
-        <p className="text-lg font-bold text-gray-800">Legislação não encontrada</p>
+        <p className="text-lg font-bold text-gray-800">Lei ou Norma não encontrada</p>
         <p className="text-sm">ID {id} não existe no banco de dados.</p>
         <p className="text-xs text-red-600 max-w-lg text-center mt-2">{error?.message}</p>
         <Link

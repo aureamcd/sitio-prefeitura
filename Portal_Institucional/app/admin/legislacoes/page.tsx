@@ -134,7 +134,7 @@ export default function AdminLegislacoesPage() {
       showToast("error", "Erro ao excluir: " + error.message);
     } else {
       setItems(prev => prev.filter(i => i.id !== deleteId));
-      showToast("success", "Legislação excluída com sucesso.");
+      showToast("success", "Lei ou Norma excluída com sucesso.");
     }
     setDeleteId(null);
     setDeleting(false);
@@ -401,7 +401,7 @@ export default function AdminLegislacoesPage() {
             className="flex items-center gap-2 px-5 py-2.5 bg-[#0B3D91] text-white rounded-xl text-sm font-bold hover:bg-[#0a3280] transition shadow-sm"
           >
             <Plus size={18} />
-            Nova Legislação
+            Nova Lei/Norma
           </Link>
         </div>
       </div>
@@ -477,7 +477,7 @@ export default function AdminLegislacoesPage() {
         ) : paged.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-gray-600">
             <FileText size={40} strokeWidth={1.5} />
-            <p className="text-sm font-medium">Nenhuma legislação encontrada</p>
+            <p className="text-sm font-medium">Nenhuma lei ou norma encontrada</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
