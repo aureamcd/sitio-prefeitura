@@ -228,16 +228,16 @@ async function main() {
   }
   console.log(`✨ Duplicatas unificadas e removidas: ${unificadas}`);
 
-  // 4. Limpar licitações órfãs/vazias (que ficaram sem nenhum documento)
-  console.log("🧹 Verificando licitações vazias...");
-  const { data: todasLics } = await supabase.schema("transparencia").from("licitacoes_v2").select("id");
+  // 4. Limpar licitações órfãs/vazias que NÃO sejam oficiais do TCE (criadas por erro sem documento)
+  console.log("🧹 Verificando licitações vazias não-oficiais...");
+  const { data: todasLics } = await supabase.schema("transparencia").from("licitacoes_v2").select("id, origem");
   const { data: todosDocs } = await supabase.schema("transparencia").from("licitacoes_documentos").select("licitacao_id");
 
   const docsPorLic = new Set((todosDocs || []).map(d => d.licitacao_id));
-  const licsVazias = (todasLics || []).filter(l => !docsPorLic.has(l.id));
+  const licsVazias = (todasLics || []).filter(l => !docsPorLic.has(l.id) && l.origem !== "TCE-PI");
 
   if (licsVazias.length > 0) {
-    console.log(`🗑️ Removendo ${licsVazias.length} licitações antigas sem nenhum documento vinculado...`);
+    console.log(`🗑️ Removendo ${licsVazias.length} licitações não-oficiais sem nenhum documento vinculado...`);
     const vaziasIds = licsVazias.map(l => l.id);
     await supabase.schema("transparencia").from("licitacoes_v2").delete().in("id", vaziasIds);
   }
