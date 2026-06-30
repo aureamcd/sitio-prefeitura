@@ -180,3 +180,66 @@
 
 ---
 *Checklist gerado em Junho/2026 - Baseado na Cartilha PNTP 2026 da Atricon*
+1️⃣ BALANÇOS (Quadros 27 a 32)
+Menu:  Prestação de Contas → Balanços 
+Para cada ano (2024, 2025, 2026), baixe os Quadros 27 a 32:
+┌────────┬─────────────────────────────────────────┐
+│ Quadro │ Nome                                    │
+├────────┼─────────────────────────────────────────┤
+│ Q27    │ Balanço Patrimonial                     │
+│ Q28    │ Balanço Financeiro                      │
+│ Q29    │ Balanço Orçamentário                    │
+│ Q30    │ Demonstração das Variações Patrimoniais │
+│ Q31    │ Demonstração das Receitas e Despesas    │
+│ Q32    │ Demonstração dos Fluxos de Caixa        │
+└────────┴─────────────────────────────────────────┘
+> 📁 Salvar em:  Downloads\Contreina\Balanços\2024\ ,  \2025\ ,  \2026\ 
+
+**Status Upload:**
+- [x] **Balanços 2025** ✅ — 40 PDFs enviados p/ R2 e cadastrados no Supabase (27/jun)
+- [x] **Balanços 2026** ✅ — 12 PDFs enviados p/ R2 e cadastrados no Supabase (27/jun)
+- [ ] **Balanços 2024** ❌ — Nenhum arquivo baixado (site Contreina offline)
+────────────────────────────────────────────────────────────────────────────────
+2️⃣ RGF (Relatório de Gestão Fiscal)
+Menu:  Prestação de Contas → Responsabilidade Fiscal - RGF 
+Para cada ano (2023, 2024, 2025, 2026), baixe os PDFs.
+> 📁 Salvar em:  Downloads\Contreina\RGF\2023\ ,  \2024\ ,  \2025\ ,  \2026\ 
+
+**Status Upload:**
+- [ ] **RGF 2023-2026** ❌ — Nenhum PDF baixado (site Contreina offline)
+────────────────────────────────────────────────────────────────────────────────
+3️⃣ RREO (Relatório Resumido da Execução Orçamentária)
+Menu:  Prestação de Contas → Responsabilidade Fiscal - RREO 
+Para cada ano (2023, 2024, 2025) — 2026 já temos! ✅
+> 📁 Salvar em:  Downloads\Contreina\RREO\2023\ ,  \2024\ ,  \2025\ 
+
+**Status Upload:**
+- [ ] **RREO 2023-2025** ❌ — Nenhum PDF baixado (site Contreina offline)
+────────────────────────────────────────────────────────────────────────────────
+4️⃣ PARECER PRÉVIO DO TCE-PI
+Menu:  Prestação de Contas → Parecer Prévio do Tribunal de Contas 
+Para cada ano (2023, 2024, 2025)
+> 📁 Salvar em:  Downloads\Contreina\Parecer TCE\2023\ ,  \2024\ ,  \2025\ 
+
+**Status Upload:**
+- [ ] **Parecer TCE 2023-2025** ❌ — Nenhum PDF baixado (site Contreina offline)
+────────────────────────────────────────────────────────────────────────────────
+📁 Estrutura final nos Downloads
+Downloads\Contreina\
+├── Balanços\
+│   ├── 2024\    ← ❌ Vazio
+│   ├── 2025\    ← ✅ 40 PDFs enviados ao portal
+│   └── 2026\    ← ✅ 12 PDFs enviados ao portal
+├── RGF\
+│   ├── 2023\    ← ❌ Vazio
+│   ├── 2024\    ← ❌ Vazio
+│   ├── 2025\    ← ❌ Vazio
+│   └── 2026\    ← ❌ Vazio
+├── RREO\
+│   ├── 2023\    ← ❌ Vazio
+│   ├── 2024\    ← ❌ Vazio
+│   └── 2025\    ← ❌ Vazio
+└── Parecer TCE\
+    ├── 2023\    ← ❌ Vazio
+    ├── 2024\    ← ❌ Vazio
+    └── 2025\    ← ❌ Vazio

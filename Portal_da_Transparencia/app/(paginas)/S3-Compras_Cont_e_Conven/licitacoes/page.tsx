@@ -133,7 +133,7 @@ function useLicitacoesData(filters: FilterValues & { modalidade?: string; situac
       }
 
       if (filters.ano) {
-        query = query.eq('ano', filters.ano);
+        query = query.eq('ano', parseInt(filters.ano, 10));
       }
 
       if (filters.mes) {
@@ -156,6 +156,7 @@ function useLicitacoesData(filters: FilterValues & { modalidade?: string; situac
       }
 
       const { data: result, error } = await query
+        .limit(5000)
         .order('ano', { ascending: false })
         .order('numero', { ascending: false });
 

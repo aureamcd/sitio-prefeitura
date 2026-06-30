@@ -265,9 +265,133 @@ function PlanejamentoTab({
 }
 
 // ============================================================================
-// Aba 2: Relatórios da LRF — Declaração de Inexistência
+// Hook genérico para buscar documentos da prestação de contas
 // ============================================================================
-function LrfTab() {
+function useDocumentos(filters: FilterValues, tipoFilter: string | string[]) {
+  const [docs, setDocs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchDocs() {
+      setLoading(true);
+      const { createBrowserClient } = await import('@/lib/supabase/client');
+      const supabase = createBrowserClient();
+      let q = supabase
+        .schema('transparencia')
+        .from('planejamento_documentos')
+        .select('*')
+        .eq('ativo', true)
+        .order('exercicio', { ascending: false })
+        .order('titulo', { ascending: true });
+
+      if (typeof tipoFilter === 'string') {
+        q = q.eq('tipo', tipoFilter);
+      } else if (Array.isArray(tipoFilter)) {
+        q = q.in('tipo', tipoFilter);
+      }
+
+      if (filters.ano) {
+        q = q.eq('exercicio', parseInt(filters.ano));
+      }
+
+      const { data } = await q;
+      if (!cancelled) {
+        setDocs(data || []);
+        setLoading(false);
+      }
+    }
+    fetchDocs();
+    return () => { cancelled = true; };
+  }, [filters.ano, JSON.stringify(tipoFilter)]);
+
+  return { docs, loading };
+}
+
+// ============================================================================
+// Componente reutilizável de listagem de documentos
+// ============================================================================
+function DocumentCard({ doc, compact = false }: { doc: any; compact?: boolean }) {
+  return (
+    <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md hover:border-blue-200 transition-all duration-200 ${compact ? '' : ''}`}>
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="bg-blue-50 text-blue-600 p-2 rounded-lg shrink-0">
+          <FileText size={18} strokeWidth={1.5} />
+        </div>
+        <div className="min-w-0">
+          <h4 className="text-sm font-semibold text-gray-800 leading-snug truncate">{doc.titulo}</h4>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Exercício {doc.exercicio}
+            {doc.data_publicacao && ` • ${new Date(doc.data_publicacao).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}`}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        <a
+          href={doc.arquivo_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 text-gray-600 font-bold text-[10px] uppercase rounded-lg hover:bg-gray-100 transition"
+        >
+          <Eye size={14} />
+          Ver
+        </a>
+        <a
+          href={`/api/download?url=${encodeURIComponent(doc.arquivo_url)}&filename=${encodeURIComponent(doc.arquivo_nome || 'documento.pdf')}`}
+          download={doc.arquivo_nome || 'documento.pdf'}
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white font-bold text-[10px] uppercase rounded-lg hover:bg-blue-700 transition shadow-sm"
+        >
+          <Download size={14} />
+          Baixar PDF
+        </a>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// Componente: seção de documentos agrupados por ano
+// ============================================================================
+function AnoSection({ ano, docs, icon: Icon }: { ano: number; docs: any[]; icon: React.ElementType }) {
+  if (docs.length === 0) return null;
+  return (
+    <div className="mb-8">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="bg-blue-600 text-white p-2 rounded-xl shrink-0 shadow-md shadow-blue-200">
+          <Icon size={20} strokeWidth={1.5} />
+        </div>
+        <div>
+          <h3 className="text-lg font-bold text-gray-900">Exercício {ano}</h3>
+          <p className="text-sm text-gray-500">{docs.length} documento{docs.length !== 1 ? 's' : ''}</p>
+        </div>
+      </div>
+      <div className="space-y-2">
+        {docs.map((doc: any) => (
+          <DocumentCard key={doc.id} doc={doc} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// Aba 2: Relatórios da LRF — Critérios 11.5 e 11.6
+// ============================================================================
+function LrfTab({ filters }: { filters: FilterValues }) {
+  const { docs, loading } = useDocumentos(filters, ['RGF', 'RREO']);
+
+  const grouped = useMemo(() => {
+    const map = new Map<number, any[]>();
+    for (const doc of docs) {
+      const ano = doc.exercicio || 0;
+      if (!map.has(ano)) map.set(ano, []);
+      map.get(ano)!.push(doc);
+    }
+    return Array.from(map.entries()).sort(([a], [b]) => b - a);
+  }, [docs]);
+
+  const totalDocs = docs.length;
+
   return (
     <div id="panel-lrf" role="tabpanel">
       <div className="mb-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
@@ -277,21 +401,34 @@ function LrfTab() {
             <p className="text-sm font-semibold text-blue-800 mb-1">Relatórios da LRF — Critérios 11.5 e 11.6</p>
             <p className="text-sm text-blue-800/80 leading-relaxed">
               O RGF (Relatório de Gestão Fiscal) e o RREO (Relatório Resumido da Execução Orçamentária)
-              serão publicados nesta seção conforme forem disponibilizados pela Secretaria Municipal de Finanças,
+              são publicados conforme disponibilizados pela Secretaria Municipal de Finanças,
               respeitando as periodicidades quadrimestral (RGF) e bimestral (RREO) exigidas pela LRF.
             </p>
           </div>
         </div>
       </div>
 
-      <DeclaracaoInexistencia
-        titulo="Aviso de Não Ocorrência — Relatórios da LRF"
-        descricao="Não há relatórios da Lei de Responsabilidade Fiscal (RGF e RREO) registrados no banco de dados do portal. Os relatórios serão publicados assim que forem encaminhados pela Secretaria Municipal de Finanças, dentro dos prazos legais."
-        icon={FileWarning}
-        colorClass="bg-amber-100"
-      />
+      {loading ? (
+        <div className="text-center py-16 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3" />
+          <h3 className="text-sm font-bold text-gray-900">Carregando documentos...</h3>
+        </div>
+      ) : totalDocs > 0 ? (
+        <div className="space-y-2">
+          {grouped.map(([ano, docsAno]) => (
+            <AnoSection key={ano} ano={ano} docs={docsAno} icon={FileWarning} />
+          ))}
+        </div>
+      ) : (
+        <DeclaracaoInexistencia
+          titulo="Aviso de Não Ocorrência — Relatórios da LRF"
+          descricao="Não há relatórios da Lei de Responsabilidade Fiscal (RGF e RREO) registrados no banco de dados do portal. Os relatórios serão publicados assim que forem encaminhados pela Secretaria Municipal de Finanças, dentro dos prazos legais."
+          icon={FileWarning}
+          colorClass="bg-amber-100"
+        />
+      )}
 
-      <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
+      <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
         <p className="text-sm font-semibold text-blue-800 mb-1">Base Legal — Critérios 11.5 e 11.6</p>
         <p className="text-sm text-blue-800/80 leading-relaxed">
           A publicação do RGF e RREO atende às exigências da Lei de Responsabilidade Fiscal
@@ -305,33 +442,64 @@ function LrfTab() {
 }
 
 // ============================================================================
-// Aba 3: Prestação de Contas — Declaração de Inexistência
+// Aba 3: Prestação de Contas — Critérios 11.1 e 11.2
 // ============================================================================
-function PrestacaoContasTab() {
+function PrestacaoContasTab({ filters }: { filters: FilterValues }) {
+  const { docs, loading } = useDocumentos(filters, 'BALANCO_GERAL');
+
+  const grouped = useMemo(() => {
+    const map = new Map<number, any[]>();
+    for (const doc of docs) {
+      const ano = doc.exercicio || 0;
+      if (!map.has(ano)) map.set(ano, []);
+      map.get(ano)!.push(doc);
+    }
+    return Array.from(map.entries()).sort(([a], [b]) => b - a);
+  }, [docs]);
+
+  const totalDocs = docs.length;
+
   return (
     <div id="panel-prestacao" role="tabpanel">
       <div className="mb-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
         <div className="flex items-start gap-3">
           <Info size={18} className="text-blue-500 shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-semibold text-blue-800 mb-1">Prestação de Contas Anual e Relatório de Gestão — Critérios 11.1 e 11.2</p>
+            <p className="text-sm font-semibold text-blue-800 mb-1">Prestação de Contas Anual — Critérios 11.1 e 11.2</p>
             <p className="text-sm text-blue-800/80 leading-relaxed">
-              O Balanço Geral do exercício anterior e o Relatório de Gestão/Atividades elaborado
-              pelo Prefeito serão publicados nesta seção assim que forem encaminhados pela
-              Secretaria Municipal de Finanças e aprovados pelos órgãos competentes.
+              Balanço Geral do exercício e demais demonstrativos contábeis exigidos pela
+              Lei nº 4.320/1964 e pela Lei de Responsabilidade Fiscal (LC nº 101/2000).
             </p>
           </div>
         </div>
       </div>
 
-      <DeclaracaoInexistencia
-        titulo="Aviso de Não Ocorrência — Prestação de Contas"
-        descricao="Não há documentos de prestação de contas anual ou relatório de gestão registrados no banco de dados do portal. Os balanços e relatórios serão publicados assim que forem disponibilizados."
-        icon={AlertTriangle}
-        colorClass="bg-rose-100"
-      />
+      {loading ? (
+        <div className="text-center py-16 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3" />
+          <h3 className="text-sm font-bold text-gray-900">Carregando documentos...</h3>
+        </div>
+      ) : totalDocs > 0 ? (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 mb-4 px-1">
+            <div className="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full">
+              {totalDocs} documento{totalDocs !== 1 ? 's' : ''} disponíve{totalDocs !== 1 ? 'is' : 'l'}
+            </div>
+          </div>
+          {grouped.map(([ano, docsAno]) => (
+            <AnoSection key={ano} ano={ano} docs={docsAno} icon={AlertTriangle} />
+          ))}
+        </div>
+      ) : (
+        <DeclaracaoInexistencia
+          titulo="Aviso de Não Ocorrência — Prestação de Contas"
+          descricao="Não há documentos de prestação de contas anual ou relatório de gestão registrados no banco de dados do portal. Os balanços e relatórios serão publicados assim que forem disponibilizados."
+          icon={AlertTriangle}
+          colorClass="bg-rose-100"
+        />
+      )}
 
-      <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
+      <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
         <p className="text-sm font-semibold text-blue-800 mb-1">Base Legal — Critérios 11.1 e 11.2</p>
         <p className="text-sm text-blue-800/80 leading-relaxed">
           A prestação de contas anual atende ao Art. 84 da Lei nº 4.320/1964, ao Art. 48 da
@@ -343,31 +511,57 @@ function PrestacaoContasTab() {
 }
 
 // ============================================================================
-// Aba 4: Julgamento das Contas — Declaração de Inexistência
+// Aba 4: Julgamento das Contas — Critérios 11.3 e 11.4
 // ============================================================================
-function JulgamentoContasTab() {
+function JulgamentoContasTab({ filters }: { filters: FilterValues }) {
+  const { docs, loading } = useDocumentos(filters, 'PARECER_TCE');
+
+  const grouped = useMemo(() => {
+    const map = new Map<number, any[]>();
+    for (const doc of docs) {
+      const ano = doc.exercicio || 0;
+      if (!map.has(ano)) map.set(ano, []);
+      map.get(ano)!.push(doc);
+    }
+    return Array.from(map.entries()).sort(([a], [b]) => b - a);
+  }, [docs]);
+
+  const totalDocs = docs.length;
+
   return (
     <div id="panel-julgamento" role="tabpanel">
-      <div className="mt-4 mb-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
+      <div className="mb-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
         <div className="flex items-start gap-3">
           <Scale size={18} className="text-blue-500 shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-semibold text-blue-800 mb-1">Julgamento das Contas — Critérios 11.3 e 11.4</p>
             <p className="text-sm text-blue-800/80 leading-relaxed">
               O Parecer Prévio do TCE-PI sobre as contas anuais do Prefeito e o ato de julgamento
-              pela Câmara Municipal serão publicados nesta seção tão logo sejam disponibilizados
-              pelos órgãos competentes.
+              pela Câmara Municipal são publicados nesta seção.
             </p>
           </div>
         </div>
       </div>
 
-      <DeclaracaoInexistencia
-        titulo="Aviso de Não Ocorrência — Julgamento das Contas"
-        descricao="Não há pareceres do TCE-PI ou atos de julgamento pela Câmara Municipal registrados no banco de dados do portal. Os documentos serão publicados assim que forem disponibilizados."
-        icon={Scale}
-        colorClass="bg-sky-100"
-      />
+      {loading ? (
+        <div className="text-center py-16 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3" />
+          <h3 className="text-sm font-bold text-gray-900">Carregando documentos...</h3>
+        </div>
+      ) : totalDocs > 0 ? (
+        <div className="space-y-2">
+          {grouped.map(([ano, docsAno]) => (
+            <AnoSection key={ano} ano={ano} docs={docsAno} icon={Scale} />
+          ))}
+        </div>
+      ) : (
+        <DeclaracaoInexistencia
+          titulo="Aviso de Não Ocorrência — Julgamento das Contas"
+          descricao="Não há pareceres do TCE-PI ou atos de julgamento pela Câmara Municipal registrados no banco de dados do portal. Os documentos serão publicados assim que forem disponibilizados."
+          icon={Scale}
+          colorClass="bg-sky-100"
+        />
+      )}
 
       <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
         <p className="text-sm font-semibold text-blue-800 mb-1">Base Legal — Critérios 11.3 e 11.4</p>
@@ -754,9 +948,9 @@ export default function RelatoriosPage() {
       {activeTab === 'planejamento' && (
         <PlanejamentoTab filters={filters} filterKey={filterKey} hasActiveFilters={hasActiveFilters} />
       )}
-      {activeTab === 'lrf' && <LrfTab />}
-      {activeTab === 'prestacao' && <PrestacaoContasTab />}
-      {activeTab === 'julgamento' && <JulgamentoContasTab />}
+      {activeTab === 'lrf' && <LrfTab filters={filters} />}
+      {activeTab === 'prestacao' && <PrestacaoContasTab filters={filters} />}
+      {activeTab === 'julgamento' && <JulgamentoContasTab filters={filters} />}
       {activeTab === 'plano-estrategico' && <PlanoEstrategicoTab />}
       {activeTab === 'demonstracoes' && <DemonstracoesFinanceirasTab />}
       {activeTab === 'consorcio' && <OrcamentoConsorcioTab />}
