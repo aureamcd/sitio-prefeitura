@@ -224,12 +224,14 @@ async function main() {
       const updateData = Object.fromEntries(Object.entries(licitacaoData).filter(([_, v]) => v != null));
 
       let licitacaoMain;
+      const modalidadeAlvo = licitacaoData.modalidade || "Pregão";
       const { data: existente } = await supabase
         .schema("transparencia")
         .from("licitacoes_v2")
         .select("*")
         .eq("numero", licitacaoData.numero)
         .eq("ano", licitacaoData.ano)
+        .eq("modalidade", modalidadeAlvo)
         .maybeSingle();
 
       if (existente) {
