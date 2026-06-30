@@ -184,9 +184,53 @@ async function main() {
 
   console.log(`✅ Concluído! Novas licitações criadas: ${criados} | Documentos realocados/corrigidos: ${corrigidos}`);
 
-  // 3. Limpar licitações órfãs/vazias (que ficaram sem nenhum documento após a realocação)
+  // 3. Unificar duplicatas: quando houver número repetido, manter a que tem objeto/informações completas e transferir todos os documentos para ela
+  console.log("🔗 Unificando licitações repetidas (mantendo a mais completa)...");
+  const { data: todasLicsFull } = await supabase.schema("transparencia").from("licitacoes_v2").select("*");
+  const grupos = new Map<string, any[]>();
+  (todasLicsFull || []).forEach(l => {
+    const k = `${(l.numero || '').trim()}___${l.ano}___${(l.modalidade || 'Pregão').trim()}`.toUpperCase();
+    if (!grupos.has(k)) grupos.set(k, []);
+    grupos.get(k)!.push(l);
+  });
+
+  let unificadas = 0;
+  for (const [k, list] of grupos.entries()) {
+    if (list.length > 1) {
+      // Ordena colocando em primeiro a que tem o maior/melhor objeto ou valor estimado
+      list.sort((a, b) => {
+        const scoreA = (a.objeto?.length || 0) + (a.valor_estimado ? 50 : 0);
+        const scoreB = (b.objeto?.length || 0) + (b.valor_estimado ? 50 : 0);
+        return scoreB - scoreA;
+      });
+
+      const principal = list[0];
+      const duplicadas = list.slice(1);
+      const dupIds = duplicadas.map(d => d.id);
+
+      // Transfere todos os documentos das duplicadas para a principal
+      await supabase.schema("transparencia").from("licitacoes_documentos").update({ licitacao_id: principal.id }).in("licitacao_id", dupIds);
+
+      // Preserva flags de edital/ata/homologacao se alguma tiver
+      const possuiEdital = list.some(l => l.possui_edital === true);
+      const possuiAta = list.some(l => l.possui_ata === true);
+      const possuiHom = list.some(l => l.possui_homologacao === true);
+      await supabase.schema("transparencia").from("licitacoes_v2").update({
+        possui_edital: possuiEdital,
+        possui_ata: possuiAta,
+        possui_homologacao: possuiHom
+      }).eq("id", principal.id);
+
+      // Exclui as duplicadas que ficaram vazias
+      await supabase.schema("transparencia").from("licitacoes_v2").delete().in("id", dupIds);
+      unificadas += duplicadas.length;
+    }
+  }
+  console.log(`✨ Duplicatas unificadas e removidas: ${unificadas}`);
+
+  // 4. Limpar licitações órfãs/vazias (que ficaram sem nenhum documento)
   console.log("🧹 Verificando licitações vazias...");
-  const { data: todasLics } = await supabase.schema("transparencia").from("licitacoes_v2").select("id, numero, ano, modalidade");
+  const { data: todasLics } = await supabase.schema("transparencia").from("licitacoes_v2").select("id");
   const { data: todosDocs } = await supabase.schema("transparencia").from("licitacoes_documentos").select("licitacao_id");
 
   const docsPorLic = new Set((todosDocs || []).map(d => d.licitacao_id));
@@ -198,7 +242,7 @@ async function main() {
     await supabase.schema("transparencia").from("licitacoes_v2").delete().in("id", vaziasIds);
   }
 
-  console.log("🎉 Reorganização finalizada com sucesso!");
+  console.log("🎉 Reorganização e unificação finalizadas com sucesso!");
 }
 
 main().catch(console.error);
