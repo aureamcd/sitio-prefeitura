@@ -200,20 +200,26 @@ export default function EmendasPage() {
 
   const federaisData = useMemo(() => {
     let d = cadastroData.filter(c => isFederal(c.parlamentar || '', c));
-    if (filtroTipo) d = d.filter(c => (c.objeto || '').toLowerCase().includes(filtroTipo.toLowerCase()));
+    if (filtroAutor) d = d.filter(c => (c.parlamentar || '').toLowerCase().includes(filtroAutor.toLowerCase()));
+    if (filtroTipo) d = d.filter(c => (c.tipo || c.objeto || c.raw_json?.modalidade || '').toLowerCase().includes(filtroTipo.toLowerCase()));
+    if (filters.busca) d = d.filter(c => (c.objeto || c.numero_emenda || c.parlamentar || '').toLowerCase().includes(filters.busca.toLowerCase()));
     return d;
-  }, [cadastroData, filtroTipo]);
+  }, [cadastroData, filtroAutor, filtroTipo, filters.busca]);
 
   const estaduaisData = useMemo(() => {
     let d = cadastroData.filter(c => !isFederal(c.parlamentar || '', c) && (c.parlamentar !== null && c.parlamentar.trim() !== ''));
-    if (filtroTipo) d = d.filter(c => (c.objeto || '').toLowerCase().includes(filtroTipo.toLowerCase()));
+    if (filtroAutor) d = d.filter(c => (c.parlamentar || '').toLowerCase().includes(filtroAutor.toLowerCase()));
+    if (filtroTipo) d = d.filter(c => (c.tipo || c.objeto || c.raw_json?.modalidade || '').toLowerCase().includes(filtroTipo.toLowerCase()));
+    if (filters.busca) d = d.filter(c => (c.objeto || c.numero_emenda || c.parlamentar || '').toLowerCase().includes(filters.busca.toLowerCase()));
     return d;
-  }, [cadastroData, filtroTipo]);
+  }, [cadastroData, filtroAutor, filtroTipo, filters.busca]);
 
   const executionFiltered = useMemo(() => {
     // Para ter transparência real, detalhada e compatível com a cartilha PNTP (sem linhas vazias com '—' ou consolidados genéricos),
     // geramos a execução orçamentária e financeira diretamente das emendas cadastradas que possuem valor/previsto no exercício.
     let listaCadastro = cadastroData;
+    if (filtroAutor) listaCadastro = listaCadastro.filter(c => (c.parlamentar || '').toLowerCase().includes(filtroAutor.toLowerCase()));
+    if (filtroTipo) listaCadastro = listaCadastro.filter(c => (c.tipo || c.objeto || c.raw_json?.modalidade || '').toLowerCase().includes(filtroTipo.toLowerCase()));
     if (filters.busca) {
       listaCadastro = listaCadastro.filter(c => 
         (c.objeto || '').toLowerCase().includes(filters.busca.toLowerCase()) ||
