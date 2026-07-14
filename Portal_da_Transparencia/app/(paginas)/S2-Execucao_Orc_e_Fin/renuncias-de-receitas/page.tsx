@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ContentPage from '@/components/layout/ContentPage';
 import FilterPanel, { FilterValues } from '@/components/ui/FilterPanel';
-import { useAvailableYears } from '@/lib/supabase/client';
+import { useAvailableYears, createBrowserClient } from '@/lib/supabase/client';
 import { useTodayDate } from '@/lib/hooks/useTodayDate';
 import {
   BadgePercent,
@@ -20,6 +20,25 @@ const MESES = [
   { value: '09', label: 'Setembro' }, { value: '10', label: 'Outubro' },
   { value: '11', label: 'Novembro' }, { value: '12', label: 'Dezembro' },
 ];
+
+type Incentivo = {
+  id: string;
+  projeto: string;
+  area: 'cultura' | 'esporte';
+  beneficiario: string;
+  tipo_incentivo: string;
+  valor_beneficio: number;
+  fundamento_legal: string;
+  ano: number;
+  descricao?: string;
+};
+
+const TIPO_INCENTIVO_LABEL: Record<string, string> = {
+  isencao_iss: 'Isenção de ISS',
+  patrocinio_abatimento: 'Patrocínio com Abatimento Fiscal',
+  isencao_taxa: 'Isenção de Taxa',
+  outro: 'Outro',
+};
 
 // ============================================================================
 // Componente de inexistência padronizado
@@ -58,6 +77,50 @@ function DeclaracaoInexistencia({
 }
 
 // ============================================================================
+// Tabela de Incentivos
+// ============================================================================
+function TabelaIncentivos({ itens }: { itens: Incentivo[] }) {
+  return (
+    <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-200 shadow-sm">
+      <table className="w-full text-sm">
+        <thead className="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th className="text-left py-3 px-4 font-semibold text-gray-700">Projeto</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-700">Área</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-700">Beneficiário</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-700">Incentivo</th>
+            <th className="text-right py-3 px-4 font-semibold text-gray-700">Valor</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-700">Fundamento Legal</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {itens.map((item) => (
+            <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
+              <td className="py-3 px-4 font-medium text-gray-900">{item.projeto}</td>
+              <td className="py-3 px-4">
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                  item.area === 'cultura'
+                    ? 'bg-purple-50 text-purple-700'
+                    : 'bg-red-50 text-red-700'
+                }`}>
+                  {item.area === 'cultura' ? 'Cultura' : 'Esporte'}
+                </span>
+              </td>
+              <td className="py-3 px-4 text-gray-600">{item.beneficiario}</td>
+              <td className="py-3 px-4 text-gray-600">{TIPO_INCENTIVO_LABEL[item.tipo_incentivo] || item.tipo_incentivo}</td>
+              <td className="py-3 px-4 text-right font-semibold text-gray-900">
+                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.valor_beneficio)}
+              </td>
+              <td className="py-3 px-4 text-xs text-gray-500">{item.fundamento_legal}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ============================================================================
 // Main Page
 // ============================================================================
 export default function RenunciasDeReceitasPage() {
@@ -65,6 +128,37 @@ export default function RenunciasDeReceitasPage() {
   const { anos: ANOS } = useAvailableYears('renuncias');
   const [activeTab, setActiveTab] = useState<'desoneracoes' | 'incentivos'>('desoneracoes');
   const [filters, setFilters] = useState<FilterValues>({ ano: '', mes: '', busca: '', entidade: '' });
+
+  // Estado para os incentivos
+  const [incentivos, setIncentivos] = useState<Incentivo[] | null>(null);
+  const [loadingIncentivos, setLoadingIncentivos] = useState(false);
+
+  // Carregar incentivos do banco
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      setLoadingIncentivos(true);
+      const supabase = createBrowserClient();
+      let query = supabase
+        .schema('transparencia')
+        .from('incentivos_cultura_esporte')
+        .select('*')
+        .order('ano', { ascending: false })
+        .limit(100);
+
+      if (filters.ano) {
+        query = query.eq('ano', parseInt(filters.ano, 10));
+      }
+
+      const { data, error } = await query;
+      if (!cancelled) {
+        setIncentivos(error ? [] : (data as Incentivo[]));
+        setLoadingIncentivos(false);
+      }
+    }
+    load();
+    return () => { cancelled = true; };
+  }, [filters.ano]);
 
   const handleChange = useCallback((field: 'ano' | 'mes' | 'busca' | 'entidade', value: string) => {
     setFilters(prev => ({ ...prev, [field]: value }));
@@ -136,12 +230,26 @@ export default function RenunciasDeReceitasPage() {
       {/* Aba 2: Incentivos */}
       {activeTab === 'incentivos' && (
         <div id="panel-incentivos" role="tabpanel">
-          <DeclaracaoInexistencia
-            titulo="Aviso de Não Ocorrência — Incentivo à Cultura e Esporte"
-            descricao={`No exercício de ${filters.ano || 'referência'}, não foram registrados projetos de incentivo à cultura e ao esporte com renúncia de receita. Os dados serão publicados assim que disponibilizados pela Secretaria Municipal de Finanças.`}
-            icon={Palette}
-            colorClass="bg-purple-100"
-          />
+          {loadingIncentivos ? (
+            <div className="mt-6 flex justify-center py-12">
+              <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full" />
+            </div>
+          ) : incentivos && incentivos.length > 0 ? (
+            <div>
+              <p className="mt-6 text-sm text-gray-500">
+                {incentivos.length} projeto{incentivos.length !== 1 ? 's' : ''} encontrado{incentivos.length !== 1 ? 's' : ''}
+                {filters.ano ? ` em ${filters.ano}` : ''}.
+              </p>
+              <TabelaIncentivos itens={incentivos} />
+            </div>
+          ) : (
+            <DeclaracaoInexistencia
+              titulo="Aviso de Não Ocorrência — Incentivo à Cultura e Esporte"
+              descricao={`No exercício de ${filters.ano || 'referência'}, não foram registrados projetos de incentivo à cultura e ao esporte com renúncia de receita. Os dados serão publicados assim que disponibilizados pela Secretaria Municipal de Finanças.`}
+              icon={Palette}
+              colorClass="bg-purple-100"
+            />
+          )}
         </div>
       )}
 

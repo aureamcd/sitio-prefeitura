@@ -285,7 +285,7 @@ const sections: SectionItem[] = [
       {
         title: "LGPD e Governo Digital",
         description:
-          "Política de privacidade, identificação do encarregado de proteção de dados, regulamentação local e acesso digital a serviços.",
+          "Política de privacidade, encarregado de dados, regulamentação do Governo Digital e acesso digital a serviços.",
         href: "/lgpd",
         Icon: ShieldCheck,
       },

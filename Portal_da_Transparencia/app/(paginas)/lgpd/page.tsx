@@ -1,5 +1,5 @@
 import ContentPage from "@/components/layout/ContentPage";
-import { ShieldCheck, User, Mail, FileText, AlertTriangle } from "lucide-react";
+import { ShieldCheck, User, Mail, FileText, AlertTriangle, Monitor } from "lucide-react";
 import { getTodayDate } from '@/lib/utils/date';
 
 export default function LGPDPage() {
@@ -125,6 +125,28 @@ export default function LGPDPage() {
           <p className="text-sm text-gray-500 italic">
             Sua solicitação será respondida em até 15 dias úteis, conforme a legislação.
           </p>
+        </section>
+
+        {/* GOVERNO DIGITAL */}
+        <section className="bg-white border border-gray-100 rounded-2xl p-6 space-y-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="bg-purple-50 text-purple-600 p-2.5 rounded-xl">
+              <Monitor size={22} />
+            </div>
+            <h2 className="text-lg font-bold text-gray-900">Governo Digital (Lei nº 14.129/2021)</h2>
+          </div>
+          <p className="text-gray-600 leading-relaxed">
+            A Lei Federal nº 14.129/2021 estabelece princípios, regras e instrumentos para o Governo Digital e para o
+            aumento da eficiência da Administração Pública. O município de Padre Marcos regulamentou a referida lei
+            por meio de Decreto Municipal, disponível na página abaixo:
+          </p>
+          <a
+            href="/regulamentacao-governo-digital"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#173572] text-white rounded-xl font-bold text-sm hover:bg-[#122a5a] transition shadow-sm"
+          >
+            <FileText size={16} />
+            Regulamentação Municipal do Governo Digital
+          </a>
         </section>
 
         {/* COOKIES */}

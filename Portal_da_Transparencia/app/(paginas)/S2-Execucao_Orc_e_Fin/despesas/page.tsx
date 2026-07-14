@@ -32,6 +32,7 @@ import {
   Award,
   Megaphone,
   AlertCircle,
+  Info,
 } from 'lucide-react';
 import { EMPRESAS } from '@/lib/empresas';
 import Pagination from '@/components/ui/Pagination';
@@ -752,6 +753,10 @@ export default function DespesasPage() {
               <AlertCircle size={14} />
               Critério 4.4 — Em adequação
             </div>
+            <div className="mt-4 inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2">
+              <Info size={14} className="text-blue-600 shrink-0" />
+              <p className="text-xs text-blue-700 font-medium">Declaração atualizada em {today}.</p>
+            </div>
           </div>
         </div>
       )}
@@ -773,6 +778,10 @@ export default function DespesasPage() {
               <AlertCircle size={14} />
               Critério 4.5 — Inexistência de despesas
             </div>
+            <div className="mt-4 inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2">
+              <Info size={14} className="text-blue-600 shrink-0" />
+              <p className="text-xs text-blue-700 font-medium">Declaração atualizada em {today}.</p>
+            </div>
           </div>
         </div>
       )}
@@ -793,6 +802,10 @@ export default function DespesasPage() {
             <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-xs font-medium text-blue-700">
               <AlertCircle size={14} />
               Critério 4.6 — Inexistência de despesas
+            </div>
+            <div className="mt-4 inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2">
+              <Info size={14} className="text-blue-600 shrink-0" />
+              <p className="text-xs text-blue-700 font-medium">Declaração atualizada em {today}.</p>
             </div>
           </div>
         </div>

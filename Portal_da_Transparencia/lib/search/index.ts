@@ -227,6 +227,13 @@ const searchItems: SearchResult[] = [
     category: "Informações Institucionais",
     keywords: ["regulamentacao", "lai", "lei acesso informacao", "decreto"],
   },
+  {
+    title: "Regulamentação do Governo Digital",
+    description: "Decreto municipal que regulamenta a Lei Federal nº 14.129/2021 (Governo Digital).",
+    href: "/regulamentacao-governo-digital",
+    category: "Informações Institucionais",
+    keywords: ["regulamentacao", "governo digital", "14129", "lei 14129", "decreto", "transformacao digital"],
+  },
 
   // ── Dados Abertos ──
   {

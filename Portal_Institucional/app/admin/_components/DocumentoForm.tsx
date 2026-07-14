@@ -6,9 +6,10 @@ import { createBrowserClient } from "@/lib/supabase/client";
 import slugify from "slugify";
 import {
   Save, ArrowLeft, Loader2, CheckCircle2, XCircle, FileUp, FileText,
-  X, Eye, RefreshCw, ExternalLink,
+  X, Eye, RefreshCw, ExternalLink, ShieldAlert,
 } from "lucide-react";
 import Link from "next/link";
+import ModalTarjamentoInterativo from "./ModalTarjamentoInterativo";
 
 import {
   TIPOS_LEGISLACAO,
@@ -94,6 +95,7 @@ export default function DocumentoForm({ initialData, mode, categoriaInicial }: P
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
   const [pdfPreview, setPdfPreview] = useState(initialData?.arquivo_r2_url ?? "");
+  const [openLgpdModal, setOpenLgpdModal] = useState(false);
   const [slugEditado, setSlugEditado] = useState(mode === "editar" && !!initialData?.slug);
 
   /* ── Detecta categoria com base nos dados iniciais ── */
@@ -359,15 +361,26 @@ export default function DocumentoForm({ initialData, mode, categoriaInicial }: P
                   </div>
                   <div className="flex items-center gap-2">
                     {pdfPreview && (
-                      <a
-                        href={pdfPreview}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition"
-                        title="Abrir PDF"
-                      >
-                        <Eye size={16} />
-                      </a>
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setOpenLgpdModal(true)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 rounded-lg text-xs font-bold transition shadow-sm"
+                          title="Auditar e tarjar dados sensíveis (LGPD)"
+                        >
+                          <ShieldAlert size={14} className="text-red-600 animate-pulse" />
+                          Tarjar (LGPD)
+                        </button>
+                        <a
+                          href={pdfPreview}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition"
+                          title="Abrir PDF"
+                        >
+                          <Eye size={16} />
+                        </a>
+                      </>
                     )}
                     <button
                       type="button"
@@ -380,6 +393,17 @@ export default function DocumentoForm({ initialData, mode, categoriaInicial }: P
                   </div>
                 </div>
               </div>
+            )}
+            {openLgpdModal && pdfPreview && (
+              <ModalTarjamentoInterativo
+                pdfUrl={pdfPreview}
+                onClose={() => setOpenLgpdModal(false)}
+                onSuccess={(newUrl) => {
+                  set("arquivo_r2_url", newUrl);
+                  setPdfPreview(newUrl);
+                  setOpenLgpdModal(false);
+                }}
+              />
             )}
           </div>
 

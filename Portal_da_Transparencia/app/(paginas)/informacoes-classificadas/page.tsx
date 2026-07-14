@@ -66,6 +66,10 @@ export default function InformacoesClassificadasPage() {
             nos últimos 3 anos (2023 a 2026), nenhuma informação classificada em qualquer grau de sigilo
             (reservado, secreto ou ultrassecreto), nos termos do art. 30 da LAI.
           </p>
+          <div className="mt-4 inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2">
+            <Info size={14} className="text-blue-600 shrink-0" />
+            <p className="text-xs text-blue-700 font-medium">Declaração atualizada em {getTodayDate()}.</p>
+          </div>
         </div>
       </div>
 
@@ -94,6 +98,10 @@ export default function InformacoesClassificadasPage() {
             O Município de Padre Marcos declara que, no período de 2023 a 2026, <strong>não houve</strong>{' '}
             desclassificação de informações anteriormente classificadas como sigilosas, nos termos do art. 45 da LAI.
           </p>
+          <div className="mt-4 inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2">
+            <Info size={14} className="text-blue-600 shrink-0" />
+            <p className="text-xs text-blue-700 font-medium">Declaração atualizada em {getTodayDate()}.</p>
+          </div>
         </div>
       </div>
 

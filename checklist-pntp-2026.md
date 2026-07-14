@@ -3,6 +3,10 @@
 **Município:** Padre Marcos - PI  
 **Data:** Junho de 2026  
 
+> [!IMPORTANT]
+> **RECADO PARA LORENA (LICITAÇÕES / LEIS / PORTARIAS / CONTRATOS):**
+> Falar com Lorena que peguei os arquivos de **Licitações** e **Leis** em lote e já processei tudo automaticamente. Se ela conseguir pastas de **Portarias** e **Contratos** iguais àquelas, consigo fazer o mesmo (varredura em lote, catalogação anti-duplicata e upload automático no portal)!
+
 ---
 
 ## 1 - CRITÉRIO 4.4 - Aquisições de Bens (com preço unitário)
@@ -180,6 +184,9 @@
 
 ---
 *Checklist gerado em Junho/2026 - Baseado na Cartilha PNTP 2026 da Atricon*
+
+## 📌 DIMENSÃO 11 — Prestação de Contas (Arquivos da Contreina)
+
 1️⃣ BALANÇOS (Quadros 27 a 32)
 Menu:  Prestação de Contas → Balanços 
 Para cada ano (2024, 2025, 2026), baixe os Quadros 27 a 32:
@@ -228,8 +235,8 @@ Para cada ano (2023, 2024, 2025)
 Downloads\Contreina\
 ├── Balanços\
 │   ├── 2024\    ← ❌ Vazio
-│   ├── 2025\    ← ✅ 40 PDFs enviados ao portal
-│   └── 2026\    ← ✅ 12 PDFs enviados ao portal
+│   ├── 2025\    ← ✅ 40 PDFs enviados ao portal (limpos)
+│   └── 2026\    ← ✅ 12 PDFs enviados ao portal (limpos)
 ├── RGF\
 │   ├── 2023\    ← ❌ Vazio
 │   ├── 2024\    ← ❌ Vazio
@@ -243,3 +250,89 @@ Downloads\Contreina\
     ├── 2023\    ← ❌ Vazio
     ├── 2024\    ← ❌ Vazio
     └── 2025\    ← ❌ Vazio
+
+---
+
+## ✅ DIMENSÃO 12 — Serviço de Informação ao Cidadão (SIC)
+**Resultado: 9/9 critérios atendidos**
+
+| Critério | Exigibilidade | Status |
+|----------|:------------:|:------:|
+| 12.1 SIC existe + setor responsável | Essencial | ✅ |
+| 12.2 Endereço, telefone, e-mail, horário | Essencial | ✅ |
+| 12.3 e-SIC (pedido eletrônico) | Essencial | ✅ |
+| 12.4 Solicitação simples (sem barreiras) | Obrigatório | ✅ |
+| 12.5 Regulamentação LAI em HTML | Obrigatório | ✅ |
+| 12.6 Prazos e fluxo recursal | Obrigatório | ✅ |
+| 12.7 Relatório anual estatístico | Obrigatório | ✅ |
+| 12.8 Documentos classificados | Obrigatório | ✅ |
+| 12.9 Informações desclassificadas | Obrigatório | ✅ |
+
+## ✅ DIMENSÃO 13 — Acessibilidade
+**Resultado: 5/5 critérios atendidos**
+
+| Critério | Exigibilidade | Status |
+|----------|:------------:|:------:|
+| 13.1 Símbolo de acessibilidade em destaque | Obrigatório | ✅ |
+| 13.2 Breadcrumb (caminho de páginas) | Obrigatório | ✅ |
+| 13.3 Alto contraste | Obrigatório | ✅ |
+| 13.4 Redimensionamento de texto | Obrigatório | ✅ |
+| 13.5 Mapa do site | Obrigatório | ✅ |
+
+## ✅ DIMENSÃO 14 — Ouvidorias
+**Resultado: 3/3 critérios atendidos**
+
+| Critério | Exigibilidade | Status |
+|----------|:------------:|:------:|
+| 14.1 Atendimento presencial (endereço, tel, e-mail, horário) | Obrigatório | ✅ |
+| 14.2 Canal eletrônico de interação | Obrigatório | ✅ |
+| 14.3 Carta de Serviços ao Usuário | Obrigatório | ✅ |
+
+## ✅ DIMENSÃO 15 — LGPD e Governo Digital
+**Resultado: 6/6 critérios atendidos**
+
+| Critério | Exigibilidade | Status |
+|----------|:------------:|:------:|
+| 15.1 Encarregado (DPO) identificado | Obrigatório | ✅ |
+| 15.2 Política de Privacidade e Proteção de Dados | Obrigatório | ✅ |
+| 15.3 Serviços públicos por meio digital | Obrigatório | ✅ |
+| 15.4 Dados Abertos (estruturados + regras) | Obrigatório | ✅ |
+| 15.5 Regulamentação Lei 14.129/2021 (Governo Digital) | Recomendado | ✅ Página `/regulamentacao-governo-digital` criada com decreto municipal completo em HTML |
+| 15.6 Pesquisa de Satisfação | Recomendado | ✅ |
+
+## ✅ DIMENSÃO 16 — Renúncias de Receita
+**Resultado: 3/4 critérios confirmados, 1 pendente**
+
+| Critério | Exigibilidade | Status | Observação |
+|----------|:------------:|:------:|------------|
+| 16.1 Desonerações com fundamentação legal | Obrigatório | ✅ | Página com filtros/abas + declaração de inexistência (confirmado pela contadora) |
+| 16.2 Valores previsto/realizado por tipo | Obrigatório | ✅ | API de CSV pronta. Inexistência confirmada |
+| 16.3 Beneficiários identificados | Obrigatório | ✅ | Colunas no banco prontas. Inexistência confirmada |
+| 16.4 Incentivo à cultura e esporte | Obrigatório | 🔄 **Pendente** | Aguardando resposta dos secretários. Página já preparada para receber dados reais. |
+
+### 📋 Perguntas para os Secretários — Critério 16.4
+
+**Perguntar ao Secretário de Cultura e ao Secretário de Esporte:**
+
+> *"O município tem alguma lei municipal que concede incentivo fiscal (desconto em IPTU, ISS, taxas) para projetos culturais ou esportivos? Tipo:"
+> - Empresa patrocinar um evento cultural (São João, aniversário da cidade, festivais) e abater do imposto?
+> - Empresa patrocinar time de futebol, corrida, campeonato esportivo e abater do imposto?
+> - Isenção de taxa para realização de eventos culturais/esportivos?
+> - Lei de Incentivo à Cultura municipal (similar à Lei Rouanet)?*
+
+**Se SIM — dados necessários para cada projeto:**
+
+| Dado | Exemplo | Onde encontrar |
+|------|---------|----------------|
+| Nome do projeto | "Festa do Padroeiro 2025" | Secretaria de Cultura |
+| Beneficiário/Realizador | "Associação Cultural X" | Contrato/Termo |
+| Tipo de incentivo | Isenção ISS / Patrocínio c/ abatimento | Lei municipal |
+| Valor do benefício | R$ 15.000,00 | Contabilidade |
+| Fundamento legal | Lei Municipal nº XXX/2023 | Procuradoria |
+| Ano | 2025 | - |
+| Área | Cultura / Esporte | - |
+
+**Se NÃO:** A declaração de inexistência já está correta no portal. Só me avisar que eu atualizo.
+
+---
+*Checklist atualizado em Junho/2026*

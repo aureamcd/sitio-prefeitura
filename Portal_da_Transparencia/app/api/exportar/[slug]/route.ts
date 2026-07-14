@@ -18,6 +18,11 @@ const TABELA_MAP: Record<string, { tabela: string; colunas: string[]; nome: stri
     colunas: ['especie', 'fundamentacao_legal', 'beneficiario', 'cpf_cnpj', 'valor_previsto', 'valor_realizado', 'exercicio'],
     nome: 'renuncias',
   },
+  incentivos: {
+    tabela: 'incentivos_cultura_esporte',
+    colunas: ['projeto', 'area', 'beneficiario', 'cpf_cnpj', 'tipo_incentivo', 'valor_beneficio', 'fundamento_legal', 'ano'],
+    nome: 'incentivos_cultura_esporte',
+  },
   'despesas-extra': {
     tabela: 'despesas_extra_orcamentarias',
     colunas: ['codigo', 'nomenclatura', 'descricao', 'historico', 'numero_guia', 'data', 'pago', 'cnpj_inscricao'],

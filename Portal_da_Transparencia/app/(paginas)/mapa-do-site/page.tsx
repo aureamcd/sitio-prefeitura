@@ -90,6 +90,7 @@ const sections: { title: string; icon?: string; links: SiteLink[] }[] = [
       { href: "/ouvidoria", label: "Ouvidoria Municipal", description: "Canal para denúncias, reclamações, sugestões e elogios" },
       { href: "/ouvidoria/consultar", label: "Consultar Manifestação Ouvidoria", description: "Acompanhe o andamento da sua manifestação" },
       { href: "/regulamentacao-lai", label: "Regulamentação da LAI", description: "Decreto municipal que regulamenta a Lei de Acesso à Informação" },
+      { href: "/regulamentacao-governo-digital", label: "Regulamentação do Governo Digital", description: "Decreto municipal que regulamenta a Lei Federal nº 14.129/2021 (Governo Digital)" },
       { href: "/informacoes-classificadas", label: "Informações Classificadas e Desclassificadas", description: "Rol de documentos classificados ou desclassificados" },
       { href: "/dados-abertos", label: "Dados Abertos", description: "Bases de dados públicos em formatos estruturados e reutilizáveis" },
       { href: "/transparencia/pesquisa-satisfacao", label: "Pesquisa de Satisfação", description: "Avalie o Portal da Transparência e ajude-nos a melhorar" },
