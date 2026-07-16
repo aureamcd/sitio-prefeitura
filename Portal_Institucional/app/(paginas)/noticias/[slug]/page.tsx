@@ -26,6 +26,43 @@ function estimarLeitura(texto: string) {
     return `${minutos} min de leitura`;
 }
 
+function formatarConteudoNoticia(texto: string) {
+    if (!texto) return "";
+    
+    // Se não tiver tags HTML de bloco (<p, <div, <h1, <br), é texto puro colado do admin
+    const hasHtmlBlocks = /<(p|div|h1|h2|h3|h4|ul|ol|table|br|blockquote|section|article)[\s>]/i.test(texto);
+    
+    let processado = texto;
+    if (!hasHtmlBlocks) {
+        // Transforma blocos separados por quebras de linha em parágrafos <p>
+        processado = texto
+            .split(/\r?\n\r?\n/)
+            .map((paragrafo) => {
+                const pTrim = paragrafo.trim();
+                if (!pTrim) return "";
+                // Se o parágrafo for apenas uma URL de imagem
+                if (/^https?:\/\/[^\s<>]+\.(?:png|jpg|jpeg|webp|gif)(?:\?[^\s<>]*)?$/i.test(pTrim)) {
+                    return `<figure class="my-8"><img src="${pTrim}" alt="Imagem da Notícia" class="rounded-2xl shadow-lg w-full max-h-[550px] object-cover mx-auto" /></figure>`;
+                }
+                // Converte quebras simples internamente em <br />
+                const comBr = pTrim.replace(/\r?\n/g, "<br />");
+                return `<p class="mb-6 text-gray-700 leading-relaxed">${comBr}</p>`;
+            })
+            .join("\n");
+    }
+
+    // Converte automaticamente URLs de imagens soltas que ainda não estejam em tags img
+    processado = processado.replace(
+        /(^|\s|<br\s*\/?>|<p[^>]*>)(https?:\/\/[^\s<>"']+\.(?:png|jpg|jpeg|webp|gif)(?:\?[^\s<>"']*)?)(?=\s|<|$)/gi,
+        (match, prefix, url) => {
+            if (prefix.includes('src=') || prefix.includes('href=')) return match;
+            return `${prefix}<figure class="my-8"><img src="${url}" alt="Imagem da Notícia" class="rounded-2xl shadow-lg w-full max-h-[550px] object-cover mx-auto" /></figure>`;
+        }
+    );
+
+    return processado;
+}
+
 export default async function NoticiaPage({
     params,
 }: {
@@ -138,7 +175,7 @@ export default async function NoticiaPage({
                             prose-p:text-gray-700 prose-p:leading-relaxed
                             prose-img:rounded-2xl prose-img:shadow-lg
                             prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline"
-                            dangerouslySetInnerHTML={{ __html: data.conteudo || "" }}
+                            dangerouslySetInnerHTML={{ __html: formatarConteudoNoticia(data.conteudo || "") }}
                         />
 
                         {/* RODAPÉ DO ARTIGO */}

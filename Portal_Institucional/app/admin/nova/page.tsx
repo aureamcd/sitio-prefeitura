@@ -237,21 +237,38 @@ export default function NovaNoticiaPage() {
         </div>
 
         {/* Conteúdo */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-5">
-          <label className="block">
+        <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-3">
+          <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-gray-700">
-              Conteúdo
+              Conteúdo da Notícia
             </span>
-            <textarea
-              name="conteudo"
-              value={form.conteudo}
-              onChange={handleChange}
-              rows={15}
-              className="mt-1.5 w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-900
-                focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition resize-y"
-              required
-            />
-          </label>
+            <button
+              type="button"
+              onClick={() => {
+                const url = window.prompt("Cole o link da foto que deseja inserir no meio do texto:");
+                if (url && url.trim()) {
+                  const tag = `\n\n<figure class="my-8"><img src="${url.trim()}" alt="Foto da Notícia" class="rounded-2xl shadow-lg w-full max-h-[500px] object-cover mx-auto" /></figure>\n\n`;
+                  setForm(prev => ({ ...prev, conteudo: prev.conteudo + tag }));
+                }
+              }}
+              className="px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-bold transition flex items-center gap-1.5"
+            >
+              🖼️ + Inserir Foto no Meio da Notícia
+            </button>
+          </div>
+          <textarea
+            name="conteudo"
+            value={form.conteudo}
+            onChange={handleChange}
+            rows={15}
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-900
+              focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition resize-y font-sans"
+            required
+            placeholder="Digite o texto da notícia aqui. Para separar em parágrafos, basta apertar Enter duas vezes..."
+          />
+          <p className="text-xs text-gray-500 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+            💡 <strong>Dica de formatação:</strong> Para separar os parágrafos, basta apertar <strong>Enter duas vezes</strong>. Para colocar uma foto no meio da matéria, clique no botão azul <em>"+ Inserir Foto no Meio da Notícia"</em> acima ou cole o link direto da foto em uma linha separada!
+          </p>
         </div>
 
         {/* Erro */}
