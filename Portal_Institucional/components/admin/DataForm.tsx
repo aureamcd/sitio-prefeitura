@@ -52,7 +52,7 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
         data[field.key] = initialData[field.key] ?? (field.type === "number" ? 0 : "");
       });
       // Garantir campos do PDF também na edição
-      data.arquivo_r2_url = initialData?.arquivo_r2_url || "";
+      data.arquivo_r2_url = initialData?.arquivo_r2_url || initialData?.pdf_url || initialData?.url_arquivo || "";
       data.arquivo_nome = initialData?.arquivo_nome || "";
       return data;
     }
@@ -144,6 +144,9 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
     if (supportsUpload && form.arquivo_r2_url) {
       payload.arquivo_r2_url = form.arquivo_r2_url;
       if (form.arquivo_nome) payload.arquivo_nome = form.arquivo_nome;
+      if (config.slug === "emendas" || config.table === "cadastro_emendas") {
+        payload.pdf_url = form.arquivo_r2_url;
+      }
     }
 
     // ── Verificação de duplicata (apenas licitações) ──
