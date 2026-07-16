@@ -316,20 +316,23 @@ export default function EmendasPage() {
     {
       header: 'Documento / Anexo',
       accessor: 'pdf_url',
-      render: (val: string, row: any) => val || row?.pdf_url ? (
-        <a
-          href={val || row?.pdf_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors shadow-sm"
-          title="Abrir documento PDF da emenda/convênio"
-        >
-          <FileText size={14} className="text-red-600" />
-          Ver PDF
-        </a>
-      ) : (
-        <span className="text-xs text-gray-400 font-medium">—</span>
-      )
+      render: (val: string, row: any) => {
+        const docUrl = val || row?.pdf_url || row?.arquivo_r2_url || row?.url_arquivo || row?.url;
+        return docUrl ? (
+          <a
+            href={docUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors shadow-sm"
+            title="Abrir documento PDF da emenda/convênio"
+          >
+            <FileText size={14} className="text-red-600" />
+            Ver PDF
+          </a>
+        ) : (
+          <span className="text-xs text-gray-400 font-medium">—</span>
+        );
+      }
     }
   ];
 
