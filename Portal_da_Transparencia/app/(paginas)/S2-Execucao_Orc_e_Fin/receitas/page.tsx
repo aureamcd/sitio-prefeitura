@@ -621,16 +621,19 @@ export default function ReceitasPage() {
     });
   }, [tree, isSearchMode, filters.busca]);
 
-  // --- Totals (from tree) ---
+  // --- Totals (from tree, Apenas Nível 1 para fechar com o consolidado oficial) ---
   const totalPrevistoInicial = tree.reduce((s, n) => {
+    if (n.level !== 1 && !n.codigo.endsWith('.00.0.0.00')) return s;
     const isDeducao = n.codigo.startsWith('9');
     return s + (isDeducao ? -Math.abs(n.previstoInicial) : n.previstoInicial);
   }, 0);
   const totalPrevisto = tree.reduce((s, n) => {
+    if (n.level !== 1 && !n.codigo.endsWith('.00.0.0.00')) return s;
     const isDeducao = n.codigo.startsWith('9');
     return s + (isDeducao ? -Math.abs(n.previsto) : n.previsto);
   }, 0);
   const totalArrecadado = tree.reduce((s, n) => {
+    if (n.level !== 1 && !n.codigo.endsWith('.00.0.0.00')) return s;
     const isDeducao = n.codigo.startsWith('9');
     return s + (isDeducao ? -Math.abs(n.arrecadado) : n.arrecadado);
   }, 0);
