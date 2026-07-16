@@ -679,6 +679,7 @@ export default function ReceitasPage() {
         anosLoading={anosLoading}
         empresas={EMPRESAS}
         hideConsolidado={isHistorico}
+        hideMes={activeTab !== 'receitas_extra'}
       >
         {activeTab === 'arrecadacao' && (
           <div className="flex flex-col gap-1 sm:w-64">
