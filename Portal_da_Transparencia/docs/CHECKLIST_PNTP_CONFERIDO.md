@@ -68,10 +68,35 @@
 - [x] **Restos a Pagar (Aba Dedicada):** Consulta de despesas empenhadas em exercícios anteriores e não pagas até 31 de dezembro, categorizadas em Processados e Não Processados, com valores empenhados, liquidados e pagos.
 - [x] **Exportação Aberta (CSV) e Paginação Rápida:** Botões de download instantâneo em formato estruturado (`CSV`) em todas as abas, além de navegação otimizada em páginas de 15 registros para não sobrecarregar o usuário nem o navegador.
 
+## 🟢 DIMENSÃO 5: CONVÊNIOS E TRANSFERÊNCIAS (100% DE ATENDIMENTO)
+
+A dimensão de Transferências (`/transparencia/transferencias`) foi reestruturada para **replicar e superar o modelo que garantiu 100% na avaliação anterior do Radar PNTP (Fiorilli/Contreina)**, garantindo navegação fluida, dados completos desde 2023 e exportação total em tempo real:
+
+### 🌟 O que foi feito e quais requisitos do PNTP 2026 estamos suprindo:
+- [x] **5.1 Estrutura em 3 Abas Segregadas e Oficiais (`União`, `Estado` e `Entre Entidades`):**
+  - **Aba 1 - Receitas da União (`ReceitaUniao`):** Repasses federais constitucionais e voluntários (FPM, FUNDEB, FNDE, SUS, Convenios Federais).
+  - **Aba 2 - Receitas do Estado (`ReceitaEstado`):** Repasses estaduais (ICMS, IPVA, ITR, Royalties, Cota-parte Fundo de Saúde).
+  - **Aba 3 - Transferências Entre Entidades (`Listagem=Transf`):** Repasses financeiros e devoluções entre as próprias entidades do município (Prefeitura, Câmara Municipal, Fundo Municipal de Saúde, Fundo Municipal de Assistência Social).
+
+- [x] **5.2 Árvore Hierárquica Interativa (`Estilo Pai e Filho abrindo`) para União e Estado:**
+  - O mesmo padrão de excelência da página de Receitas (`TreeTable`) foi implementado na consulta de Transferências da União e Estado.
+  - O cidadão/auditor navega do nível sintético (`1710.00.0.0.00 - TRANSFERÊNCIAS DA UNIÃO`) expandindo em tempo real até as alíneas e desdobramentos analíticos, visualizando lado a lado: `Previsão Inicial`, `Previsão Atualizada`, `Arrecadado no Período` e `Arrecadado Total`.
+  - Mecanismo inteligente `findExistingParent()` que aninha automaticamente a hierarquia contábil de 6 e 7 níveis mesmo quando o banco de dados original não retorna a coluna explícita de código pai.
+
+- [x] **5.3 Detalhamento Inline Acordeão (`Abrir embaixo quando clicar`) para Transferências Entre Entidades:**
+  - Em conformidade exata com as fotos e comportamento do portal anterior 100% avaliado: ao clicar em qualquer linha de consolidação mensal (`Mês + Entidade Pagadora + Entidade Recebedora`), a tabela expande diretamente **embaixo da própria linha** (sem pop-ups ou modais que tampam a tela).
+  - Exibe a sub-tabela detalhada com o título de auditoria oficial: *"Transferência do Mês: [XX] da Entidade Pagadora: [...] e Entidade Recebedora: [...]"*, discriminando todas as datas parciais de lançamento (`DTLAN`), histórico de movimentação e totalizadores parciais de `Concedida (Repasse)` e `Recebida (Devolução)`.
+  - Filtro interativo `[v] Mostrar Dados Consolidados considerando todas as entidades` com contagem dinâmica de grupos mensais e lançamentos totais.
+
+- [x] **5.4 Sincronização Diária e Histórico Completo (`2023 pra cá`):**
+  - O Cron Job (`scripts/automatico/importar-receitas-cron.ts`) foi expandido para capturar simultaneamente os 3 endpoints da Fiorilli (`ReceitaUniao`, `ReceitaEstado` e `Listagem=Transf`).
+  - Cobertura integral de todos os exercícios de **2023, 2024, 2025 e 2026**, garantindo série histórica intacta para auditores e órgãos de controle.
+  - Exportação direta de todas as tabelas para **CSV / Excel** em clique único com formatação ABNT/UTF-8.
+
 ---
 
 ## 🟡 PRÓXIMAS DIMENSÕES PENDENTES DE CONFERÊNCIA CIRÚRGICA:
-- `[ ]` **Dimensão 5:** Convênios e Transferências *(Convênios recebidos/concedidos)*
+- `[ ]` **Dimensão 5.B:** Convênios *(Convênios recebidos/concedidos e termos de cooperação)*
 - `[ ]` **Dimensão 6:** Recursos Humanos *(Servidores, Remunerações, Diárias, Concursos)*
 - `[ ]` **Dimensão 7:** Diárias e Passagens *(Detalhamento de viagens institucionais)*
 - `[ ]` **Dimensão 8:** Licitações, Contratos e Obras *(Editais, termos, obras paralisadas e em andamento)*

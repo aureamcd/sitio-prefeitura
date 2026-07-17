@@ -299,9 +299,7 @@ export function buildTree(items: RawReceita[]): ReceitaNode[] {
   for (const [normalizedKey, node] of nodeMap.entries()) {
     const codigo_pai = parentCodeMap.get(normalizedKey);
 
-    if (!codigo_pai) {
-      roots.push(node);
-    } else if (nodeMap.has(codigo_pai)) {
+    if (codigo_pai && nodeMap.has(codigo_pai)) {
       // Pai direto existe no dataset
       const parentCode = codigo_pai;
       if (!childrenMap.has(parentCode)) {
@@ -309,9 +307,9 @@ export function buildTree(items: RawReceita[]): ReceitaNode[] {
       }
       childrenMap.get(parentCode)!.push(node);
     } else {
-      // Pai direto não está no dataset — sobe na hierarquia
+      // Pai direto não fornecido ou não está no dataset — sobe na hierarquia
       const ancestor = findExistingParent(node.codigo);
-      if (ancestor) {
+      if (ancestor && ancestor !== normalizedKey) {
         if (!childrenMap.has(ancestor)) {
           childrenMap.set(ancestor, []);
         }

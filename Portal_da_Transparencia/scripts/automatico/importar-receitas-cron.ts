@@ -16,10 +16,12 @@ import { createClient } from "@supabase/supabase-js";
 import * as dotenv from "dotenv";
 import * as path from "path";
 
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
-dotenv.config({ path: path.resolve(__dirname, "../../.env.local") });
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
+if (typeof __dirname !== "undefined") {
+  dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+  dotenv.config({ path: path.resolve(__dirname, "../../.env.local") });
+}
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL;
 const SUPABASE_KEY =
@@ -269,8 +271,8 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
   // 3. Atualizar Transferências da União (ReceitaUniao) e do Estado (ReceitaEstado)
   let transferenciasAtualizadas = 0;
   const listagensTransf = [
-    { nome: "ReceitaUniao", tipo: "uniao" },
-    { nome: "ReceitaEstado", tipo: "estado" }
+    { nome: "ReceitaUniao", tipo: "UNIAO" },
+    { nome: "ReceitaEstado", tipo: "ESTADO" }
   ];
 
   for (const lt of listagensTransf) {
@@ -321,6 +323,37 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
         transferenciasAtualizadas++;
       }
     }
+  }
+
+  // Sincronizar Transferências entre Entidades (Listagem = Transf)
+  try {
+    const urlTransfEnt = `${process.env.FIORILLI_API_URL || "https://contreina.padremarcos.pi.gov.br/Transparencia"}/VersaoJson/Transferencias/?ConectarExercicio=${anoAtual}&Listagem=Transf&Empresa=1&MostraDadosConsolidado=False`;
+    const respTransf = await fetch(urlTransfEnt);
+    if (respTransf.ok) {
+      const textTransf = await respTransf.text();
+      const cleanTransf = textTransf.replace(/^\uFEFF/, "");
+      const dataTransf = JSON.parse(cleanTransf);
+      if (Array.isArray(dataTransf) && dataTransf.length > 0) {
+        const regTransf = dataTransf.map((item: any) => ({
+          exercicio: anoAtual,
+          mes: parseInt(item.MES) || null,
+          entidade_pagadora: item.ENTIDADE_PAGADORA?.trim(),
+          entidade_recebedora: item.ENTIDADE_RECEBEDORA?.trim(),
+          cnpj_pagadora: item.CNPJPAGADORA?.trim(),
+          cnpj_recebedora: item.CNPJRECEBEDORA?.trim(),
+          repasse: parseValor(item.REPASSE),
+          devolucao: parseValor(item.DEVOLUCAO),
+          previsto: parseValor(item.PREVISTO),
+          data_lancamento: item.DTLAN ? item.DTLAN.split(" ")[0].split("/").reverse().join("-") : null,
+          data_importacao: new Date().toISOString()
+        }));
+        await supabase.schema("transparencia").from("transferencias_entre_entidades").delete().eq("exercicio", anoAtual);
+        await supabase.schema("transparencia").from("transferencias_entre_entidades").insert(regTransf);
+        transferenciasAtualizadas += regTransf.length;
+      }
+    }
+  } catch (e) {
+    console.warn("Aviso na importação de transferências entre entidades:", e);
   }
 
   // 4. Rodar as RPCs de atualização de árvore e analítica

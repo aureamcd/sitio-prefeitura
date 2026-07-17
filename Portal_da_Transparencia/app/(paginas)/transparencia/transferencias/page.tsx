@@ -3,11 +3,13 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import ContentPage from '@/components/layout/ContentPage';
 import FilterPanel, { FilterValues } from '@/components/ui/FilterPanel';
-import DataTable from '@/components/ui/DataTable';
 import { createBrowserClient, useAvailableYears } from '@/lib/supabase/client';
 import { useTodayDate } from '@/lib/hooks/useTodayDate';
 import { EMPRESAS, getEmpresaNome } from '@/lib/empresas';
 import { Landmark, MapPin, ArrowRightLeft } from 'lucide-react';
+import { buildTree, flattenTree } from '@/lib/receitas/receitasTree';
+import TreeTable from '@/components/receitas/TreeTable';
+import EntidadesTreeTable, { TransferenciaEntidadeRow } from '@/components/transferencias/EntidadesTreeTable';
 
 const MESES = [
   { value: '01', label: 'Janeiro' }, { value: '02', label: 'Fevereiro' },
@@ -26,14 +28,18 @@ export default function TransferenciasPage() {
   const today = useTodayDate();
   const [activeTab, setActiveTab] = useState<'uniao' | 'estado' | 'entidades'>('uniao');
   const [filters, setFilters] = useState<FilterValues>({ ano: '', mes: '', busca: '', entidade: '' });
+  const [consolidado, setConsolidado] = useState(true);
 
   const [receitasData, setReceitasData] = useState<any[]>([]);
-  const [transferenciasData, setTransferenciasData] = useState<any[]>([]);
+  const [transferenciasData, setTransferenciasData] = useState<TransferenciaEntidadeRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Árvore expansível de receitas (União / Estado)
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
   const supabase = createBrowserClient();
-  const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}-${filters.entidade}`;
+  const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}-${filters.entidade}-${consolidado}`;
   const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca || filters.entidade);
 
   useEffect(() => {
@@ -49,7 +55,7 @@ export default function TransferenciasPage() {
             .schema('transparencia')
             .from('receitas_transferencias')
             .select('*')
-            .eq('tipo', activeTab === 'uniao' ? 'UNIAO' : 'ESTADO');
+            .in('tipo', activeTab === 'uniao' ? ['UNIAO', 'uniao'] : ['ESTADO', 'estado']);
 
           if (filters.ano) query = query.eq('exercicio', Number(filters.ano));
           if (filters.busca) {
@@ -75,13 +81,21 @@ export default function TransferenciasPage() {
 
           if (filters.ano) query = query.eq('exercicio', Number(filters.ano));
           if (filters.mes) query = query.eq('mes', Number(filters.mes));
-          if (filters.entidade) {
+          
+          if (!consolidado && filters.entidade) {
+            const empNome = getEmpresaNome(filters.entidade);
+            query = query.or(
+              `entidade_pagadora.ilike.%${empNome}%` +
+              `,entidade_recebedora.ilike.%${empNome}%`
+            );
+          } else if (filters.entidade) {
             const empNome = getEmpresaNome(filters.entidade);
             query = query.or(
               `entidade_pagadora.ilike.%${empNome}%` +
               `,entidade_recebedora.ilike.%${empNome}%`
             );
           }
+
           if (filters.busca) {
             query = query.or(
               `entidade_pagadora.ilike.%${filters.busca}%` +
@@ -113,7 +127,7 @@ export default function TransferenciasPage() {
 
     const timer = setTimeout(fetchData, 300);
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [activeTab, filters.ano, filters.mes, filters.busca, filters.entidade, supabase]);
+  }, [activeTab, filters.ano, filters.mes, filters.busca, filters.entidade, consolidado, supabase]);
 
   const handleChange = useCallback((field: keyof FilterValues, value: string) => {
     setFilters(prev => ({ ...prev, [field]: value }));
@@ -123,83 +137,63 @@ export default function TransferenciasPage() {
     setFilters({ ano: '', mes: '', busca: '', entidade: '' });
   }, []);
 
-  // Columns: Receitas (Uniao/Estado)
-  const receitasColumns = [
-    {
-      header: 'Código',
-      accessor: 'codigo',
-      render: (val: string) => <span className="text-sm font-medium text-gray-900">{val || '—'}</span>
-    },
-    {
-      header: 'Especificação',
-      accessor: 'especificacao',
-      render: (val: string) => <span className="text-sm text-gray-700">{val || '—'}</span>
-    },
-    {
-      header: 'Prev. Inicial',
-      accessor: 'previsao_inicial',
-      render: (val: number) => <span className="text-sm tabular-nums text-gray-600">{formatBRL(val)}</span>
-    },
-    {
-      header: 'Prev. Atualizada',
-      accessor: 'previsao_atualizada',
-      render: (val: number) => <span className="text-sm tabular-nums font-medium text-blue-700">{formatBRL(val)}</span>
-    },
-    {
-      header: 'Arrecadado Período',
-      accessor: 'arrecadado_periodo',
-      render: (val: number) => <span className="text-sm tabular-nums font-semibold text-emerald-600">{formatBRL(val)}</span>
-    },
-    {
-      header: 'Arrecadado Total',
-      accessor: 'arrecadado_total',
-      render: (val: number) => <span className="text-sm tabular-nums font-bold text-emerald-700">{formatBRL(val)}</span>
-    }
-  ];
+  const handleToggleTree = useCallback((codigo: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(codigo)) next.delete(codigo);
+      else next.add(codigo);
+      return next;
+    });
+  }, []);
 
-  // Columns: Transferencias Entre Entidades
-  const transferenciasColumns = [
-    {
-      header: 'Mês',
-      accessor: 'mes',
-      render: (val: number) => <span className="text-sm font-medium text-gray-900">{val ? val.toString().padStart(2, '0') : '—'}</span>
-    },
-    {
-      header: 'Pagadora',
-      accessor: 'entidade_pagadora',
-      render: (val: string, row: any) => (
-        <div className="flex flex-col">
-          <span className="text-sm font-medium text-gray-900">{val || '—'}</span>
-          {row.cnpj_pagadora && <span className="text-xs text-gray-500">CNPJ: {row.cnpj_pagadora}</span>}
-        </div>
-      )
-    },
-    {
-      header: 'Recebedora',
-      accessor: 'entidade_recebedora',
-      render: (val: string, row: any) => (
-        <div className="flex flex-col">
-          <span className="text-sm font-medium text-gray-900">{val || '—'}</span>
-          {row.cnpj_recebedora && <span className="text-xs text-gray-500">CNPJ: {row.cnpj_recebedora}</span>}
-        </div>
-      )
-    },
-    {
-      header: 'Concedida (Repasse)',
-      accessor: 'repasse',
-      render: (val: number) => <span className="text-sm tabular-nums font-semibold text-blue-600">{formatBRL(val)}</span>
-    },
-    {
-      header: 'Recebida (Devolução)',
-      accessor: 'devolucao',
-      render: (val: number) => <span className="text-sm tabular-nums font-medium text-purple-600">{formatBRL(val)}</span>
-    },
-    {
-      header: 'Previsto',
-      accessor: 'previsto',
-      render: (val: number) => <span className="text-sm tabular-nums text-gray-500">{formatBRL(val)}</span>
+  // --- Mapeamento para buildTree ---
+  const rawTreeItems = useMemo(() => {
+    return receitasData.map((r: any) => ({
+      id: r.id || String(Math.random()),
+      codigo_contabil: r.codigo || '',
+      descricao: r.especificacao || '',
+      previsto_inicial: Number(r.previsao_inicial) || 0,
+      previsto_atualizado: Number(r.previsao_atualizada) || Number(r.previsao_inicial) || 0,
+      arrecadado_periodo: Number(r.arrecadado_periodo) || 0,
+      arrecadado_total: Number(r.arrecadado_total) || 0,
+      fonte_recurso: null,
+      nivel: r.nivel,
+      tipo_nivel: r.tipo_nivel,
+      codigo_pai: r.codigo_pai,
+    }));
+  }, [receitasData]);
+
+  const tree = useMemo(() => buildTree(rawTreeItems), [rawTreeItems]);
+
+  // Auto expand initially
+  useEffect(() => {
+    if (tree.length > 0) {
+      const initialExpanded = new Set<string>();
+      function traverse(nodes: any[]) {
+        for (const node of nodes) {
+          if (node.level <= 4) {
+            initialExpanded.add(node.codigo);
+            if (node.filhos && node.filhos.length > 0) {
+              traverse(node.filhos);
+            }
+          }
+        }
+      }
+      traverse(tree);
+      setExpanded(initialExpanded);
+    } else {
+      setExpanded(new Set());
     }
-  ];
+  }, [tree]);
+
+  const isSearchMode = filters.busca.trim().length > 0;
+  const flatList = useMemo(() => {
+    if (!isSearchMode) return [];
+    return flattenTree(tree).filter((n) => {
+      const term = filters.busca.toLowerCase();
+      return n.codigo.toLowerCase().includes(term) || n.descricao.toLowerCase().includes(term);
+    });
+  }, [tree, isSearchMode, filters.busca]);
 
   const anosTransf = useAvailableYears('transferencias_entre_entidades');
   const anosReceitas = useAvailableYears('receitas_transferencias');
@@ -210,8 +204,8 @@ export default function TransferenciasPage() {
   return (
     <ContentPage
       showSearch={false}
-      title="Transferências Constitucionais e Legais"
-      description="Consulta às receitas arrecadadas através de transferências da União e Estado, e aos repasses/devoluções entre as próprias entidades municipais."
+      title="Transferências Constitucionais, Legais e entre Entidades"
+      description="Consulta interativa às receitas arrecadadas através de transferências da União (FPM, FUNDEB, SUS) e Estado (ICMS, IPVA), além do detalhamento completo de repasses e devoluções entre as próprias entidades municipais."
       breadcrumb={[
         { label: 'Portal da Transparência', href: '/' },
         { label: 'Transferências' },
@@ -272,45 +266,30 @@ export default function TransferenciasPage() {
       </div>
 
       <div className="mt-6">
-        {activeTab === 'uniao' && (
-          <DataTable
-            columns={receitasColumns}
-            data={receitasData}
-            title="Receitas da União"
-            caption="Transferências da União e de suas entidades (Cotas-parte do FPM, FUNDEB, etc)."
-            exportable
+        {(activeTab === 'uniao' || activeTab === 'estado') && (
+          <TreeTable
+            tree={tree}
             loading={loading}
             error={error}
-            paginationResetKey={filterKey}
-            hasActiveFilters={hasActiveFilters}
-          />
-        )}
-
-        {activeTab === 'estado' && (
-          <DataTable
-            columns={receitasColumns}
-            data={receitasData}
-            title="Receitas do Estado"
-            caption="Transferências dos Estados e suas entidades (Cota-parte do ICMS, IPVA, etc)."
-            exportable
-            loading={loading}
-            error={error}
-            paginationResetKey={filterKey}
-            hasActiveFilters={hasActiveFilters}
+            expanded={expanded}
+            onToggle={handleToggleTree}
+            searchMode={isSearchMode}
+            searchResults={flatList}
+            searchTerm={filters.busca}
+            filterKey={filterKey}
+            ano={filters.ano}
           />
         )}
 
         {activeTab === 'entidades' && (
-          <DataTable
-            columns={transferenciasColumns}
+          <EntidadesTreeTable
             data={transferenciasData}
-            title="Transferências Entre Entidades"
-            caption="Repasses e devoluções financeiras realizadas entre a Prefeitura, Fundos e a Câmara Municipal."
-            exportable
             loading={loading}
             error={error}
-            paginationResetKey={filterKey}
-            hasActiveFilters={hasActiveFilters}
+            filterKey={filterKey}
+            ano={filters.ano}
+            consolidado={consolidado}
+            onConsolidadoChange={setConsolidado}
           />
         )}
       </div>
