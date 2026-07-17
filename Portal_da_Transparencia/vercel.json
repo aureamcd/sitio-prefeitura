@@ -10,7 +10,7 @@
     },
     {
       "path": "/api/cron/importar-receitas",
-      "schedule": "3 6 * * 5"
+      "schedule": "20 6 * * 5"
     }
   ]
 }
