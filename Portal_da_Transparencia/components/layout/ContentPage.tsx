@@ -35,11 +35,8 @@ type ContentPageProps = {
    HELPERS
 ========================= */
 function formatDate(dateStr: string): string {
-  if (!dateStr) return "";
-  if (dateStr.includes("/")) return dateStr; // se já for DD/MM/YYYY ou similar
-  const cleanStr = dateStr.includes("T") ? dateStr.split("T")[0] : dateStr;
-  const [year, month, day] = cleanStr.split("-").map(Number);
-  if (isNaN(year) || isNaN(month) || isNaN(day)) return dateStr;
+  const cleanDate = dateStr.split("T")[0];
+  const [year, month, day] = cleanDate.split("-").map(Number);
   const date = new Date(year, month - 1, day);
   return date.toLocaleDateString("pt-BR", {
     day: "numeric",

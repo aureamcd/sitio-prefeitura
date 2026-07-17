@@ -376,7 +376,6 @@ function ReceitasExtraTable({
 
 export default function ReceitasPage() {
   const today = useTodayDate();
-  const [lastDbDate, setLastDbDate] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'arrecadacao' | 'divida_ativa' | 'receitas_extra'>('arrecadacao');
   const [filters, setFilters] = useState<FilterValues & { categoria_economica?: string }>({ ano: '2026', mes: '', busca: '', entidade: '', categoria_economica: '' });
   const { anos: ANOS, loading: anosLoading } = useAvailableYears('receitas', filters.entidade || undefined);
@@ -394,26 +393,6 @@ export default function ReceitasPage() {
   const isHistorico = filters.ano === "2023" || filters.ano === "2024" || filters.ano === "2025";
 
   const supabase = createBrowserClient();
-
-  useEffect(() => {
-    async function fetchLastDate() {
-      try {
-        const { data: latest } = await supabase
-          .schema('transparencia')
-          .from('receitas')
-          .select('created_at, updated_at')
-          .order('created_at', { ascending: false })
-          .limit(1);
-        if (latest && latest[0]) {
-          const dt = latest[0].updated_at || latest[0].created_at;
-          if (dt) setLastDbDate(dt);
-        }
-      } catch (e) {
-        console.error('Erro ao buscar data de atualização receitas:', e);
-      }
-    }
-    fetchLastDate();
-  }, [supabase]);
   const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}-${filters.entidade}`;
   const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca || filters.entidade);
 
@@ -659,6 +638,17 @@ export default function ReceitasPage() {
     return s + (isDeducao ? -Math.abs(n.arrecadado) : n.arrecadado);
   }, 0);
 
+  // --- Data de atualização baseada no banco de dados ---
+  const dbUpdateDate = useMemo(() => {
+    if (!rawData.length) return today;
+    let maxDate = '';
+    for (const r of rawData) {
+      const d = (r as any).updated_at || (r as any).created_at || '';
+      if (d > maxDate) maxDate = d;
+    }
+    return maxDate ? maxDate.split('T')[0] : today;
+  }, [rawData, today]);
+
   // --- Handlers ---
   const handleChange = useCallback((field: any, value: string) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
@@ -687,7 +677,7 @@ export default function ReceitasPage() {
         { label: 'Execução Orçamentária e Financeira', href: '/S2-Execucao_Orc_e_Fin' },
         { label: 'Receitas' },
       ]}
-      lastUpdate={lastDbDate || today}
+      lastUpdate={dbUpdateDate}
       responsible="Secretaria Municipal de Finanças e Planejamento"
     >
       {/* Filter Panel */}
@@ -814,7 +804,7 @@ export default function ReceitasPage() {
             loading={dividaAtivaLoading}
             error={dividaAtivaError}
             filterKey={filterKey}
-            today={lastDbDate || today}
+            today={today}
           />
         </div>
       )}
