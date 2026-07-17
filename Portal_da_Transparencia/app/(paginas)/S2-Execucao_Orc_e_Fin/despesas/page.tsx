@@ -13,6 +13,7 @@ import {
 import type { DespesaRow, DespesaExtraRow, RestosPagarRow } from '@/lib/despesas/types';
 import { useTodayDate } from '@/lib/hooks/useTodayDate';
 import { usePagination } from '@/lib/hooks/usePagination';
+import Link from 'next/link';
 import {
   ChevronDown,
   ChevronRight,
@@ -33,6 +34,7 @@ import {
   Megaphone,
   AlertCircle,
   Info,
+  ExternalLink,
 } from 'lucide-react';
 import { EMPRESAS } from '@/lib/empresas';
 import Pagination from '@/components/ui/Pagination';
@@ -281,65 +283,196 @@ function EmpenhosTable({
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-100 border-b border-gray-200">
-              <th className="w-10 px-2 py-3" />
-              <th className="px-3 py-3 text-left font-semibold text-gray-700">Nº Empenho</th>
-              <th className="px-3 py-3 text-left font-semibold text-gray-700">Data</th>
-              <th className="px-3 py-3 text-left font-semibold text-gray-700">Credor</th>
-              <th className="px-3 py-3 text-right font-semibold text-gray-700">Empenhado</th>
-              <th className="px-3 py-3 text-right font-semibold text-gray-700">Liquidado</th>
-              <th className="px-3 py-3 text-right font-semibold text-gray-700">Pago</th>
+            <tr className="bg-gray-100 border-b border-gray-200 text-xs font-bold text-gray-600 uppercase tracking-wider">
+              <th className="w-10 px-3 py-3.5 text-center" />
+              <th className="px-3 py-3.5 text-left">Nº Empenho / Ficha</th>
+              <th className="px-3 py-3.5 text-left">Data</th>
+              <th className="px-4 py-3.5 text-left">Credor / Favorecido</th>
+              <th className="px-4 py-3.5 text-right">Empenhado</th>
+              <th className="px-4 py-3.5 text-right">Liquidado</th>
+              <th className="px-4 py-3.5 text-right">Pago</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-100">
             {slice.map((row) => {
               const isOpen = expanded.has(row.id);
               return (
                 <Fragment key={row.id}>
                   <tr
                     onClick={() => toggleExpand(row.id)}
-                    className="border-t border-gray-100 hover:bg-blue-50/30 transition-colors cursor-pointer"
+                    className={`transition-colors cursor-pointer ${isOpen ? 'bg-blue-50/40' : 'hover:bg-gray-50/80'}`}
                   >
-                    <td className="px-2 py-3 text-gray-400">
-                      {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                    <td className="px-3 py-4 text-center text-gray-400">
+                      <div className="w-6 h-6 rounded-md bg-gray-100 flex items-center justify-center mx-auto text-gray-600 hover:bg-blue-100 hover:text-blue-700 transition-colors">
+                        {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                      </div>
                     </td>
-                    <td className="px-3 py-3 font-mono text-xs text-gray-800 font-medium">
-                      {row.numero_empenho || row.pkemp || '—'}
+                    <td className="px-3 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-sm font-bold text-gray-900">
+                          {row.numero_empenho || row.pkemp || '—'}
+                        </span>
+                        {row.tipo_empenho && (
+                          <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-blue-100 text-blue-800 uppercase tracking-tight">
+                            {row.tipo_empenho}
+                          </span>
+                        )}
+                      </div>
+                      {row.ficha && (
+                        <span className="text-[11px] text-gray-500 font-medium block mt-0.5">
+                          Ficha: <strong className="text-gray-700">{row.ficha}</strong>
+                        </span>
+                      )}
                     </td>
-                    <td className="px-3 py-3 text-gray-600 whitespace-nowrap">
+                    <td className="px-3 py-4 text-gray-600 font-medium whitespace-nowrap">
                       {formatDateISO(row.data_empenho)}
                     </td>
-                    <td className="px-3 py-3 max-w-[220px]">
-                      <span className="block truncate font-medium text-gray-800" title={row.credor_nome || ''}>
+                    <td className="px-4 py-4 min-w-[240px] max-w-[360px]">
+                      <span className="block font-semibold text-gray-800 line-clamp-2 leading-snug" title={row.credor_nome || ''}>
                         {row.credor_nome || '—'}
                       </span>
                       {row.credor_documento && (
-                        <span className="text-[10px] text-gray-400 block truncate">{row.credor_documento}</span>
+                        <span className="text-[11px] text-gray-400 font-mono block mt-0.5">{row.credor_documento}</span>
                       )}
                     </td>
-                    <td className="px-3 py-3 text-right tabular-nums text-gray-800">
+                    <td className="px-4 py-4 text-right tabular-nums font-medium text-gray-800 whitespace-nowrap">
                       {formatBRL(Number(row.empenhado) || 0)}
                     </td>
-                    <td className="px-3 py-3 text-right tabular-nums text-amber-600">
+                    <td className="px-4 py-4 text-right tabular-nums font-medium text-amber-600 whitespace-nowrap">
                       {formatBRL(Number(row.liquidado) || 0)}
                     </td>
-                    <td className="px-3 py-3 text-right tabular-nums text-emerald-600 font-semibold">
+                    <td className="px-4 py-4 text-right tabular-nums font-bold text-emerald-600 whitespace-nowrap">
                       {formatBRL(Number(row.pago) || 0)}
                     </td>
                   </tr>
 
-                  {/* Expandable detail row */}
+                  {/* Expandable detail row with modern grouped cards */}
                   {isOpen && (
-                    <tr className="bg-gray-50/70">
-                      <td colSpan={8} className="px-6 py-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                          <DetailItem icon={<MapPin size={14} />} label="Órgão / Unidade Orçamentária" value={row.orgao_codigo ? `${row.orgao_codigo} - ${row.orgao_nome || ''}` : row.orgao_nome || '-'} />
-                          <DetailItem icon={<FolderTree size={14} />} label="Função" value={row.funcao_codigo ? `${row.funcao_codigo} - ${row.funcao_nome || ''}` : row.funcao_nome || '-'} />
-                          <DetailItem icon={<Tag size={14} />} label="Subfunção" value={row.subfuncao_codigo ? `${row.subfuncao_codigo} - ${row.subfuncao_nome || ''}` : row.subfuncao_nome || '-'} />
-                          <DetailItem icon={<BookOpen size={14} />} label="Natureza (Classificação Orçamentária)" value={row.natureza_codigo ? `${row.natureza_codigo} - ${row.natureza_nome || ''}` : row.natureza_nome || '-'} />
-                          <DetailItem icon={<DollarSign size={14} />} label="Fonte de Recursos" value={row.fonte_codigo_nome || row.fonte_stn_nome || '-'} />
-                          <DetailItem icon={<FileText size={14} />} label="Objeto" value={row.objeto || '-'} />
-                          <DetailItem icon={<Gavel size={14} />} label="Licitação Originária" value={row.licitacao_numero ? `${row.licitacao_modalidade || ''} ${row.licitacao_numero}`.trim() : '-'} />
+                    <tr className="bg-gray-50/90 border-b-2 border-blue-100">
+                      <td colSpan={7} className="px-6 py-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm">
+                          
+                          {/* Card 1: Classificação Institucional */}
+                          <div className="bg-white rounded-xl border border-gray-200/80 p-4 shadow-sm flex flex-col gap-3">
+                            <div className="flex items-center gap-2 border-b border-gray-100 pb-2 text-blue-700 font-semibold text-xs uppercase tracking-wider">
+                              <MapPin size={15} className="text-blue-600" />
+                              <span>Classificação Institucional e Funcional</span>
+                            </div>
+                            <div className="grid grid-cols-1 gap-2.5">
+                              <DetailItem label="Órgão / Unidade Orçamentária" value={row.orgao_codigo ? `${row.orgao_codigo} - ${row.orgao_nome || ''}` : row.orgao_nome || '-'} />
+                              <div className="grid grid-cols-2 gap-2 pt-1 border-t border-gray-50">
+                                <DetailItem label="Função" value={row.funcao_codigo ? `${row.funcao_codigo} - ${row.funcao_nome || ''}` : row.funcao_nome || '-'} />
+                                <DetailItem label="Subfunção" value={row.subfuncao_codigo ? `${row.subfuncao_codigo} - ${row.subfuncao_nome || ''}` : row.subfuncao_nome || '-'} />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Card 2: Classificação Econômica e Fonte */}
+                          <div className="bg-white rounded-xl border border-gray-200/80 p-4 shadow-sm flex flex-col gap-3">
+                            <div className="flex items-center gap-2 border-b border-gray-100 pb-2 text-emerald-700 font-semibold text-xs uppercase tracking-wider">
+                              <BookOpen size={15} className="text-emerald-600" />
+                              <span>Classificação Orçamentária e Recurso</span>
+                            </div>
+                            <div className="grid grid-cols-1 gap-2.5">
+                              <DetailItem label="Natureza da Despesa" value={row.natureza_codigo ? `${row.natureza_codigo} - ${row.natureza_nome || ''}` : row.natureza_nome || '-'} />
+                              <DetailItem label="Fonte de Recursos / Destinação" value={row.fonte_stn_nome || row.fonte_codigo_nome || '-'} />
+                            </div>
+                          </div>
+
+                          {/* Card 3: Histórico e Contratação (Largura Total) com Linkador Inteligente de Licitações */}
+                          <div className="md:col-span-2 bg-white rounded-xl border border-gray-200/80 p-4 shadow-sm flex flex-col gap-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-3">
+                              <div className="flex items-center gap-2 text-purple-700 font-semibold text-xs uppercase tracking-wider">
+                                <FileText size={15} className="text-purple-600" />
+                                <span>Objeto do Empenho e Histórico Detalhado</span>
+                              </div>
+
+                              {/* Bloco de Licitação Originária como Link Interativo em Destaque */}
+                              {(() => {
+                                const objText = row.objeto || '';
+                                const matchLic = objText.match(/(?:preg[ãa]o|dispensa|inexigibilidade|concorr[êe]ncia|tomada|edital)[^\d]*(\d{1,4}[\/\.\-_]\d{4}|\d{1,4}\/\d{2})/i);
+                                const numLic = row.licitacao_numero || (matchLic ? matchLic[1] : null);
+                                const labelMod = row.licitacao_modalidade || (matchLic ? matchLic[0].split(/\d/)[0].trim() : null) || row.licitacao_descricao || 'Licitação';
+                                const fullVal = numLic ? `${labelMod} ${numLic}`.trim() : row.licitacao_descricao && row.licitacao_descricao !== 'OUTRO NÃO APLICÁVEL' && row.licitacao_descricao !== 'Não se Aplica' ? row.licitacao_descricao : 'Outro não aplicável';
+                                const termoBusca = numLic || (fullVal !== 'Outro não aplicável' ? fullVal : null);
+
+                                return (
+                                  <div className="flex items-start gap-2 bg-purple-50/60 border border-purple-200/80 px-3 py-1.5 rounded-lg">
+                                    <span className="text-purple-600 mt-0.5 shrink-0"><Gavel size={14} /></span>
+                                    <div>
+                                      <p className="text-[10px] font-bold text-purple-700 uppercase tracking-wider">Licitação Originária</p>
+                                      {termoBusca ? (
+                                        <Link
+                                          href={`/S3-Compras_Cont_e_Conven/licitacoes?busca=${encodeURIComponent(termoBusca)}`}
+                                          className="text-sm font-bold text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center gap-1 leading-snug"
+                                          title={`Abrir ${fullVal} em Licitações`}
+                                        >
+                                          <span>{fullVal}</span>
+                                          <ExternalLink size={13} className="shrink-0" />
+                                        </Link>
+                                      ) : (
+                                        <p className="text-sm font-medium text-gray-700 leading-snug">{fullVal}</p>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })()}
+                            </div>
+
+                            <div className="bg-gray-50/80 border border-gray-200/60 rounded-lg p-3.5 text-sm text-gray-800 font-sans leading-relaxed break-words">
+                              {row.objeto || 'Nenhum histórico detalhado disponível.'}
+                            </div>
+
+                            {/* Ações Inteligentes de Linkagem (Licitação / Contrato / Credor) */}
+                            {(() => {
+                              const objText = row.objeto || '';
+                              const matchLic = objText.match(/(?:preg[ãa]o|dispensa|inexigibilidade|concorr[êe]ncia|tomada|edital)[^\d]*(\d{1,4}[\/\.\-_]\d{4}|\d{1,4}\/\d{2})/i);
+                              const matchContr = objText.match(/(?:contrato|aditivo)[^\d]*(\d{1,4}[\/\.\-_]\d{4}|\d{1,4}\/\d{2})/i);
+                              const numLic = row.licitacao_numero || (matchLic ? matchLic[1] : null);
+                              const refLic = row.licitacao_numero ? `Nº ${row.licitacao_numero}` : matchLic ? `${matchLic[0].trim()}` : null;
+                              const refContr = matchContr ? `${matchContr[0].trim()}` : null;
+
+                              return (
+                                <div className="pt-1 flex flex-wrap items-center gap-2 text-xs">
+                                  <span className="text-gray-400 font-medium mr-1">Ações Rápidas:</span>
+                                  
+                                  {/* Link para Processo Licitatório Específico */}
+                                  {numLic && (
+                                    <Link
+                                      href={`/S3-Compras_Cont_e_Conven/licitacoes?busca=${encodeURIComponent(numLic)}`}
+                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors shadow-2xs"
+                                    >
+                                      <Gavel size={13} />
+                                      <span>Ver Licitação ({refLic}) →</span>
+                                    </Link>
+                                  )}
+
+                                  {/* Link para Contrato Específico citado no Objeto */}
+                                  {refContr && (
+                                    <Link
+                                      href={`/transparencia/contratos?busca=${encodeURIComponent(matchContr?.[1] || '')}`}
+                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-colors shadow-2xs"
+                                    >
+                                      <FileText size={13} />
+                                      <span>Ver Contrato ({refContr}) →</span>
+                                    </Link>
+                                  )}
+
+                                  {/* Link Direto para consultar todas as licitações/processos do Credor */}
+                                  {(row.credor_documento || row.credor_nome) && (
+                                    <Link
+                                      href={`/S3-Compras_Cont_e_Conven/licitacoes?busca=${encodeURIComponent(row.credor_documento || row.credor_nome || '')}`}
+                                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-medium bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 transition-colors"
+                                    >
+                                      <ExternalLink size={13} className="text-gray-400" />
+                                      <span>Consultar Processos do Favorecido ({row.credor_nome?.split(' ')[0] || 'Credor'})</span>
+                                    </Link>
+                                  )}
+                                </div>
+                              );
+                            })()}
+                          </div>
+
                         </div>
                       </td>
                     </tr>
@@ -369,13 +502,33 @@ function EmpenhosTable({
 
 
 // Detail item component for expandable rows
-function DetailItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | null | undefined }) {
+function DetailItem({ icon, label, value }: { icon?: React.ReactNode; label: string; value: string | null | undefined }) {
+  const isLic = label.toLowerCase().includes('licita');
+  const strVal = value || '-';
+  let licUrl = null;
+  if (isLic && strVal !== '-' && strVal !== 'OUTRO NÃO APLICÁVEL' && strVal !== 'Não se Aplica') {
+    const numMatch = strVal.match(/(\d{1,4}[\/\.\-_]\d{4}|\d{1,4}\/\d{2})/);
+    const termo = numMatch ? numMatch[1] : strVal;
+    licUrl = `/S3-Compras_Cont_e_Conven/licitacoes?busca=${encodeURIComponent(termo)}`;
+  }
+
   return (
     <div className="flex items-start gap-2">
-      <span className="text-gray-400 mt-0.5 shrink-0">{icon}</span>
+      {icon && <span className="text-gray-400 mt-0.5 shrink-0">{icon}</span>}
       <div>
         <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">{label}</p>
-        <p className="text-sm text-gray-700 leading-relaxed">{value}</p>
+        {licUrl ? (
+          <Link
+            href={licUrl}
+            className="text-sm font-bold text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center gap-1 mt-0.5"
+            title={`Abrir ${strVal} em Licitações`}
+          >
+            <span>{strVal}</span>
+            <ExternalLink size={13} className="shrink-0" />
+          </Link>
+        ) : (
+          <p className="text-sm font-medium text-gray-800 leading-relaxed">{strVal}</p>
+        )}
       </div>
     </div>
   );

@@ -28,6 +28,7 @@ export interface DespesaRow {
   codigo: string | null;
   tipo_empenho: string | null;          // Ordinário, Estimativo, Global
   numero_empenho: string | null;
+  ficha?: string | null;
   data_empenho: string | null;
 
   /* Fornecedor / Credor */
