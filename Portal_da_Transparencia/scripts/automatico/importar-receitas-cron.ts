@@ -16,7 +16,10 @@ import { createClient } from "@supabase/supabase-js";
 import * as dotenv from "dotenv";
 import * as path from "path";
 
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+dotenv.config({ path: path.resolve(__dirname, "../../.env.local") });
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL;
 const SUPABASE_KEY =
@@ -219,7 +222,8 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
         // Verifica se houve alguma mudança de valor
         const mudouArrecadado = Math.abs(registroExistente.arrecadado_total - registroNovo.arrecadado_total) > 0.01 ||
                                 Math.abs(registroExistente.arrecadado_periodo - registroNovo.arrecadado_periodo) > 0.01;
-        const mudouPrevisto = Math.abs((registroExistente.previsto_atualizado || 0) - registroNovo.previsto_atualizado) > 0.01;
+        const mudouPrevisto = Math.abs((registroExistente.previsto_atualizado || 0) - registroNovo.previsto_atualizado) > 0.01 ||
+                              Math.abs((registroExistente.previsto_inicial || 0) - registroNovo.previsto_inicial) > 0.01;
 
         if (mudouArrecadado || mudouPrevisto) {
           await supabase
@@ -227,6 +231,7 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
             .update({
               arrecadado_periodo: registroNovo.arrecadado_periodo,
               arrecadado_total: registroNovo.arrecadado_total,
+              previsto_inicial: registroNovo.previsto_inicial,
               previsto_atualizado: registroNovo.previsto_atualizado,
               created_at: new Date().toISOString()
             })
@@ -234,6 +239,7 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
           
           registroExistente.arrecadado_total = registroNovo.arrecadado_total;
           registroExistente.arrecadado_periodo = registroNovo.arrecadado_periodo;
+          registroExistente.previsto_inicial = registroNovo.previsto_inicial;
           registroExistente.previsto_atualizado = registroNovo.previsto_atualizado;
           
           atualizados++;
