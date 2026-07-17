@@ -621,22 +621,34 @@ export default function ReceitasPage() {
     });
   }, [tree, isSearchMode, filters.busca]);
 
-  // --- Totals (from tree, Apenas Nível 1 para fechar com o consolidado oficial) ---
-  const totalPrevistoInicial = tree.reduce((s, n) => {
-    if (n.level !== 1 && !n.codigo.endsWith('.00.0.0.00')) return s;
-    const isDeducao = n.codigo.startsWith('9');
-    return s + (isDeducao ? -Math.abs(n.previstoInicial) : n.previstoInicial);
-  }, 0);
-  const totalPrevisto = tree.reduce((s, n) => {
-    if (n.level !== 1 && !n.codigo.endsWith('.00.0.0.00')) return s;
-    const isDeducao = n.codigo.startsWith('9');
-    return s + (isDeducao ? -Math.abs(n.previsto) : n.previsto);
-  }, 0);
-  const totalArrecadado = tree.reduce((s, n) => {
-    if (n.level !== 1 && !n.codigo.endsWith('.00.0.0.00')) return s;
-    const isDeducao = n.codigo.startsWith('9');
-    return s + (isDeducao ? -Math.abs(n.arrecadado) : n.arrecadado);
-  }, 0);
+  // --- Totals (calculados diretamente dos registros Nível 1 do banco para imunidade contra colapsos/encurtamentos da árvore visual) ---
+  const totalPrevistoInicial = useMemo(() => {
+    return rawData.reduce((s, r) => {
+      if (r.nivel !== 1 && !r.codigo_contabil.endsWith('.00.0.0.00')) return s;
+      const isDeducao = r.codigo_contabil.startsWith('9');
+      const v = Number(r.previsto_inicial) || 0;
+      return s + (isDeducao ? -Math.abs(v) : v);
+    }, 0);
+  }, [rawData]);
+
+  const totalPrevisto = useMemo(() => {
+    return rawData.reduce((s, r) => {
+      if (r.nivel !== 1 && !r.codigo_contabil.endsWith('.00.0.0.00')) return s;
+      const isDeducao = r.codigo_contabil.startsWith('9');
+      const v = Number(r.previsto_atualizado) || 0;
+      return s + (isDeducao ? -Math.abs(v) : v);
+    }, 0);
+  }, [rawData]);
+
+  const totalArrecadado = useMemo(() => {
+    return rawData.reduce((s, r) => {
+      if (r.nivel !== 1 && !r.codigo_contabil.endsWith('.00.0.0.00')) return s;
+      const isDeducao = r.codigo_contabil.startsWith('9');
+      const v = Number(r.arrecadado_total) || 0;
+      return s + (isDeducao ? -Math.abs(v) : v);
+    }, 0);
+  }, [rawData]);
+
 
   // --- Data de atualização baseada no banco de dados ---
   const dbUpdateDate = useMemo(() => {

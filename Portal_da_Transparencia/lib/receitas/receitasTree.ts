@@ -208,9 +208,15 @@ function normalizeDBPai(pai: string): string {
 export function buildTree(items: RawReceita[]): ReceitaNode[] {
   if (!items.length) return [];
 
+  // 0. Filtra registros lixo/órfãos (sem pontos, com até 4 dígitos e zerados)
+  const validItems = items.filter((item) => {
+    const isGarbageZero = !item.codigo_contabil.includes('.') && item.codigo_contabil.length <= 4 && Number(item.previsto_atualizado || 0) === 0 && Number(item.arrecadado_total || 0) === 0;
+    return !isGarbageZero;
+  });
+
   // 1. Usa valores do banco; fallback para computação local apenas
   //    quando o DB não tiver o campo preenchido.
-  const enriched = items.map((item) => {
+  const enriched = validItems.map((item) => {
     const nivel = item.nivel ?? getNivelFromCodigo(item.codigo_contabil);
     const tipoNivel = item.tipo_nivel ?? getTipoNivelFromNivel(nivel);
 
@@ -243,6 +249,14 @@ export function buildTree(items: RawReceita[]): ReceitaNode[] {
       existing.previstoInicial += Number(item.previsto_inicial) || 0;
       existing.arrecadado += Number(item.arrecadado_total) || 0;
       existing.arrecadadoPeriodo += Number(item.arrecadado_periodo) || 0;
+
+      // Se o item tem nível mais alto (ou código formatado com pontos quando o anterior era curto), atualiza metadados
+      if (item.nivel < existing.level || (item.codigo_contabil.includes('.') && !existing.codigo.includes('.'))) {
+        if (item.codigo_contabil.includes('.')) existing.codigo = item.codigo_contabil;
+        if (item.nivel < existing.level) existing.level = item.nivel;
+        if (item.tipo_nivel && existing.tipoNivel === 'Item') existing.tipoNivel = item.tipo_nivel;
+        if (item.descricao && !existing.descricao) existing.descricao = item.descricao;
+      }
       continue;
     }
 
