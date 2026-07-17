@@ -333,13 +333,13 @@ function EmpenhosTable({
                     <tr className="bg-gray-50/70">
                       <td colSpan={8} className="px-6 py-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                          <DetailItem icon={<MapPin size={14} />} label="Órgão" value={row.orgao_nome || '-'} />
-                          <DetailItem icon={<FolderTree size={14} />} label="Função" value={row.funcao_nome || '-'} />
-                          <DetailItem icon={<Tag size={14} />} label="Subfunção" value={row.subfuncao_nome || '-'} />
-                          <DetailItem icon={<BookOpen size={14} />} label="Natureza" value={row.natureza_nome || '-'} />
+                          <DetailItem icon={<MapPin size={14} />} label="Órgão / Unidade Orçamentária" value={row.orgao_codigo ? `${row.orgao_codigo} - ${row.orgao_nome || ''}` : row.orgao_nome || '-'} />
+                          <DetailItem icon={<FolderTree size={14} />} label="Função" value={row.funcao_codigo ? `${row.funcao_codigo} - ${row.funcao_nome || ''}` : row.funcao_nome || '-'} />
+                          <DetailItem icon={<Tag size={14} />} label="Subfunção" value={row.subfuncao_codigo ? `${row.subfuncao_codigo} - ${row.subfuncao_nome || ''}` : row.subfuncao_nome || '-'} />
+                          <DetailItem icon={<BookOpen size={14} />} label="Natureza (Classificação Orçamentária)" value={row.natureza_codigo ? `${row.natureza_codigo} - ${row.natureza_nome || ''}` : row.natureza_nome || '-'} />
                           <DetailItem icon={<DollarSign size={14} />} label="Fonte de Recursos" value={row.fonte_codigo_nome || row.fonte_stn_nome || '-'} />
                           <DetailItem icon={<FileText size={14} />} label="Objeto" value={row.objeto || '-'} />
-                          <DetailItem icon={<Gavel size={14} />} label="Licitação" value={row.licitacao_numero ? `${row.licitacao_modalidade || ''} ${row.licitacao_numero}`.trim() : '-'} />
+                          <DetailItem icon={<Gavel size={14} />} label="Licitação Originária" value={row.licitacao_numero ? `${row.licitacao_modalidade || ''} ${row.licitacao_numero}`.trim() : '-'} />
                         </div>
                       </td>
                     </tr>
