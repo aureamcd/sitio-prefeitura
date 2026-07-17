@@ -255,6 +255,37 @@ export default function LicitacoesPage() {
     setModalOpen(true);
   }, []);
 
+  // Ler parâmetros da URL na montagem inicial (ex: vindo da tela de despesas)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const buscaParam = params.get('busca');
+      if (buscaParam) {
+        setFilters((prev) => ({ ...prev, busca: buscaParam }));
+      }
+    }
+  }, []);
+
+  // Se veio via link com busca e pedir para abrir documento (ou encontrar resultado exato), abre o modal ou PDF automaticamente
+  useEffect(() => {
+    if (!loading && data.length > 0 && typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const buscaParam = params.get('busca');
+      const abrirDocParam = params.get('abrirDoc');
+      if (buscaParam && (abrirDocParam === 'true' || data.length === 1)) {
+        const first = data[0];
+        const docs = first.documentos && Array.isArray(first.documentos) && first.documentos.length > 0
+          ? first.documentos
+          : first.arquivo_url
+          ? [{ id: '1', nome_arquivo: `Edital / Documento - ${first.numero || 'Anexo'}`, url_arquivo: first.arquivo_url, tipo_documento: 'Edital / Íntegra' }]
+          : [];
+        if (docs.length > 0) {
+          handleOpenDocs(`Licitação ${first.numero || first.objeto?.substring(0, 30) || '-'}`, docs);
+        }
+      }
+    }
+  }, [loading, data, handleOpenDocs]);
+
   const handleChange = useCallback(
     (field: 'ano' | 'mes' | 'busca' | 'entidade' | 'modalidade' | 'situacao', value: string) => {
       setFilters((prev) => ({ ...prev, [field]: value }));

@@ -403,9 +403,9 @@ function EmpenhosTable({
                                       <p className="text-[10px] font-bold text-purple-700 uppercase tracking-wider">Licitação Originária</p>
                                       {termoBusca ? (
                                         <Link
-                                          href={`/S3-Compras_Cont_e_Conven/licitacoes?busca=${encodeURIComponent(termoBusca)}`}
+                                          href={`/S3-Compras_Cont_e_Conven/licitacoes?busca=${encodeURIComponent(termoBusca)}&abrirDoc=true`}
                                           className="text-sm font-bold text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center gap-1 leading-snug"
-                                          title={`Abrir ${fullVal} em Licitações`}
+                                          title={`Abrir ${fullVal} em Licitações e visualizar anexos`}
                                         >
                                           <span>{fullVal}</span>
                                           <ExternalLink size={13} className="shrink-0" />
@@ -423,7 +423,6 @@ function EmpenhosTable({
                               {row.objeto || 'Nenhum histórico detalhado disponível.'}
                             </div>
 
-                            {/* Ações Inteligentes de Linkagem (Licitação / Contrato / Credor) */}
                             {(() => {
                               const objText = row.objeto || '';
                               const matchLic = objText.match(/(?:preg[ãa]o|dispensa|inexigibilidade|concorr[êe]ncia|tomada|edital)[^\d]*(\d{1,4}[\/\.\-_]\d{4}|\d{1,4}\/\d{2})/i);
@@ -436,10 +435,9 @@ function EmpenhosTable({
                                 <div className="pt-1 flex flex-wrap items-center gap-2 text-xs">
                                   <span className="text-gray-400 font-medium mr-1">Ações Rápidas:</span>
                                   
-                                  {/* Link para Processo Licitatório Específico */}
                                   {numLic && (
                                     <Link
-                                      href={`/S3-Compras_Cont_e_Conven/licitacoes?busca=${encodeURIComponent(numLic)}`}
+                                      href={`/S3-Compras_Cont_e_Conven/licitacoes?busca=${encodeURIComponent(numLic)}&abrirDoc=true`}
                                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors shadow-2xs"
                                     >
                                       <Gavel size={13} />
@@ -447,10 +445,9 @@ function EmpenhosTable({
                                     </Link>
                                   )}
 
-                                  {/* Link para Contrato Específico citado no Objeto */}
                                   {refContr && (
                                     <Link
-                                      href={`/transparencia/contratos?busca=${encodeURIComponent(matchContr?.[1] || '')}`}
+                                      href={`/transparencia/contratos?busca=${encodeURIComponent(matchContr?.[1] || '')}&abrirDoc=true`}
                                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-colors shadow-2xs"
                                     >
                                       <FileText size={13} />
@@ -458,7 +455,6 @@ function EmpenhosTable({
                                     </Link>
                                   )}
 
-                                  {/* Link Direto para consultar todas as licitações/processos do Credor */}
                                   {(row.credor_documento || row.credor_nome) && (
                                     <Link
                                       href={`/S3-Compras_Cont_e_Conven/licitacoes?busca=${encodeURIComponent(row.credor_documento || row.credor_nome || '')}`}
@@ -484,7 +480,6 @@ function EmpenhosTable({
         </table>
       </div>
 
-      {/* Pagination */}
       <div className="px-4 py-4 border-t border-gray-100">
         <Pagination
           page={page}
@@ -499,9 +494,6 @@ function EmpenhosTable({
   );
 }
 
-
-
-// Detail item component for expandable rows
 function DetailItem({ icon, label, value }: { icon?: React.ReactNode; label: string; value: string | null | undefined }) {
   const isLic = label.toLowerCase().includes('licita');
   const strVal = value || '-';
@@ -509,7 +501,7 @@ function DetailItem({ icon, label, value }: { icon?: React.ReactNode; label: str
   if (isLic && strVal !== '-' && strVal !== 'OUTRO NÃO APLICÁVEL' && strVal !== 'Não se Aplica') {
     const numMatch = strVal.match(/(\d{1,4}[\/\.\-_]\d{4}|\d{1,4}\/\d{2})/);
     const termo = numMatch ? numMatch[1] : strVal;
-    licUrl = `/S3-Compras_Cont_e_Conven/licitacoes?busca=${encodeURIComponent(termo)}`;
+    licUrl = `/S3-Compras_Cont_e_Conven/licitacoes?busca=${encodeURIComponent(termo)}&abrirDoc=true`;
   }
 
   return (
@@ -521,7 +513,7 @@ function DetailItem({ icon, label, value }: { icon?: React.ReactNode; label: str
           <Link
             href={licUrl}
             className="text-sm font-bold text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center gap-1 mt-0.5"
-            title={`Abrir ${strVal} em Licitações`}
+            title={`Abrir ${strVal} em Licitações e visualizar anexos`}
           >
             <span>{strVal}</span>
             <ExternalLink size={13} className="shrink-0" />
@@ -534,9 +526,6 @@ function DetailItem({ icon, label, value }: { icon?: React.ReactNode; label: str
   );
 }
 
-// -------------------------------------------------------------------
-// Main Page
-// -------------------------------------------------------------------
 export default function DespesasPage() {
   const today = useTodayDate();
   const [activeTab, setActiveTab] = useState<'empenhos' | 'extra_orcamentarias' | 'restos_a_pagar' | 'aquisicoes_bens' | 'patrocinio' | 'publicidade'>('empenhos');

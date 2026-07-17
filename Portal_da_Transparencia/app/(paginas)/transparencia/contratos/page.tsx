@@ -99,6 +99,37 @@ export default function ContratosPage() {
     setModalOpen(true);
   }, []);
 
+  // Ler parâmetros da URL na montagem inicial (ex: vindo da tela de despesas)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const buscaParam = params.get('busca');
+      if (buscaParam) {
+        setFilters((prev) => ({ ...prev, busca: buscaParam }));
+      }
+    }
+  }, []);
+
+  // Se veio via link com busca, abre o modal de seleção de documentos do contrato automaticamente
+  useEffect(() => {
+    if (!loading && data.length > 0 && typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const buscaParam = params.get('busca');
+      const abrirDocParam = params.get('abrirDoc');
+      if (buscaParam && (abrirDocParam === 'true' || data.length === 1)) {
+        const first = data[0];
+        const docs = first.documentos && Array.isArray(first.documentos) && first.documentos.length > 0
+          ? first.documentos
+          : first.arquivo_url
+          ? [{ id: '1', nome_arquivo: `Contrato / Íntegra - ${first.numero || 'Arquivo'}`, url_arquivo: first.arquivo_url, tipo_documento: 'Contrato Principal' }]
+          : [];
+        if (docs.length > 0) {
+          handleOpenDocs(`Contrato ${first.numero || '-'}`, docs);
+        }
+      }
+    }
+  }, [loading, data, handleOpenDocs]);
+
   const handleChange = useCallback(
     (field: 'ano' | 'mes' | 'busca', value: string) => {
       setFilters((prev) => ({ ...prev, [field]: value }));
