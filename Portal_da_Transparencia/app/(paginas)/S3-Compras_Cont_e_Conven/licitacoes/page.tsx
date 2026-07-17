@@ -150,8 +150,9 @@ function useLicitacoesData(filters: FilterValues & { modalidade?: string; situac
       }
 
       if (filters.busca) {
+        const b = filters.busca.trim();
         query = query.or(
-          `objeto.ilike.%${filters.busca}%,numero.ilike.%${filters.busca}%,modalidade.ilike.%${filters.busca}%,processo.ilike.%${filters.busca}%`
+          `objeto.ilike.%${b}%,numero.ilike.%${b}%,modalidade.ilike.%${b}%,processo.ilike.%${b}%,empresa.ilike.%${b}%,empresa_nome.ilike.%${b}%`
         );
       }
 
@@ -162,12 +163,67 @@ function useLicitacoesData(filters: FilterValues & { modalidade?: string; situac
 
       if (cancelled) return;
 
-      if (!error && result) {
-        setData(result);
-      } else {
-        console.error('Error fetching licitacoes:', error);
-        setData([]);
+      let finalData = !error && result ? result : [];
+
+      // Se há busca (ex: CNPJ ou Nome do Credor) e pode ter processos vinculados via contratos ou despesas
+      if (filters.busca && filters.busca.trim().length >= 3) {
+        const b = filters.busca.trim();
+        try {
+          // 1. Buscar contratos vinculados ao fornecedor/CNPJ
+          const { data: contrs } = await supabase
+            .schema('transparencia')
+            .from('contratos_v2')
+            .select('numero, objeto')
+            .or(`contratado.ilike.%${b}%,cpf_cnpj.ilike.%${b}%`)
+            .limit(100);
+
+          // 2. Buscar despesas vinculadas ao credor/CNPJ
+          const { data: desps } = await supabase
+            .schema('transparencia')
+            .from('despesas')
+            .select('licitacao_numero, objeto')
+            .or(`credor_nome.ilike.%${b}%,credor_documento.ilike.%${b}%`)
+            .limit(100);
+
+          const numsLic: string[] = [];
+          const regexLic = /(?:preg[ãa]o|dispensa|inexigibilidade|concorr[êe]ncia|tomada|edital)[^\d]*(\d{1,4}[\/\.\-_]\d{4}|\d{1,4}\/\d{2})/i;
+
+          (contrs || []).forEach(c => {
+            if (c.numero) numsLic.push(c.numero.split('/')[0] + '/' + (c.numero.split('/')[1] || ''));
+            const m = (c.objeto || '').match(regexLic);
+            if (m && m[1]) numsLic.push(m[1]);
+          });
+
+          (desps || []).forEach(d => {
+            if (d.licitacao_numero) numsLic.push(d.licitacao_numero);
+            const m = (d.objeto || '').match(regexLic);
+            if (m && m[1]) numsLic.push(m[1]);
+          });
+
+          const uniqNums = Array.from(new Set(numsLic.filter(Boolean)));
+          if (uniqNums.length > 0) {
+            const { data: extraLics } = await supabase
+              .schema('transparencia')
+              .from('licitacoes_v2')
+              .select('*, documentos:licitacoes_documentos(*)')
+              .in('numero', uniqNums);
+
+            if (extraLics && extraLics.length > 0) {
+              const existingIds = new Set(finalData.map(item => item.id));
+              extraLics.forEach(lic => {
+                if (!existingIds.has(lic.id)) {
+                  finalData.push(lic);
+                  existingIds.add(lic.id);
+                }
+              });
+            }
+          }
+        } catch (e) {
+          console.error('Erro na busca cruzada de licitações por CNPJ:', e);
+        }
       }
+
+      setData(finalData);
       setLoading(false);
     }
 

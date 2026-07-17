@@ -53,8 +53,9 @@ function useContratosData(filters: FilterValues) {
         query = query.ilike('data_assinatura', `${prefix}%`);
       }
       if (filters.busca) {
+        const b = filters.busca.trim();
         query = query.or(
-          `contratado.ilike.%${filters.busca}%,numero.ilike.%${filters.busca}%,objeto.ilike.%${filters.busca}%`
+          `contratado.ilike.%${b}%,numero.ilike.%${b}%,objeto.ilike.%${b}%,cpf_cnpj.ilike.%${b}%`
         );
       }
 
