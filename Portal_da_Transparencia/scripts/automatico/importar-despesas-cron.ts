@@ -30,13 +30,16 @@ const SUPABASE_KEY =
   process.env.SUPABASE_ANON_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
-  console.error("❌ Variáveis SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY não definidas no .env");
-  process.exit(1);
+  console.warn("⚠️ Variáveis SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY não definidas (fallback em tempo de build).");
 }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
-  db: { schema: "transparencia" }
-});
+const supabase = createClient(
+  SUPABASE_URL || "https://placeholder.supabase.co",
+  SUPABASE_KEY || "placeholder-key",
+  {
+    db: { schema: "transparencia" }
+  }
+);
 
 const FIORILLI_BASE_URL = "https://contreina.padremarcos.pi.gov.br/transparencia/VersaoJson/Despesas";
 
