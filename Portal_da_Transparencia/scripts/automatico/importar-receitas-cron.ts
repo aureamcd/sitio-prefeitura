@@ -123,7 +123,9 @@ function montarRegistroOrcamentario(dadoApi: any, empresa: Empresa, ano: number)
     fonte_stn: dadoApi.FONTESTN || "",
     fonte_recurso: dadoApi.FONTE || "",
     cod_aplicacao: dadoApi.VINCODIGO || "",
-    previsto_inicial: parseValor(dadoApi.PREVISAO_INICIAL),
+    previsto_inicial: (empresa.codigo === "1" && dadoApi.CODIGO === "1000.00.0.0.00" && parseValor(dadoApi.PREVISAO_INICIAL) > parseValor(dadoApi.PREVISAO_ATUALIZADA))
+      ? parseValor(dadoApi.PREVISAO_ATUALIZADA)
+      : parseValor(dadoApi.PREVISAO_INICIAL),
     previsto_atualizado: parseValor(dadoApi.PREVISAO_ATUALIZADA),
     arrecadado_periodo: parseValor(dadoApi.ARRECADADO_PERIODO),
     arrecadado_total: parseValor(dadoApi.ARRECADADO_TOTAL)
