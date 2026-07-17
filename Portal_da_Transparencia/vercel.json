@@ -6,11 +6,7 @@
     },
     {
       "path": "/api/cron/importar-receitas",
-      "schedule": "0 6 * * 1"
-    },
-    {
-      "path": "/api/cron/importar-receitas",
-      "schedule": "3 6 * * 5"
+      "schedule": "0 6 * * *"
     }
   ]
 }

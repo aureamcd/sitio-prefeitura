@@ -624,7 +624,8 @@ export default function ReceitasPage() {
   // --- Totals (calculados diretamente dos registros Nível 1 do banco para imunidade contra colapsos/encurtamentos da árvore visual) ---
   const totalPrevistoInicial = useMemo(() => {
     return rawData.reduce((s, r) => {
-      if (r.nivel !== 1 && !r.codigo_contabil.endsWith('.00.0.0.00')) return s;
+      const isRoot = r.nivel === 1 || ['1000.00.0.0.00', '2000.00.0.0.00', '7000.00.0.0.00', '9000.00.0.0.00'].includes(r.codigo_contabil);
+      if (!isRoot) return s;
       const isDeducao = r.codigo_contabil.startsWith('9');
       const v = Number(r.previsto_inicial) || 0;
       return s + (isDeducao ? -Math.abs(v) : v);
@@ -633,7 +634,8 @@ export default function ReceitasPage() {
 
   const totalPrevisto = useMemo(() => {
     return rawData.reduce((s, r) => {
-      if (r.nivel !== 1 && !r.codigo_contabil.endsWith('.00.0.0.00')) return s;
+      const isRoot = r.nivel === 1 || ['1000.00.0.0.00', '2000.00.0.0.00', '7000.00.0.0.00', '9000.00.0.0.00'].includes(r.codigo_contabil);
+      if (!isRoot) return s;
       const isDeducao = r.codigo_contabil.startsWith('9');
       const v = Number(r.previsto_atualizado) || 0;
       return s + (isDeducao ? -Math.abs(v) : v);
@@ -642,7 +644,8 @@ export default function ReceitasPage() {
 
   const totalArrecadado = useMemo(() => {
     return rawData.reduce((s, r) => {
-      if (r.nivel !== 1 && !r.codigo_contabil.endsWith('.00.0.0.00')) return s;
+      const isRoot = r.nivel === 1 || ['1000.00.0.0.00', '2000.00.0.0.00', '7000.00.0.0.00', '9000.00.0.0.00'].includes(r.codigo_contabil);
+      if (!isRoot) return s;
       const isDeducao = r.codigo_contabil.startsWith('9');
       const v = Number(r.arrecadado_total) || 0;
       return s + (isDeducao ? -Math.abs(v) : v);

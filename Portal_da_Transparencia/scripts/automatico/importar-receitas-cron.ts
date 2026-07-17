@@ -135,6 +135,7 @@ async function buscarEmpresas(): Promise<Empresa[]> {
   if (error || !data || data.length === 0) {
     return [
       { codigo: "1", nome: "PREFEITURA MUNICIPAL DE PADRE MARCOS" },
+      { codigo: "2", nome: "CAMARA MUNICIPAL DE PADRE MARCOS" },
       { codigo: "3", nome: "FUNDO MUNICIPAL DE SAÚDE" },
       { codigo: "4", nome: "FUNDEB" },
       { codigo: "5", nome: "FMAS" },
