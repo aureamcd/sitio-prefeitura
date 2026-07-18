@@ -740,7 +740,6 @@ export default function DespesasPage() {
         onClear={handleClear}
         anosLoading={anosLoading}
         empresas={EMPRESAS.filter(e => e.codigo !== '2')}
-        hideConsolidado={isHistorico}
         hideTodosAno={true}
       >
         {activeTab === 'empenhos' && (
