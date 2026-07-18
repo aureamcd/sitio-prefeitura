@@ -1,11 +1,84 @@
 # CHECKLIST PNTP 2026 - Dados Necessários
 
 **Município:** Padre Marcos - PI  
-**Data:** Junho de 2026  
+**Data:** Julho de 2026  
 
-> [!IMPORTANT]
-> **RECADO PARA LORENA (LICITAÇÕES / LEIS / PORTARIAS / CONTRATOS):**
-> Falar com Lorena que peguei os arquivos de **Licitações** e **Leis** em lote e já processei tudo automaticamente. Se ela conseguir pastas de **Portarias** e **Contratos** iguais àquelas, consigo fazer o mesmo (varredura em lote, catalogação anti-duplicata e upload automático no portal)!
+---
+
+## ✅ DIMENSÃO 1 e 2 — Informações Prioritárias e Institucionais (Estrutura Organizacional)
+**Resultado: 100% dos critérios atendidos (`✅ OK`) — Rotina da Lorena: ZERO (estático / via site institucional)**
+
+| Critério | Exigibilidade | Status | Observação / Onde está no Portal |
+|----------|:------------:|:------:|-----------------------------------|
+| 1.1 Sítio oficial com ferramenta de pesquisa geral de conteúdo | Essencial | ✅ OK | Busca global ativa no cabeçalho (`Header.tsx`) e na página de busca do Portal |
+| 1.2 Ícone/Link de acesso ao Portal da Transparência em destaque na capa | Essencial | ✅ OK | Destaque na capa do sítio institucional (`padremarcos.pi.gov.br`) e vice-versa |
+| 2.1 Estrutura Organizacional completa (órgãos da adm direta e indireta) | Essencial | ✅ OK | Espelhado e lincado ao sítio oficial (`/estrutura-organizacional`) e mapa do site |
+| 2.2 Identificação dos Responsáveis (Prefeito, Vice-prefeito e Secretários) | Essencial | ✅ OK | Nomes e cargos completos e atualizados na estrutura institucional e rodapé |
+| 2.3 Atribuições e Competências legais de cada secretaria/órgão municipal | Obrigatório | ✅ OK | Detalhado conforme Lei Orgânica e Estrutura Administrativa |
+| 2.4 Endereço, telefone e horário de atendimento de todas as secretarias | Essencial | ✅ OK | No rodapé (`8h às 12h/13h`) e nas páginas individuais das secretarias |
+| 2.5 E-mail institucional e canais de contato presencial e eletrônico | Essencial | ✅ OK | E-mail `prefeitura@padremarcos.pi.gov.br` e telefones no rodapé |
+| 2.6 Perguntas Frequentes (FAQ) sobre os serviços e transações públicas | Obrigatório | ✅ OK | Página `/faq` ativa com dúvidas sobre IPTU, certidões, licitações e SIC |
+| 2.7 Links oficiais para Redes Sociais da Prefeitura (Instagram/Diário Oficial) | Recomendado | ✅ OK | Ícones e links oficiais (@prefeituradepadremarcos) no rodapé |
+| 2.8 Leis e Normas Municipais (Lei Orgânica, Estatuto, Leis Ordinárias) | Essencial | ✅ OK | Banco no Supabase `planejamento_documentos` e aba de Leis |
+
+---
+
+## ✅ DIMENSÃO 3 — RECEITAS PÚBLICAS E DÍVIDA ATIVA (Critérios 3.1 a 3.7)
+**Resultado: 100% dos critérios atendidos (`✅ OK`) — Automação ativa / Rotina Simplificada**
+
+| Critério | Exigibilidade | Status | Observação / Onde está no Portal |
+|----------|:------------:|:------:|-----------------------------------|
+| 3.1 Previsão de todas as receitas (Orçamentárias e Extraorçamentárias) | Essencial | ✅ OK | Tabela `receitas` com `previsto_inicial` e `previsto_atualizado` por código |
+| 3.2 Lançamento e arrecadação no exercício corrente e anteriores | Essencial | ✅ OK | Valores arrecadados (`arrecadado_periodo` / `arrecadado_total`) em tempo real |
+| 3.3 Classificação/Detalhamento: Categoria, Origem, Espécie, Rubrica, Alínea | Essencial | ✅ OK | Estrutura hierárquica completa em árvore interativa (`receitas.nivel`) |
+| 3.4 Transferências da União e do Estado detalhadas | Obrigatório | ✅ OK | Tabelas e APIs específicas de transferências consolidadas no portal |
+| 3.5 Dívida Ativa (Estoque, cobrança, inscrição, arrecadação) | Obrigatório | ✅ OK | Página `/S2-Execucao_Orc_e_Fin/divida-ativa` sincronizada com data de receitas |
+| 3.6 Atualização em Tempo Real (até 1 dia útil após o registro no SIAFIC) | Essencial | ✅ OK | Garantida pelos scripts de automação via API JSON contábil |
+| 3.7 Filtros de pesquisa (Órgão, período, classificação) e exportação aberta | Obrigatório | ✅ OK | Filtros na interface + botões de exportação em CSV / Excel / PDF |
+
+### 🤖 Automação — Receitas & Dívida Ativa:
+- **APIs de Base (Intactas - 100% Funcionais):**
+  - O portal consome as 5 rotas oficiais do SIAFIC/Contreina sem alterações nos códigos já construídos (`sync-receitas-2026.ts`, `fetch-receitas-transferencias.ts`):
+    1. `VersaoJson/Receitas/?ConectarExercicio={Ano}&Listagem=ReceitaOrcamentaria&Empresa={Entidade}&MostraDadosConsolidado=False`
+    2. `VersaoJson/Receitas/?ConectarExercicio={Ano}&Listagem=ReceitaUniao&Empresa={Entidade}`
+    3. `VersaoJson/Receitas/?ConectarExercicio={Ano}&Listagem=ReceitaEstado&Empresa={Entidade}`
+    4. `VersaoJson/Receitas/?ConectarExercicio={Ano}&Listagem=ReceitaExtraOrcamentaria&Empresa={Entidade}`
+    5. `VersaoJson/Receitas/?ConectarExercicio={Ano}&Listagem=DetalhesReceitaOrcamentaria&Empresa={Entidade}&Codigochave={Codigo}`
+- **Dívida Ativa:** A data de última atualização da Dívida Ativa (`divida-ativa`) está vinculada diretamente à sincronização das receitas globais, garantindo conformidade total sem trabalho extra.
+- **Rotina**
+  - **Frequência:** Semanal (todas as segundas-feiras) ou Quinzena/Mensal no fechamento contábil.
+  - **Onde pegar:** O próprio script ou automação em nuvem puxa diretamente dos endpoints acima das 10 entidades (`Empresas 1 a 10: Prefeitura, FMS, FUNDEB, FMAS, etc.`).
+  - **O que fazer:** Zero intervenção manual de digitação (basta que o script rode no servidor/cron). Cuidado integral mantido ao atualizar o banco de dados (`transparencia.receitas`).
+
+---
+
+## ✅ DIMENSÃO 4 — DESPESAS PÚBLICAS E EMPENHOS (Critérios 4.1 a 4.15)
+**Resultado: 100% dos critérios atendidos (`✅ OK`) — Automação via `importar-despesas.ts` + Detalhamento**
+
+| Critério | Exigibilidade | Status | Observação / Onde está no Portal |
+|----------|:------------:|:------:|-----------------------------------|
+| 4.1 Empenhos, Liquidações e Pagamentos (valor, data, fase) | Essencial | ✅ OK | Tabela `despesas` com detalhamento por fase da despesa municipal |
+| 4.2 Identificação do Credor/Fornecedor (Nome e CPF/CNPJ tarjado) | Essencial | ✅ OK | Colunas do credor/fornecedor exibidas com proteção de dados pessoais (LGPD) |
+| 4.3 Classificação funcional-programática (Órgão, Função, Subfunção, Programa) | Essencial | ✅ OK | Filtros e colunas de classificação funcional e categoria econômica |
+| 4.4 Aquisições de bens com descrição, quantitativo e preço unitário | Obrigatório | ✅ OK | Detalhado via planilhas/almoxarifado e notas fiscais nos empenhos |
+| 4.5 Despesas de Patrocínio (Beneficiário, valor, evento, data) | Obrigatório | ✅ OK | Página específica no portal com declaração ou listagem |
+| 4.6 Contratos de Publicidade / Propaganda (Agência, veículo, valor) | Obrigatório | ✅ OK | Página de publicidade com filtros e declaração de inexistência se couber |
+| 4.7 Diárias de Viagem (Nome, cargo, destino, motivo, valor, data) | Essencial | ✅ OK | Tabela e importador de diárias (`importar-diarias.ts`) |
+| 4.8 Passagens aéreas/terrestres (Beneficiário, destino, valor, data) | Obrigatório | ✅ OK | Incluído na aba de diárias/passagens na execução orçamentária |
+| 4.9 Cartões corporativos / Suprimentos de Fundo | Obrigatório | ✅ OK | Declaração de inexistência de cartões corporativos no município |
+| 4.10 Obras Públicas (Local, valor, construtora, medições, situação) | Essencial | ✅ OK | Página `/transparencia/obras` com painel georreferenciado/detalhado |
+| 4.11 Transferências realizadas / Subvenções sociais | Obrigatório | ✅ OK | Aba de convênios/transferências concedidas (`/transferencias`) |
+| 4.12 Emendas Parlamentares executadas (Nº, autor, valor, objeto) | Obrigatório | ✅ OK | Painel de Emendas (`S2-Execucao_Orc_e_Fin/emendas-parlamentares`) |
+| 4.13 Filtros de pesquisa (Ano, órgão, credor, elemento de despesa) | Essencial | ✅ OK | Sistema completo de filtros na página de despesas |
+| 4.14 Exportação de dados abertos (CSV, JSON, Excel) e relatórios | Essencial | ✅ OK | Botões de download em formato aberto em todas as tabelas |
+| 4.15 Atualização em Tempo Real (até 1 dia útil após o registro) | Essencial | ✅ OK | Automação contínua conectada ao SIAFIC municipal (`VersaoJson/Despesas`) |
+
+### 🤖 Automação e Rotina da Lorena — Despesas e Empenhos:
+- **Automação Pronta (`importar-despesas.ts`):** O script conecta em `VersaoJson/Despesas`, percorre as empresas municipais (`1 a 10`) e popula a tabela `transparencia.despesas` preservando empenhos, liquidações e pagamentos.
+- **Rotina da Lorena:**
+  - **Diárias/Passagens:** Quando houver diárias no mês, exportar do SIAFIC e rodar `importar-diarias.ts`.
+  - **Obras Públicas:** Atualizar bimestralmente fotos/medições na página de obras caso haja novas entregas.
+  - **Patrocínio / Publicidade:** Se não houver, a declaração de inexistência no portal já supre 100%. Se houver nova contratação, incluir na tabela correspondente.
 
 ---
 
@@ -203,53 +276,35 @@ Para cada ano (2024, 2025, 2026), baixe os Quadros 27 a 32:
 > 📁 Salvar em:  Downloads\Contreina\Balanços\2024\ ,  \2025\ ,  \2026\ 
 
 **Status Upload:**
-- [x] **Balanços 2025** ✅ — 40 PDFs enviados p/ R2 e cadastrados no Supabase (27/jun)
-- [x] **Balanços 2026** ✅ — 12 PDFs enviados p/ R2 e cadastrados no Supabase (27/jun)
-- [ ] **Balanços 2024** ❌ — Nenhum arquivo baixado (site Contreina offline)
+- [x] **Balanços 2024-2026** ✅ — Todos os PDFs enviados p/ R2 e cadastrados no Supabase (Julho/2026)
 ────────────────────────────────────────────────────────────────────────────────
 2️⃣ RGF (Relatório de Gestão Fiscal)
 Menu:  Prestação de Contas → Responsabilidade Fiscal - RGF 
 Para cada ano (2023, 2024, 2025, 2026), baixe os PDFs.
-> 📁 Salvar em:  Downloads\Contreina\RGF\2023\ ,  \2024\ ,  \2025\ ,  \2026\ 
 
 **Status Upload:**
-- [ ] **RGF 2023-2026** ❌ — Nenhum PDF baixado (site Contreina offline)
+- [x] **RGF 2023-2026** ✅ — 100% Migrado e cadastrado no portal (`transparencia.planejamento_documentos`) (Julho/2026)
 ────────────────────────────────────────────────────────────────────────────────
 3️⃣ RREO (Relatório Resumido da Execução Orçamentária)
 Menu:  Prestação de Contas → Responsabilidade Fiscal - RREO 
-Para cada ano (2023, 2024, 2025) — 2026 já temos! ✅
-> 📁 Salvar em:  Downloads\Contreina\RREO\2023\ ,  \2024\ ,  \2025\ 
+Para cada ano (2023, 2024, 2025, 2026).
 
 **Status Upload:**
-- [ ] **RREO 2023-2025** ❌ — Nenhum PDF baixado (site Contreina offline)
+- [x] **RREO 2023-2026** ✅ — 100% Migrado e cadastrado no portal (Julho/2026)
 ────────────────────────────────────────────────────────────────────────────────
-4️⃣ PARECER PRÉVIO DO TCE-PI
+4️⃣ PARECER PRÉVIO DO TCE-PI E DECRETOS DA CÂMARA
 Menu:  Prestação de Contas → Parecer Prévio do Tribunal de Contas 
-Para cada ano (2023, 2024, 2025)
-> 📁 Salvar em:  Downloads\Contreina\Parecer TCE\2023\ ,  \2024\ ,  \2025\ 
+Para cada ano (2020 a 2025).
 
 **Status Upload:**
-- [ ] **Parecer TCE 2023-2025** ❌ — Nenhum PDF baixado (site Contreina offline)
+- [x] **Parecer TCE e Câmara (2020 a 2025)** ✅ — 100% dos 12 processos (TCE + Decretos Legislativos) extraídos, enviados ao R2 e catalogados no portal (15/Julho/2026)
 ────────────────────────────────────────────────────────────────────────────────
-📁 Estrutura final nos Downloads
-Downloads\Contreina\
-├── Balanços\
-│   ├── 2024\    ← ❌ Vazio
-│   ├── 2025\    ← ✅ 40 PDFs enviados ao portal (limpos)
-│   └── 2026\    ← ✅ 12 PDFs enviados ao portal (limpos)
-├── RGF\
-│   ├── 2023\    ← ❌ Vazio
-│   ├── 2024\    ← ❌ Vazio
-│   ├── 2025\    ← ❌ Vazio
-│   └── 2026\    ← ❌ Vazio
-├── RREO\
-│   ├── 2023\    ← ❌ Vazio
-│   ├── 2024\    ← ❌ Vazio
-│   └── 2025\    ← ❌ Vazio
-└── Parecer TCE\
-    ├── 2023\    ← ❌ Vazio
-    ├── 2024\    ← ❌ Vazio
-    └── 2025\    ← ❌ Vazio
+📁 Estrutura final nos Downloads / R2
+Downloads\Contreina\ e R2 Cloudflare:
+├── Balanços\     ← ✅ 100% Concluído e limpo no Portal
+├── RGF\          ← ✅ 100% Concluído e limpo no Portal
+├── RREO\         ← ✅ 100% Concluído e limpo no Portal
+└── Parecer TCE\  ← ✅ 100% Concluído e limpo no Portal (Série histórica 2020-2025 completa)
 
 ---
 

@@ -347,9 +347,41 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
           data_lancamento: item.DTLAN ? item.DTLAN.split(" ")[0].split("/").reverse().join("-") : null,
           data_importacao: new Date().toISOString()
         }));
-        await supabase.schema("transparencia").from("transferencias_entre_entidades").delete().eq("exercicio", anoAtual);
-        await supabase.schema("transparencia").from("transferencias_entre_entidades").insert(regTransf);
-        transferenciasAtualizadas += regTransf.length;
+        // Delta-Sync para transferências entre entidades (sem usar DELETE)
+        const { data: dbTransf } = await supabase
+          .schema("transparencia")
+          .from("transferencias_entre_entidades")
+          .select("id, mes, entidade_pagadora, entidade_recebedora, repasse, devolucao, data_lancamento")
+          .eq("exercicio", anoAtual);
+
+        const existentes = dbTransf || [];
+        const novosParaInserir = [];
+
+        // Para evitar duplicatas de repasses idênticos, montamos uma chave combinada
+        // e contamos quantas vezes ela aparece no banco.
+        const contagemDB = new Map<string, number>();
+        for (const t of existentes) {
+          const key = `${t.mes}_${t.entidade_pagadora}_${t.entidade_recebedora}_${t.repasse}_${t.data_lancamento || ''}`;
+          contagemDB.set(key, (contagemDB.get(key) || 0) + 1);
+        }
+
+        for (const reg of regTransf) {
+          const key = `${reg.mes}_${reg.entidade_pagadora}_${reg.entidade_recebedora}_${reg.repasse}_${reg.data_lancamento || ''}`;
+          const qtdDb = contagemDB.get(key) || 0;
+          
+          if (qtdDb > 0) {
+            // Já existe no banco, consumimos 1 da contagem
+            contagemDB.set(key, qtdDb - 1);
+          } else {
+            // É um registro novo (ou um repasse adicional idêntico que não estava no banco)
+            novosParaInserir.push(reg);
+          }
+        }
+
+        if (novosParaInserir.length > 0) {
+          await supabase.schema("transparencia").from("transferencias_entre_entidades").insert(novosParaInserir);
+          transferenciasAtualizadas += novosParaInserir.length;
+        }
       }
     }
   } catch (e) {

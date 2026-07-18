@@ -115,7 +115,14 @@ export default function EntidadesTreeTable({
   }, [groupedList]);
 
   const totalGeralPrevisto = useMemo(() => {
-    return groupedList.reduce((s, g) => s + g.previsto_total, 0);
+    const uniquePairs = new Map<string, number>();
+    for (const g of groupedList) {
+      const pairKey = `${g.entidade_pagadora}:::${g.entidade_recebedora}`;
+      if (!uniquePairs.has(pairKey)) {
+        uniquePairs.set(pairKey, g.previsto_total);
+      }
+    }
+    return Array.from(uniquePairs.values()).reduce((s, val) => s + val, 0);
   }, [groupedList]);
 
   // Export CSV
@@ -154,7 +161,7 @@ export default function EntidadesTreeTable({
             Transferências entre Entidades - Exercício {ano || 'Atual'}
           </h3>
           <p className="text-xs sm:text-sm text-gray-600 mt-1">
-            Clique na seta ou na linha para abrir abaixo os lançamentos detalhados de cada mês.
+            Clique na seta ou na linha para abrir abaixo os lançamentos detalhados de cada mês. ({groupedList.length} {groupedList.length === 1 ? 'grupo mensal' : 'grupos mensais'})
           </p>
         </div>
 
@@ -171,22 +178,29 @@ export default function EntidadesTreeTable({
         </div>
       </div>
 
-      {/* Checkbox "Mostrar Dados Consolidados" */}
-      <div className="px-4 sm:px-6 py-3 bg-purple-50/40 border-b border-gray-200 flex items-center justify-between flex-wrap gap-3">
-        <label className="inline-flex items-center gap-2 cursor-pointer text-xs sm:text-sm font-medium text-purple-900 select-none">
-          <input
-            type="checkbox"
-            checked={consolidado}
-            onChange={(e) => onConsolidadoChange(e.target.checked)}
-            className="w-4 h-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500 cursor-pointer"
-          />
-          Mostrar Dados Consolidados considerando todas as entidades
-        </label>
-
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-          {groupedList.length} {groupedList.length === 1 ? 'grupo mensal' : 'grupos mensais'} ({data.length} {data.length === 1 ? 'lançamento' : 'lançamentos'})
-        </span>
-      </div>
+      {/* Cards de Totais */}
+      {!loading && !error && data.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 sm:p-6 bg-slate-50/80 border-b border-gray-200">
+          <div className="bg-white p-4 rounded-xl border border-blue-100 shadow-sm flex flex-col items-center sm:items-start">
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Concedida (Repasse)</span>
+            <span className="text-xl sm:text-2xl font-extrabold text-blue-700 mt-1 tabular-nums">
+              {formatBRL(totalGeralConcedida)}
+            </span>
+          </div>
+          <div className="bg-white p-4 rounded-xl border border-purple-100 shadow-sm flex flex-col items-center sm:items-start">
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Recebida (Devolução)</span>
+            <span className="text-xl sm:text-2xl font-extrabold text-purple-700 mt-1 tabular-nums">
+              {formatBRL(totalGeralRecebida)}
+            </span>
+          </div>
+          <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center sm:items-start">
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Previsto</span>
+            <span className="text-xl sm:text-2xl font-extrabold text-gray-800 mt-1 tabular-nums">
+              {formatBRL(totalGeralPrevisto)}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Tabela Principal */}
       <div className="overflow-x-auto">
@@ -249,25 +263,6 @@ export default function EntidadesTreeTable({
             })}
           </tbody>
 
-          {/* Footer Total Geral */}
-          {!loading && !error && groupedList.length > 0 && (
-            <tfoot>
-              <tr className="bg-slate-100 font-bold text-gray-900 border-t-2 border-gray-300 text-sm">
-                <td colSpan={6} className="py-3.5 px-4 text-right uppercase tracking-wider text-xs">
-                  Total Geral do Exercício:
-                </td>
-                <td className="py-3.5 px-4 text-right text-blue-700 tabular-nums">
-                  {formatBRL(totalGeralConcedida)}
-                </td>
-                <td className="py-3.5 px-4 text-right text-purple-700 tabular-nums">
-                  {formatBRL(totalGeralRecebida)}
-                </td>
-                <td className="py-3.5 px-4 text-right text-gray-700 tabular-nums">
-                  {formatBRL(totalGeralPrevisto)}
-                </td>
-              </tr>
-            </tfoot>
-          )}
         </table>
       </div>
 

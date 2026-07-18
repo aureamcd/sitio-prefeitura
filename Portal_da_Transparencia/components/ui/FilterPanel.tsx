@@ -25,6 +25,7 @@ interface FilterPanelProps<T extends string = 'ano' | 'mes' | 'busca' | 'entidad
   hideBusca?: boolean;
   searchPlaceholder?: string;
   hideConsolidado?: boolean;
+  hideTodosAno?: boolean;
 }
 
 
@@ -42,6 +43,7 @@ export default function FilterPanel<T extends string = 'ano' | 'mes' | 'busca' |
   hideBusca = false,
   searchPlaceholder = 'Pesquisar por código ou descrição...',
   hideConsolidado = false,
+  hideTodosAno = false,
 }: FilterPanelProps<T>) {
   const baseHasFilters = 
     (!hideAno && values.ano !== '') || 
@@ -103,7 +105,7 @@ export default function FilterPanel<T extends string = 'ano' | 'mes' | 'busca' |
                     onChange={(e) => onChange('ano' as T, e.target.value)}
                     className="w-full bg-gray-50 border border-gray-100 rounded-xl pl-4 pr-10 py-2.5 appearance-none text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all"
                   >
-                    <option value="">Todos</option>
+                    {!hideTodosAno && <option value="">Todos</option>}
                     {anos.map((a) => {
                       const val = typeof a === 'string' ? a : a.value;
                       const label = typeof a === 'string' ? a : a.label;

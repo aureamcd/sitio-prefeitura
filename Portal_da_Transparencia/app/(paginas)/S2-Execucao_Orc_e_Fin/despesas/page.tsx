@@ -671,7 +671,7 @@ export default function DespesasPage() {
     setFilters(prev => ({ ...prev, [field]: value }));
   }, []);
   const handleClear = useCallback(() => {
-    setFilters({ ano: '', mes: '', busca: '', entidade: '', natureza: '', credor: '', numero_empenho: '' });
+    setFilters({ ano: '2026', mes: '', busca: '', entidade: '', natureza: '', credor: '', numero_empenho: '' });
   }, []);
 
   // Extra table columns
@@ -739,7 +739,9 @@ export default function DespesasPage() {
         onChange={handleChange as any}
         onClear={handleClear}
         anosLoading={anosLoading}
-        empresas={EMPRESAS}
+        empresas={EMPRESAS.filter(e => e.codigo !== '2')}
+        hideConsolidado={isHistorico}
+        hideTodosAno={true}
       >
         {activeTab === 'empenhos' && (
           <>

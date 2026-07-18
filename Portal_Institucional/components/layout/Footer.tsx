@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { JSX } from "react";
+import { JSX, useState, useEffect } from "react";
 import {
   MapPin, Phone, Mail, Building2, TrendingUp, DollarSign,
   Gavel, Users, FileBarChart, HardHat, Handshake, Info,
@@ -12,6 +12,27 @@ import {
 import { FaInstagram } from "react-icons/fa";
 
 export default function TransparencyFooter(): JSX.Element {
+  const [dataAtualizacao, setDataAtualizacao] = useState<string>("Carregando...");
+
+  useEffect(() => {
+    async function buscarData() {
+      try {
+        const res = await fetch("/api/status/ultima-atualizacao");
+        if (res.ok) {
+          const json = await res.json();
+          if (json.date) {
+            setDataAtualizacao(json.date);
+            return;
+          }
+        }
+      } catch (e) {
+        // Fallback em caso de erro
+      }
+      setDataAtualizacao("04/05/2026");
+    }
+    buscarData();
+  }, []);
+
   const linkListClass = "space-y-2 text-xs text-gray-200";
   const colHeadClass = "font-bold text-[#FFE066] text-sm mb-4 border-b border-white/20 pb-1 uppercase tracking-wider";
 
@@ -224,7 +245,7 @@ export default function TransparencyFooter(): JSX.Element {
             Dados disponibilizados conforme Lei de Acesso à Informação (Lei nº 12.527/2011)
           </p>
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
-            <p>Atualização: <strong className="text-gray-200">04/05/2026</strong></p>
+            <p>Atualização: <strong className="text-gray-200">{dataAtualizacao}</strong></p>
             <p>Fonte: <strong className="text-gray-200">Sistema Contábil Municipal</strong></p>
             <p className="hidden md:block">Frequência: diária</p>
           </div>

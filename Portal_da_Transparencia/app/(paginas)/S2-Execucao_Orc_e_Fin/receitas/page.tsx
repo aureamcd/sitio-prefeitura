@@ -15,7 +15,7 @@ import Pagination from '@/components/ui/Pagination';
 import { createBrowserClient, useAvailableYears } from '@/lib/supabase/client';
 import { usePagination } from '@/lib/hooks/usePagination';
 import { useTodayDate } from '@/lib/hooks/useTodayDate';
-import { buildTree, flattenTree, formatDate } from '@/lib/receitas/receitasTree';
+import { buildTree, flattenTree, formatDate, prepareConsolidatedTreeItems } from '@/lib/receitas/receitasTree';
 import type {
   DividaAtivaRow,
   RawReceita,
@@ -420,6 +420,8 @@ export default function ReceitasPage() {
 
         if (filters.entidade) {
           query = query.eq('empresa', filters.entidade);
+        } else {
+          query = query.neq('empresa', '2');
         }
 
         if (filters.ano) {
@@ -586,7 +588,7 @@ export default function ReceitasPage() {
   }, [activeTab, filters.ano, filters.mes, filters.busca, filters.entidade, supabase]);
 
   // --- Build tree ---
-  const tree = useMemo(() => buildTree(rawData), [rawData]);
+  const tree = useMemo(() => buildTree(prepareConsolidatedTreeItems(rawData, !filters.entidade)), [rawData, filters.entidade]);
 
   // --- Auto-expand levels initially ---
   useEffect(() => {
@@ -670,7 +672,7 @@ export default function ReceitasPage() {
   }, []);
 
   const handleClear = useCallback(() => {
-    setFilters({ ano: '', mes: '', busca: '', entidade: '', categoria_economica: '' });
+    setFilters({ ano: '2026', mes: '', busca: '', entidade: '', categoria_economica: '' });
   }, []);
 
   const handleToggle = useCallback((codigo: string) => {
@@ -703,9 +705,10 @@ export default function ReceitasPage() {
         onChange={handleChange}
         onClear={handleClear}
         anosLoading={anosLoading}
-        empresas={EMPRESAS}
+        empresas={EMPRESAS.filter(e => e.codigo !== '2')}
         hideConsolidado={isHistorico}
         hideMes={activeTab !== 'receitas_extra'}
+        hideTodosAno={true}
       >
         {activeTab === 'arrecadacao' && (
           <div className="flex flex-col gap-1 sm:w-64">

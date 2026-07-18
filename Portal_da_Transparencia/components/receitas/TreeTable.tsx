@@ -121,7 +121,7 @@ function Row({ node, depth, canExpand, isExpanded, onToggle }: RowProps) {
         {formatBRL(node.previstoInicial)}
       </td>
 
-      {/* Previsto Atualizado */}
+      {/* Previsto Atualizada */}
       <td
         className={`px-4 py-3 text-right tabular-nums whitespace-nowrap ${
           logicalDepth === 0 ? 'text-gray-900' : 'text-gray-700'
@@ -130,10 +130,19 @@ function Row({ node, depth, canExpand, isExpanded, onToggle }: RowProps) {
         {formatBRL(node.previsto)}
       </td>
 
-      {/* Arrecadado */}
+      {/* Arrecadado Período */}
       <td
         className={`px-4 py-3 text-right tabular-nums whitespace-nowrap ${
-          logicalDepth === 0 ? 'text-gray-900' : 'text-gray-700'
+          logicalDepth === 0 ? 'text-emerald-700 font-semibold' : 'text-emerald-600'
+        }`}
+      >
+        {formatBRL(node.arrecadadoPeriodo || 0)}
+      </td>
+
+      {/* Arrecadado Total */}
+      <td
+        className={`px-4 py-3 text-right tabular-nums whitespace-nowrap ${
+          logicalDepth === 0 ? 'text-blue-700 font-bold' : 'text-gray-700'
         }`}
       >
         {formatBRL(node.arrecadado)}
@@ -182,7 +191,10 @@ function SearchRow({ node, level }: { node: ReceitaNode; level: number }) {
       <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap text-gray-800">
         {formatBRL(node.previsto)}
       </td>
-      <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap text-gray-800">
+      <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap text-emerald-600 font-medium">
+        {formatBRL(node.arrecadadoPeriodo || 0)}
+      </td>
+      <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap text-blue-700 font-semibold">
         {formatBRL(node.arrecadado)}
       </td>
       <td className="px-4 py-3 text-right whitespace-nowrap">
@@ -198,15 +210,15 @@ function SearchRow({ node, level }: { node: ReceitaNode; level: number }) {
 // Empty State
 // ---------------------------------------------------------------------------
 
-function EmptyState({ searchMode }: { searchMode: boolean; searchTerm?: string }) {
+function EmptyState({ searchMode }: { searchMode: boolean }) {
   if (searchMode) {
     return (
       <tr>
-        <td colSpan={5} className="px-6 py-16 text-center">
+        <td colSpan={6} className="px-6 py-16 text-center">
           <div className="flex flex-col items-center gap-3 text-gray-400">
             <Search size={32} className="opacity-30" />
-            <p className="text-sm font-semibold">Nenhum registro encontrado para os filtros selecionados.</p>
-            <p className="text-xs">Tente outro termo de busca ou limpe os filtros</p>
+            <p className="text-sm font-semibold">Nenhum resultado encontrado</p>
+            <p className="text-xs">Tente buscar por outro termo ou limpe o filtro de busca.</p>
           </div>
         </td>
       </tr>
@@ -215,7 +227,7 @@ function EmptyState({ searchMode }: { searchMode: boolean; searchTerm?: string }
 
   return (
     <tr>
-      <td colSpan={5} className="px-6 py-16 text-center">
+      <td colSpan={6} className="px-6 py-16 text-center">
         <div className="flex flex-col items-center gap-3 text-gray-400">
           <Receipt size={32} className="opacity-30" />
           <p className="text-sm font-semibold">Nenhum dado disponível</p>
@@ -233,7 +245,7 @@ function EmptyState({ searchMode }: { searchMode: boolean; searchTerm?: string }
 function ErrorState({ message }: { message: string }) {
   return (
     <tr>
-      <td colSpan={5} className="px-6 py-16 text-center">
+      <td colSpan={6} className="px-6 py-16 text-center">
         <div className="flex flex-col items-center gap-3 text-red-400" role="alert">
           <AlertCircle size={32} />
           <p className="text-sm font-semibold text-red-600">Erro ao carregar dados</p>
@@ -252,7 +264,7 @@ function ErrorState({ message }: { message: string }) {
 function LoadingSkeleton() {
   return (
     <tr>
-      <td colSpan={5} className="px-6 py-10 text-center text-gray-500">
+      <td colSpan={6} className="px-6 py-10 text-center text-gray-500">
         <div className="flex flex-col items-center gap-4" aria-label="Carregando dados">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
           <div className="animate-pulse flex justify-center">
@@ -364,10 +376,13 @@ export default function TreeTable({
                 Prev. Inicial
               </th>
               <th className="px-4 py-3 text-right font-semibold text-gray-700 whitespace-nowrap">
-                Prev. Atualizado
+                Prev. Atualizada
               </th>
               <th className="px-4 py-3 text-right font-semibold text-gray-700 whitespace-nowrap">
-                Arrecadado
+                Arrec. Período
+              </th>
+              <th className="px-4 py-3 text-right font-semibold text-gray-700 whitespace-nowrap">
+                Arrec. Total
               </th>
               <th className="px-4 py-3 text-right font-semibold text-gray-700 whitespace-nowrap">
                 % Realização
