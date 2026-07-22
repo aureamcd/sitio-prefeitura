@@ -11,7 +11,7 @@ import {
 import { getTableConfig } from "@/lib/admin/transparencia-tables";
 import BatchDocumentManager from "./BatchDocumentManager";
 
-const MAX_PDF_MB = Number.MAX_SAFE_INTEGER;
+
 
 type Toast = { type: "success" | "error"; msg: string };
 
@@ -80,10 +80,7 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
       showToast("error", "Apenas arquivos PDF são aceitos.");
       return;
     }
-    if (f.size > MAX_PDF_MB * 1_000_000) {
-      showToast("error", `O arquivo excede ${MAX_PDF_MB} MB.`);
-      return;
-    }
+
     setFile(f);
   }
 
@@ -92,25 +89,35 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
     setUploading(true);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("tabela", config.slug);
-      formData.append("ano", String(form.ano || new Date().getFullYear()));
-
-      const res = await fetch("/api/admin/upload", {
+      const resPresigned = await fetch("/api/admin/presigned-url", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: file.name,
+          fileType: file.type || "application/pdf",
+          tabela: config.slug,
+          ano: String(form.ano || new Date().getFullYear())
+        })
       });
 
-      const json = await res.json();
-
-      if (!res.ok || json.error) {
-        throw new Error(json.error || "Erro desconhecido no upload");
+      if (!resPresigned.ok) {
+        const text = await resPresigned.text();
+        throw new Error(text);
       }
+      
+      const json = await resPresigned.json();
 
-      setForm((prev) => ({ ...prev, arquivo_r2_url: json.url, arquivo_nome: json.fileName }));
+      const resUpload = await fetch(json.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type || "application/pdf" },
+        body: file
+      });
+
+      if (!resUpload.ok) throw new Error("Erro no upload R2 direto");
+
+      setForm((prev) => ({ ...prev, arquivo_r2_url: json.publicUrl, arquivo_nome: json.fileName }));
       setUploading(false);
-      return json.url;
+      return json.publicUrl;
     } catch (err: any) {
       showToast("error", "Erro no upload: " + err.message);
       setUploading(false);
@@ -215,21 +222,37 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
       let errorMessages: string[] = [];
 
       for (const item of pendingBatchFiles) {
-        const formData = new FormData();
-        formData.append("file", item.file);
-        formData.append("tabela", config.table);
-        formData.append("ano", String(form.ano || new Date().getFullYear()));
-
         try {
-          const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
-          if (res.ok) {
-            const json = await res.json();
+          const resPresigned = await fetch("/api/admin/presigned-url", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              fileName: item.name || item.file.name,
+              fileType: item.file.type || "application/pdf",
+              tabela: config.table,
+              ano: String(form.ano || new Date().getFullYear())
+            })
+          });
+
+          if (resPresigned.ok) {
+            const json = await resPresigned.json();
+            
+            const resUpload = await fetch(json.uploadUrl, {
+              method: "PUT",
+              headers: { "Content-Type": item.file.type || "application/pdf" },
+              body: item.file
+            });
+
+            if (!resUpload.ok) {
+               throw new Error("Falha no upload direto para a nuvem");
+            }
+
             const { error: dbErr } = await supabase.schema("transparencia").from(docTable).insert([{
               [fkColumn]: newRecordId,
               tipo_documento: item.type || "Anexo",
               nome_arquivo: item.name || item.file.name,
-              url_arquivo: json.url,
-              caminho_r2: json.url.split('/').slice(3).join('/'),
+              url_arquivo: json.publicUrl,
+              caminho_r2: json.caminho_r2,
               tamanho: item.file.size,
             }]);
             
@@ -239,7 +262,7 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
             }
           } else {
             hasUploadError = true;
-            const errText = await res.text();
+            const errText = await resPresigned.text();
             errorMessages.push(`Servidor (${item.name}): ${errText}`);
           }
         } catch (err: any) {
@@ -435,7 +458,7 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
                   onChange={(e) => {
                     if (e.target.files) {
                       const allFiles = Array.from(e.target.files);
-                      const validFiles = allFiles.filter(f => f.name.toLowerCase().endsWith(".pdf") && f.size <= MAX_PDF_MB * 1_000_000);
+                      const validFiles = allFiles.filter(f => f.name.toLowerCase().endsWith(".pdf"));
                       
                       if (validFiles.length < allFiles.length) {
                         alert(`Atenção: Apenas arquivos .PDF são permitidos.\nAlguns arquivos foram ignorados.`);

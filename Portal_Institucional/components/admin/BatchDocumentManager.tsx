@@ -18,8 +18,6 @@ type Documento = {
   caminho_r2?: string;
 };
 
-const MAX_PDF_MB = 50;
-
 export default function BatchDocumentManager({ tabela, parentId, ano }: BatchDocumentManagerProps) {
   const [docs, setDocs] = useState<Documento[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,9 +55,9 @@ export default function BatchDocumentManager({ tabela, parentId, ano }: BatchDoc
     if (!e.target.files || e.target.files.length === 0) return;
     const files = Array.from(e.target.files);
 
-    const validFiles = files.filter(f => f.name.toLowerCase().endsWith(".pdf") && f.size <= MAX_PDF_MB * 1_000_000);
+    const validFiles = files.filter(f => f.name.toLowerCase().endsWith(".pdf"));
     if (validFiles.length < files.length) {
-      alert(`Atenção: Apenas arquivos .PDF de até ${MAX_PDF_MB}MB são permitidos.\nAlguns arquivos foram ignorados.`);
+      alert(`Atenção: Apenas arquivos .PDF são permitidos.\nAlguns arquivos foram ignorados.`);
     }
 
     if (validFiles.length === 0) return;
@@ -74,26 +72,46 @@ export default function BatchDocumentManager({ tabela, parentId, ano }: BatchDoc
       const file = validFiles[i];
       setUploadProgress({ current: i + 1, total: validFiles.length });
 
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("tabela", tabela);
-      formData.append("ano", String(ano));
-
       try {
-        const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
-        if (!res.ok) {
-          const text = await res.text();
-          throw new Error(`Servidor: ${text}`);
-        }
-        const json = await res.json();
+        // 1. Obter URL Pré-assinada
+        const resPresigned = await fetch("/api/admin/presigned-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fileName: file.name,
+            fileType: file.type || "application/pdf",
+            tabela,
+            ano: String(ano)
+          })
+        });
 
-        // Save to DB
+        if (!resPresigned.ok) {
+          const text = await resPresigned.text();
+          throw new Error(`Erro ao gerar autorização: ${text}`);
+        }
+
+        const { uploadUrl, publicUrl, fileName, caminho_r2 } = await resPresigned.json();
+
+        // 2. Upload direto para o R2 usando a URL Pré-assinada
+        const resUpload = await fetch(uploadUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": file.type || "application/pdf",
+          },
+          body: file
+        });
+
+        if (!resUpload.ok) {
+          throw new Error(`Falha no upload direto para a nuvem.`);
+        }
+
+        // 3. Salvar no Banco de Dados
         const { error: dbErr } = await supabase.schema("transparencia").from(docTable).insert([{
           [fkColumn]: parentId,
           tipo_documento: "Anexo", // Padrão
           nome_arquivo: file.name,
-          url_arquivo: json.url,
-          caminho_r2: json.url.split('/').slice(3).join('/'),
+          url_arquivo: publicUrl,
+          caminho_r2: caminho_r2,
           tamanho: file.size,
         }]);
 
