@@ -537,6 +537,22 @@ export default function DespesasPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const aquisicoesData = useMemo(() => {
+    return data.filter(d => d.elemento_codigo === '30' || d.elemento_codigo === '52');
+  }, [data]);
+
+  const patrocinioData = useMemo(() => {
+    return data.filter(d => 
+      (d.objeto?.toLowerCase().includes('patrocínio') || d.objeto?.toLowerCase().includes('patrocinio'))
+    );
+  }, [data]);
+
+  const publicidadeData = useMemo(() => {
+    return data.filter(d => 
+      (d.objeto?.toLowerCase().includes('publicidade') || d.objeto?.toLowerCase().includes('propaganda') || d.credor_nome?.toLowerCase().includes('publicidade') || d.credor_nome?.toLowerCase().includes('propaganda'))
+    );
+  }, [data]);
+
   // Extra-orçamentárias
   const [extraData, setExtraData] = useState<DespesaExtraRow[]>([]);
   const [extraLoading, setExtraLoading] = useState(false);
@@ -726,6 +742,28 @@ export default function DespesasPage() {
     { header: 'Situação', accessor: 'status', render: (_v: string, row: RestosPagarRow) => <div className="flex justify-end"><StatusBadge row={row} /></div> },
   ];
 
+  const aquisicoesColumns: ColumnConfig[] = [
+    { header: 'Fornecedor', accessor: 'credor_nome', render: (val: string) => <span className="block max-w-[200px] line-clamp-2 text-xs" title={val}>{val || '-'}</span> },
+    { header: 'Descrição do Bem', accessor: 'objeto', render: (val: string) => <span className="block max-w-[300px] line-clamp-3 text-sm text-gray-700" title={val}>{val || '-'}</span> },
+    { header: 'Qtde', accessor: 'quantidade', render: () => <span className="block text-center font-mono text-xs text-gray-400 cursor-help" title="A quantidade está detalhada no texto da Descrição do Bem">-</span> },
+    { header: 'Val. Unitário (R$)', accessor: 'valor_unitario', render: () => <span className="block text-right tabular-nums text-gray-400 cursor-help" title="O valor unitário está detalhado no texto da Descrição do Bem">-</span> },
+    { header: 'Val. Total (R$)', accessor: 'empenhado', render: (val: number) => <span className="block text-right tabular-nums font-semibold text-emerald-700">{val ? formatBRL(Number(val)) : '-'}</span> },
+  ];
+
+  const patrocinioColumns: ColumnConfig[] = [
+    { header: 'Patrocinado (Fornecedor)', accessor: 'credor_nome', render: (val: string) => <span className="block max-w-[200px] line-clamp-2 text-xs" title={val}>{val || '-'}</span> },
+    { header: 'Ação Patrocinada (Objeto)', accessor: 'objeto', render: (val: string) => <span className="block max-w-[400px] line-clamp-3 text-sm text-gray-700" title={val}>{val || '-'}</span> },
+    { header: 'Data', accessor: 'data_empenho', render: (val: string) => <span className="text-gray-500 text-xs tabular-nums">{formatDateISO(val)}</span> },
+    { header: 'Val. Empenhado (R$)', accessor: 'empenhado', render: (val: number) => <span className="block text-right tabular-nums font-semibold text-emerald-700">{val ? formatBRL(Number(val)) : '-'}</span> },
+  ];
+
+  const publicidadeColumns: ColumnConfig[] = [
+    { header: 'Agência / Veículo', accessor: 'credor_nome', render: (val: string) => <span className="block max-w-[200px] line-clamp-2 text-xs" title={val}>{val || '-'}</span> },
+    { header: 'Campanha / Ação', accessor: 'objeto', render: (val: string) => <span className="block max-w-[400px] line-clamp-3 text-sm text-gray-700" title={val}>{val || '-'}</span> },
+    { header: 'Data', accessor: 'data_empenho', render: (val: string) => <span className="text-gray-500 text-xs tabular-nums">{formatDateISO(val)}</span> },
+    { header: 'Val. Empenhado (R$)', accessor: 'empenhado', render: (val: number) => <span className="block text-right tabular-nums font-semibold text-emerald-700">{val ? formatBRL(Number(val)) : '-'}</span> },
+  ];
+
   return (
     <ContentPage
       showSearch={false}
@@ -888,77 +926,61 @@ export default function DespesasPage() {
 
       {/* Tab: Aquisições de Bens */}
       {activeTab === 'aquisicoes_bens' && (
-        <div id="panel-aquisicoes" role="tabpanel" className="mt-6">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center">
-            <div className="flex justify-center mb-4">
-              <div className="p-3 rounded-full bg-gray-100">
-                <ShoppingCart size={32} className="text-gray-400" />
-              </div>
-            </div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Aquisições de Bens</h3>
-            <p className="text-sm text-gray-500 max-w-lg mx-auto leading-relaxed">
-              Não há registros de aquisições de bens com detalhamento por item (preço unitário e quantidade) disponíveis no momento para os exercícios de <strong>2023, 2024, 2025 e 2026</strong>.
-              Esta seção será atualizada assim que os dados forem estruturados conforme o critério 4.4 do PNTP 2026.
-            </p>
-            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-xs font-medium text-amber-700">
-              <AlertCircle size={14} />
-              Critério 4.4 — Em adequação
-            </div>
-            <div className="mt-4 inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2">
-              <Info size={14} className="text-blue-600 shrink-0" />
-              <p className="text-xs text-blue-700 font-medium">Declaração atualizada em {today}.</p>
-            </div>
-          </div>
+        <div id="panel-aquisicoes" role="tabpanel">
+          <DataTable
+            columns={aquisicoesColumns}
+            data={aquisicoesData}
+            title="Aquisições de Bens"
+            caption="Detalhamento das despesas e aquisições de bens, filtradas automaticamente a partir dos empenhos de Material de Consumo (30) e Material Permanente (52)."
+            exportable
+            loading={loading}
+            error={error}
+            paginationResetKey={filterKey}
+            hasActiveFilters={hasActiveFilters}
+            emptyMessage="Nenhuma despesa com aquisição de bens foi encontrada para este exercício."
+            emptyFilteredMessage="Nenhuma aquisição encontrada para os filtros selecionados."
+            pageSize={PAGE_SIZE}
+          />
         </div>
       )}
 
       {/* Tab: Patrocínio */}
       {activeTab === 'patrocinio' && (
         <div id="panel-patrocinio" role="tabpanel" className="mt-6">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center">
-            <div className="flex justify-center mb-4">
-              <div className="p-3 rounded-full bg-gray-100">
-                <Award size={32} className="text-gray-400" />
-              </div>
-            </div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Despesas de Patrocínio</h3>
-            <p className="text-sm text-gray-500 max-w-lg mx-auto leading-relaxed">
-              Não foram realizadas despesas com patrocínio nos exercícios de <strong>2023, 2024, 2025 e 2026</strong>.
-            </p>
-            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-xs font-medium text-blue-700">
-              <AlertCircle size={14} />
-              Critério 4.5 — Inexistência de despesas
-            </div>
-            <div className="mt-4 inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2">
-              <Info size={14} className="text-blue-600 shrink-0" />
-              <p className="text-xs text-blue-700 font-medium">Declaração atualizada em {today}.</p>
-            </div>
-          </div>
+          <DataTable
+            columns={patrocinioColumns}
+            data={patrocinioData}
+            title="Despesas de Patrocínio"
+            caption="Detalhamento das despesas relacionadas a patrocínios e apoio, extraídas automaticamente dos empenhos."
+            exportable
+            loading={loading}
+            error={error}
+            paginationResetKey={filterKey}
+            hasActiveFilters={hasActiveFilters}
+            emptyMessage="Nenhuma despesa de patrocínio foi encontrada para este exercício."
+            emptyFilteredMessage="Nenhuma despesa encontrada para os filtros selecionados."
+            pageSize={PAGE_SIZE}
+          />
         </div>
       )}
 
       {/* Tab: Publicidade */}
       {activeTab === 'publicidade' && (
         <div id="panel-publicidade" role="tabpanel" className="mt-6">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center">
-            <div className="flex justify-center mb-4">
-              <div className="p-3 rounded-full bg-gray-100">
-                <Megaphone size={32} className="text-gray-400" />
-              </div>
-            </div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Contratos de Publicidade</h3>
-            <p className="text-sm text-gray-500 max-w-lg mx-auto leading-relaxed">
-              Não foram realizadas despesas com contratos de publicidade nos exercícios de <strong>2023, 2024, 2025 e 2026</strong>.
-            </p>
-            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-xs font-medium text-blue-700">
-              <AlertCircle size={14} />
-              Critério 4.6 — Inexistência de despesas
-            </div>
-            <div className="mt-4 inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2">
-              <Info size={14} className="text-blue-600 shrink-0" />
-              <p className="text-xs text-blue-700 font-medium">Declaração atualizada em {today}.</p>
-            </div>
-          </div>
+          <DataTable
+            columns={publicidadeColumns}
+            data={publicidadeData}
+            title="Contratos de Publicidade"
+            caption="Detalhamento das despesas e contratos relacionados a serviços de publicidade, propaganda e divulgação institucional."
+            exportable
+            loading={loading}
+            error={error}
+            paginationResetKey={filterKey}
+            hasActiveFilters={hasActiveFilters}
+            emptyMessage="Nenhuma despesa com publicidade foi encontrada para este exercício."
+            emptyFilteredMessage="Nenhuma despesa encontrada para os filtros selecionados."
+            pageSize={PAGE_SIZE}
+          />
         </div>
       )}
 
