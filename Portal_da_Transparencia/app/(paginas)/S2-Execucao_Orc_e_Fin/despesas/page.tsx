@@ -656,6 +656,7 @@ export default function DespesasPage() {
           });
           setRestosData(sorted);
         }
+      } catch (err) {
         if (!cancelled) {
           setRestosError(err instanceof Error ? err.message : 'Erro ao carregar restos a pagar');
           setRestosData([]);
