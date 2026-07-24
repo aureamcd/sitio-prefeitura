@@ -215,7 +215,7 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
     console.log(`\n📦 Consultando Entidade ${emp.codigo} - ${emp.nome}...`);
     const dadosOrc = await fetchApiJson("ReceitaOrcamentaria", anoAtual, mesAtualPadrao, emp.codigo);
     const dadosExtra = await fetchApiJson("ReceitaExtraOrcamentaria", anoAtual, mesAtualPadrao, emp.codigo);
-    const todosApi = [...dadosOrc, ...dadosExtra];
+    const todosApi = dadosOrc; // dadosExtra será processado separadamente abaixo
 
     for (const itemApi of todosApi) {
       if (!itemApi.CODIGO) continue;
@@ -265,6 +265,65 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
       const { error } = await supabase.from("receitas").insert(chunk);
       if (!error) inseridos += chunk.length;
       else console.error("Erro insert lote:", error.message);
+    }
+  }
+
+  // 2.5. Sincronizar Receitas Extra-orçamentárias (Tabela Específica)
+  let extraAtualizados = 0;
+  let extraInseridos = 0;
+  for (const emp of empresas) {
+    const dadosExtra = await fetchApiJson("ReceitaExtraOrcamentaria", anoAtual, mesAtualPadrao, emp.codigo);
+    if (!dadosExtra || dadosExtra.length === 0) continue;
+
+    const registrosExtraFormatados = dadosExtra.map((item: any) => ({
+      ano: anoAtual,
+      codigo: item.EXTRA || item.CODIGO || "",
+      descricao: item.DESCRICAO || item.NOME || "",
+      data_lancamento: item.DTLAN ? item.DTLAN.split(" ")[0].split("/").reverse().join("-") : null,
+      historico: item.HISTORICO || item.NOMENCLATURA || "",
+      documento: item.DOCUMENTO || "",
+      contribuinte: item.CONTRIBUINTE || "",
+      cpf_cnpj: item.CPF_CNPJ || "",
+      valor: parseValor(item.VALOR),
+      origem: item.ORIGEM || "",
+      empresa: emp.codigo,
+      empresa_nome: emp.nome
+    })).filter(r => r.data_lancamento && r.valor > 0);
+
+    const { data: dbExtra } = await supabase
+      .schema("transparencia")
+      .from("receitas_extra_orcamentarias")
+      .select("id, codigo, data_lancamento, valor, historico")
+      .eq("ano", anoAtual)
+      .eq("empresa", emp.codigo);
+
+    const existentesExtra = dbExtra || [];
+    const novosExtraParaInserir = [];
+    const contagemExtraDB = new Map<string, number>();
+
+    for (const e of existentesExtra) {
+      const key = `${e.codigo}_${e.data_lancamento}_${e.valor}_${e.historico}`;
+      contagemExtraDB.set(key, (contagemExtraDB.get(key) || 0) + 1);
+    }
+
+    for (const reg of registrosExtraFormatados) {
+      const key = `${reg.codigo}_${reg.data_lancamento}_${reg.valor}_${reg.historico}`;
+      const qtdDb = contagemExtraDB.get(key) || 0;
+      if (qtdDb > 0) {
+        contagemExtraDB.set(key, qtdDb - 1);
+        extraAtualizados++;
+      } else {
+        novosExtraParaInserir.push(reg);
+      }
+    }
+
+    if (novosExtraParaInserir.length > 0) {
+      const CHUNK_SIZE = 200;
+      for (let i = 0; i < novosExtraParaInserir.length; i += CHUNK_SIZE) {
+        const chunk = novosExtraParaInserir.slice(i, i + CHUNK_SIZE);
+        const { error } = await supabase.schema("transparencia").from("receitas_extra_orcamentarias").insert(chunk);
+        if (!error) extraInseridos += chunk.length;
+      }
     }
   }
 
@@ -399,6 +458,8 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
   console.log(`✅ SINCRONIZAÇÃO CONCLUÍDA COM SUCESSO!`);
   console.log(`📊 Registros Existentes Atualizados (Delta): ${atualizados}`);
   console.log(`✨ Novos Registros Inseridos: ${inseridos}`);
+  console.log(`📊 Receitas Extra Existentes Atualizadas: ${extraAtualizados}`);
+  console.log(`✨ Receitas Extra Inseridas: ${extraInseridos}`);
   console.log(`🔄 Transferências Atualizadas/Inseridas: ${transferenciasAtualizadas}`);
   console.log(`====================================\n`);
 
