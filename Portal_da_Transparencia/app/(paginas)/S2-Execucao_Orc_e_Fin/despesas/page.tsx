@@ -645,11 +645,17 @@ export default function DespesasPage() {
         if (filters.busca) {
           query = query.or(`descricao.ilike.%${filters.busca}%,codigo.ilike.%${filters.busca}%`);
         }
-        const { data: result, error: qErr } = await query.order('codigo', { ascending: true });
+        const { data: result, error: qErr } = await query;
         if (cancelled) return;
         if (qErr) { setRestosError(qErr.message); setRestosData([]); }
-        else if (result) { setRestosData(result as RestosPagarRow[]); }
-      } catch (err) {
+        else if (result) {
+          const sorted = (result as RestosPagarRow[]).sort((a, b) => {
+            const numA = parseInt(a.codigo || '0', 10);
+            const numB = parseInt(b.codigo || '0', 10);
+            return numA - numB;
+          });
+          setRestosData(sorted);
+        }
         if (!cancelled) {
           setRestosError(err instanceof Error ? err.message : 'Erro ao carregar restos a pagar');
           setRestosData([]);
@@ -709,13 +715,14 @@ export default function DespesasPage() {
   }
 
   const restosColumns: ColumnConfig[] = [
-    { header: 'Código', accessor: 'codigo', render: (val: string) => <span className="font-mono text-xs">{val || '-'}</span> },
-    { header: 'Descrição', accessor: 'descricao', render: (val: string) => <span className="block max-w-[350px] line-clamp-2" title={val || ''}>{val || '-'}</span> },
-    { header: 'Empenhado (R$)', accessor: 'empenhado', render: (val: number) => <span className="block text-right tabular-nums">{formatBRL(Number(val))}</span> },
+    { header: 'Credor / Histórico', accessor: 'descricao', render: (val: string) => <span className="block max-w-[350px] line-clamp-2 text-sm text-gray-700" title={val || ''}>{val || '-'}</span> },
+    { header: 'Número do Empenho', accessor: 'codigo', render: (val: string) => <span className="font-mono text-xs font-semibold">{val || '-'}</span> },
+    { header: 'Valor Inscrito (R$)', accessor: 'empenhado', render: (val: number) => <span className="block text-right tabular-nums text-gray-500">{formatBRL(Number(val))}</span> },
     { header: 'Liquidado (R$)', accessor: 'liquidado', render: (val: number) => <span className="block text-right tabular-nums text-amber-600">{formatBRL(Number(val))}</span> },
-    { header: 'Pago (R$)', accessor: 'pago', render: (val: number) => (
+    { header: 'Valor Pago (R$)', accessor: 'pago', render: (val: number) => (
       <span className={`block text-right tabular-nums font-semibold ${Number(val) > 0 ? 'text-emerald-600' : 'text-gray-400'}`}>{formatBRL(Number(val))}</span>
     )},
+    { header: 'Situação', accessor: 'status', render: (_v: string, row: RestosPagarRow) => <div className="flex justify-end"><StatusBadge row={row} /></div> },
   ];
 
   return (

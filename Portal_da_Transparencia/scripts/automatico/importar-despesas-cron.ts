@@ -388,7 +388,7 @@ export async function sincronizarDespesasAno(ano: number) {
       // Carregar existentes da entidade no banco
       const { data: extraBanco } = await supabase
         .from("despesas_extra_orcamentarias")
-        .select("id, empresa, numero_guia, codigo, pago")
+        .select("id, empresa, numero_guia, codigo, pago, data")
         .eq("ano", ano)
         .eq("empresa", emp.codigo);
 
@@ -399,16 +399,30 @@ export async function sincronizarDespesasAno(ano: number) {
       }
 
       for (const itemEx of listaExtraApi) {
-        const numGuia = String(itemEx.NUMGUIA || itemEx.NUMERO_GUIA || "").trim();
+        const numGuia = String(itemEx.NUMEROGUIA || itemEx.NUMGUIA || itemEx.NUMERO_GUIA || "").trim();
         const codEx = String(itemEx.CODIGO || "").trim();
         const rowEx = (numGuia ? mapaExtra.get(`guia_${numGuia}`) : null) || mapaExtra.get(`cod_${codEx}`);
         const vPagoEx = parseValor(itemEx.PAGO || itemEx.VALOR);
 
         if (rowEx) {
-          if (Math.abs((Number(rowEx.pago) || 0) - vPagoEx) > 0.01) {
+          const dataParsed = parseDateBR(itemEx.DATAE || itemEx.DATA || itemEx.DATA_PAGAMENTO);
+          const dataGuiaParsed = parseDateBR(itemEx.DATAGUIA || itemEx.DATA_GUIA);
+          const cnpjParsed = itemEx.INSMF || itemEx.CNPJ_INSCRICAO || itemEx.CNPJ || null;
+          const codAdotado = itemEx.CODIGOADOTADO || itemEx.CODIGO_ADOTADO || null;
+          const hist = itemEx.HISTORICO || itemEx.DESCRICAODESPESA || itemEx.DESCRICAO || null;
+
+          if (Math.abs((Number(rowEx.pago) || 0) - vPagoEx) > 0.01 || !rowEx.data) {
             await supabase
               .from("despesas_extra_orcamentarias")
-              .update({ pago: vPagoEx })
+              .update({ 
+                pago: vPagoEx,
+                data: dataParsed,
+                numero_guia: numGuia || null,
+                data_guia: dataGuiaParsed,
+                cnpj_inscricao: cnpjParsed,
+                codigo_adotado: codAdotado,
+                historico: hist
+              })
               .eq("id", rowEx.id);
             extraAtualizadas++;
           }
@@ -420,12 +434,12 @@ export async function sincronizarDespesasAno(ano: number) {
             codigo: codEx || null,
             descricao: itemEx.DESCRICAO || itemEx.HISTORICO || splitNom.descricao || "Despesa Extraorçamentária",
             nomenclatura: itemEx.NOMENCLATURA || null,
-            historico: itemEx.HISTORICO || itemEx.DESCRICAO || null,
-            data: parseDateBR(itemEx.DATA || itemEx.DATA_PAGAMENTO),
+            historico: itemEx.HISTORICO || itemEx.DESCRICAODESPESA || itemEx.DESCRICAO || null,
+            data: parseDateBR(itemEx.DATAE || itemEx.DATA || itemEx.DATA_PAGAMENTO),
             numero_guia: numGuia || null,
             data_guia: parseDateBR(itemEx.DATAGUIA || itemEx.DATA_GUIA),
-            cnpj_inscricao: itemEx.CNPJ_INSCRICAO || itemEx.CNPJ || null,
-            codigo_adotado: itemEx.CODIGO_ADOTADO || null,
+            cnpj_inscricao: itemEx.INSMF || itemEx.CNPJ_INSCRICAO || itemEx.CNPJ || null,
+            codigo_adotado: itemEx.CODIGOADOTADO || itemEx.CODIGO_ADOTADO || null,
             pago: vPagoEx
           });
           extraInseridas++;
