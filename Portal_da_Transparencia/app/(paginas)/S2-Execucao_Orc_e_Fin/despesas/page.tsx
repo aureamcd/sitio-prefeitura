@@ -584,6 +584,7 @@ export default function DespesasPage() {
   const supabase = createBrowserClient();
   const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}-${filters.entidade}`;
   const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca || filters.entidade);
+  const isFilteredExceptYear = !!(filters.mes || filters.busca || filters.entidade || filters.natureza || filters.credor || filters.numero_empenho);
 
   // ── Buscar empenhos ──
   useEffect(() => {
@@ -974,7 +975,7 @@ export default function DespesasPage() {
             loading={loading}
             error={error}
             paginationResetKey={filterKey}
-            hasActiveFilters={hasActiveFilters}
+            hasActiveFilters={isFilteredExceptYear}
             emptyMessage={
               <EmptyDeclaration 
                 text={`Não foram realizadas despesas com patrocínio no exercício de ${filters.ano || '2026'}.`} 
@@ -1000,7 +1001,7 @@ export default function DespesasPage() {
             loading={loading}
             error={error}
             paginationResetKey={filterKey}
-            hasActiveFilters={hasActiveFilters}
+            hasActiveFilters={isFilteredExceptYear}
             emptyMessage={
               <EmptyDeclaration 
                 text={`Não foram realizadas despesas com contratos de publicidade no exercício de ${filters.ano || '2026'}.`} 
