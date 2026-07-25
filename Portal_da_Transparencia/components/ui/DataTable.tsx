@@ -26,6 +26,8 @@ export interface DataTableProps {
   hasActiveFilters?: boolean;
   emptyMessage?: React.ReactNode;
   emptyFilteredMessage?: React.ReactNode;
+  renderExpandedRow?: (row: any) => React.ReactNode;
+  isRowExpanded?: (row: any) => boolean;
 }
 
 /** Extrai o valor textual de uma célula para o CSV. */
@@ -88,6 +90,8 @@ export default function DataTable({
   emptyMessage = 'Nenhum dado disponível',
   emptyFilteredMessage = 'Nenhum registro encontrado para os filtros selecionados.',
   error,
+  renderExpandedRow,
+  isRowExpanded,
 }: DataTableProps): JSX.Element {
   const { slice, page, setPage, totalPages, total, startIndex, endIndex } = usePagination(
     data,
@@ -172,19 +176,28 @@ export default function DataTable({
               </tr>
             ) : displayData.length > 0 ? (
               displayData.map((row, rowIndex) => (
-                <tr key={rowIndex} role="row" className="hover:bg-gray-50 transition-colors">
-                  {columns.map((col, colIndex) => (
-                    <td
-                      key={col.accessor}
-                      role="cell"
-                      className={`px-5 py-3.5 text-sm text-gray-700 border-b ${
-                        colIndex === 0 ? 'sticky left-0 bg-white z-10 font-medium' : ''
-                      }`}
-                    >
-                      {col.render ? col.render(row[col.accessor], row) : row[col.accessor]}
-                    </td>
-                  ))}
-                </tr>
+                <React.Fragment key={rowIndex}>
+                  <tr role="row" className={`hover:bg-gray-50 transition-colors ${isRowExpanded?.(row) ? 'bg-blue-50/20' : ''}`}>
+                    {columns.map((col, colIndex) => (
+                      <td
+                        key={col.accessor}
+                        role="cell"
+                        className={`px-5 py-3.5 text-sm text-gray-700 border-b ${
+                          colIndex === 0 ? 'sticky left-0 bg-white z-10 font-medium' : ''
+                        }`}
+                      >
+                        {col.render ? col.render(row[col.accessor], row) : row[col.accessor]}
+                      </td>
+                    ))}
+                  </tr>
+                  {isRowExpanded?.(row) && renderExpandedRow && (
+                    <tr className="bg-gray-50/30">
+                      <td colSpan={columns.length} className="p-0 border-b border-gray-200">
+                        {renderExpandedRow(row)}
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))
             ) : (
               <tr role="row">

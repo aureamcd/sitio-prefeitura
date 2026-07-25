@@ -30,6 +30,13 @@ const MESES = [
   { value: '11', label: 'Novembro' },{ value: '12', label: 'Dezembro' },
 ];
 
+const SITUACOES = [
+  { value: 'andamento', label: 'Em Andamento' },
+  { value: 'conclu', label: 'Concluída' },
+  { value: 'paralis', label: 'Paralisada' },
+  { value: 'projet', label: 'Em Planejamento' },
+];
+
 function formatBRL(value: number): string {
   return (value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
@@ -69,7 +76,7 @@ function getPercentualColor(pct: number | null): string {
 // ---------------------------------------------------------------------------
 // Hook: busca obras do banco
 // ---------------------------------------------------------------------------
-function useObrasData(filters: FilterValues) {
+function useObrasData(filters: FilterValues & { situacao?: string }) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createBrowserClient();
@@ -83,6 +90,7 @@ function useObrasData(filters: FilterValues) {
 
       if (filters.entidade) query = query.eq('empresa', filters.entidade);
       if (filters.ano) query = query.eq('ano', Number(filters.ano));
+      if (filters.situacao) query = query.ilike('situacao', `%${filters.situacao}%`);
       if (filters.mes) {
         const prefix = `${filters.ano || '2026'}-${filters.mes}`;
         query = query.or(`data_inicio.ilike.${prefix}%,data_previsao_fim.ilike.${prefix}%`);
@@ -97,13 +105,24 @@ function useObrasData(filters: FilterValues) {
         .order('data_inicio', { ascending: false });
 
       if (cancelled) return;
-      setData(!error && result ? result : []);
+      
+      let finalData = !error && result ? result : [];
+      // Deduplicar obras pelo objeto + contrato para evitar repetições na tela
+      const seen = new Set();
+      finalData = finalData.filter((obra) => {
+        const key = `${obra.objeto}-${obra.contrato_numero}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+
+      setData(finalData);
       setLoading(false);
     }
 
     const timer = setTimeout(fetchData, 300);
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [filters.ano, filters.mes, filters.busca, filters.entidade]);
+  }, [filters.ano, filters.mes, filters.busca, filters.entidade, filters.situacao]);
 
   return { data, loading };
 }
@@ -111,47 +130,10 @@ function useObrasData(filters: FilterValues) {
 // ---------------------------------------------------------------------------
 // Componente: Detalhamento da Obra (expansível)
 // ---------------------------------------------------------------------------
-function DetalhamentoObra({ obra, isOpen, onToggle }: {
-  obra: any;
-  isOpen: boolean;
-  onToggle: () => void;
-}) {
+function DetalhamentoObra({ obra }: { obra: any }) {
   return (
-    <div className="border border-gray-100 rounded-xl overflow-hidden transition-all duration-300">
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center justify-between px-5 py-3.5 bg-white hover:bg-gray-50 transition-colors text-left"
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-            <Search size={16} />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-900 line-clamp-1">
-              {obra.objeto || 'Obra sem descrição'}
-            </p>
-            <div className="flex items-center gap-3 mt-0.5">
-              <span className="text-xs text-gray-500">
-                {obra.contrato_numero ? `Contrato: ${obra.contrato_numero}` : 'Sem contrato'}
-              </span>
-              {obra.situacao && (
-                <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold border ${getSituacaoBadge(obra.situacao).className}`}>
-                  {getSituacaoBadge(obra.situacao).label}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-        {isOpen ? (
-          <ChevronUp size={18} className="text-gray-400 shrink-0" />
-        ) : (
-          <ChevronDown size={18} className="text-gray-400 shrink-0" />
-        )}
-      </button>
-
-      {isOpen && (
-        <div className="border-t border-gray-100 bg-gray-50/50 p-5 space-y-6">
-          {/* Informações Gerais */}
+    <div className="bg-gray-50/50 p-6 space-y-6">
+      {/* Informações Gerais */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-white rounded-xl border border-gray-100 p-4">
               <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
@@ -296,8 +278,8 @@ function DetalhamentoObra({ obra, isOpen, onToggle }: {
               </div>
             </div>
           </div>
+          </div>
         </div>
-      )}
     </div>
   );
 }
@@ -508,29 +490,9 @@ function PainelGeralObrasTab({
         hasActiveFilters={hasActiveFilters}
         emptyMessage="Não há obras públicas registradas no período informado."
         emptyFilteredMessage="Nenhuma obra encontrada para os filtros selecionados."
+        renderExpandedRow={(row) => <DetalhamentoObra obra={row} />}
+        isRowExpanded={(row) => row.id === obraAberta}
       />
-
-      {/* Detalhamento Expansível */}
-      {data.length > 0 && (
-        <div className="mt-6 space-y-3">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-            <FileText size={16} className="text-gray-400" />
-            Detalhamento de Custos e Execução
-          </h3>
-          <p className="text-xs text-gray-500 mb-4 -mt-2">
-            Clique em uma obra na tabela acima para expandir o detalhamento financeiro, ou utilize
-            os botões abaixo para navegar rapidamente.
-          </p>
-          {data.map((obra) => (
-            <DetalhamentoObra
-              key={obra.id}
-              obra={obra}
-              isOpen={obraAberta === obra.id}
-              onToggle={() => setObraAberta(obraAberta === obra.id ? null : obra.id)}
-            />
-          ))}
-        </div>
-      )}
 
       {/* Nota Legal */}
       <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50 px-6 py-4">
@@ -712,11 +674,12 @@ function ObrasParalisadasTab({ filters }: { filters: FilterValues }) {
 // ---------------------------------------------------------------------------
 export default function ObrasPage() {
   const [activeTab, setActiveTab] = useState<'geral' | 'paralisadas'>('geral');
-  const [filters, setFilters] = useState<FilterValues>({
-    ano: '2026',
+  const [filters, setFilters] = useState<FilterValues & { situacao?: string }>({
+    ano: '',
     mes: '',
     busca: '',
     entidade: '',
+    situacao: '',
   });
   const { anos: ANOS, loading: anosLoading } = useAvailableYears(
     'obras',
@@ -724,18 +687,18 @@ export default function ObrasPage() {
   );
 
   const handleChange = useCallback(
-    (field: 'ano' | 'mes' | 'busca' | 'entidade', value: string) => {
+    (field: string, value: string) => {
       setFilters((prev) => ({ ...prev, [field]: value }));
     },
     []
   );
 
   const handleClear = useCallback(() => {
-    setFilters({ ano: '', mes: '', busca: '', entidade: '' });
+    setFilters({ ano: '', mes: '', busca: '', entidade: '', situacao: '' });
   }, []);
 
-  const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}-${filters.entidade}`;
-  const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca || filters.entidade);
+  const filterKey = `${filters.ano}-${filters.mes}-${filters.busca}-${filters.entidade}-${filters.situacao}`;
+  const hasActiveFilters = !!(filters.ano || filters.mes || filters.busca || filters.entidade || filters.situacao);
 
   return (
     <ContentPage
@@ -755,8 +718,25 @@ export default function ObrasPage() {
         onChange={handleChange}
         onClear={handleClear}
         anosLoading={anosLoading}
-        empresas={EMPRESAS}
-      />
+      >
+        {/* Filtro de Situação */}
+        <div className="flex flex-col gap-1 sm:w-44">
+          <label className="text-xs font-medium text-gray-600">Situação</label>
+          <div className="relative">
+            <select
+              value={filters.situacao || ''}
+              onChange={(e) => handleChange('situacao', e.target.value)}
+              className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 appearance-none text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all"
+            >
+              <option value="">Todas</option>
+              {SITUACOES.map((s) => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
+            </select>
+            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+      </FilterPanel>
 
       {/* Abas lado a lado */}
       <div
