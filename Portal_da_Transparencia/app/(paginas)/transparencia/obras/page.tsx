@@ -278,8 +278,6 @@ function DetalhamentoObra({ obra }: { obra: any }) {
               </div>
             </div>
           </div>
-          </div>
-        </div>
     </div>
   );
 }
