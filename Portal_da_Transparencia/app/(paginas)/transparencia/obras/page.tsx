@@ -122,17 +122,22 @@ function useObrasData(filters: FilterValues & { situacao?: string }) {
         .map(o => o.contrato_numero);
 
       if (contratosNumeros.length > 0) {
+        // Usa .or() com ilike para lidar com prefixos como "Termo de contrato 029/2026"
+        const orString = contratosNumeros
+          .map(n => `numero.ilike.%${n.trim()}%`)
+          .join(',');
+
         const { data: contratos } = await supabase
           .schema('transparencia')
           .from('contratos_v2')
           .select('numero, valor')
-          .in('numero', contratosNumeros);
+          .or(orString);
 
         if (contratos && contratos.length > 0) {
-          const contratosMap = new Map(contratos.map(c => [c.numero, c]));
           finalData = finalData.map(obra => {
             if (!obra.valor_total && obra.contrato_numero) {
-              const contrato = contratosMap.get(obra.contrato_numero);
+              const numBusca = obra.contrato_numero.toLowerCase().trim();
+              const contrato = contratos.find(c => c.numero && c.numero.toLowerCase().includes(numBusca));
               if (contrato && contrato.valor) {
                 return {
                   ...obra,
