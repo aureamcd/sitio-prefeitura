@@ -526,6 +526,24 @@ function DetailItem({ icon, label, value }: { icon?: React.ReactNode; label: str
   );
 }
 
+function EmptyDeclaration({ text, pntpCriterio, today }: { text: string, pntpCriterio: string, today: string }) {
+  return (
+    <div className="flex flex-col items-center py-6 px-4">
+      <p className="text-sm text-gray-500 max-w-lg mx-auto leading-relaxed mb-4 text-center">
+        {text}
+      </p>
+      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-xs font-medium text-blue-700 mb-3">
+        <AlertCircle size={14} />
+        {pntpCriterio}
+      </div>
+      <div className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2">
+        <Info size={14} className="text-blue-600 shrink-0" />
+        <p className="text-xs text-blue-700 font-medium">Declaração de inexistência atualizada em {today}.</p>
+      </div>
+    </div>
+  );
+}
+
 export default function DespesasPage() {
   const today = useTodayDate();
   const [activeTab, setActiveTab] = useState<'empenhos' | 'extra_orcamentarias' | 'restos_a_pagar' | 'aquisicoes_bens' | 'patrocinio' | 'publicidade'>('empenhos');
@@ -957,7 +975,13 @@ export default function DespesasPage() {
             error={error}
             paginationResetKey={filterKey}
             hasActiveFilters={hasActiveFilters}
-            emptyMessage="Nenhuma despesa de patrocínio foi encontrada para este exercício."
+            emptyMessage={
+              <EmptyDeclaration 
+                text={`Não foram realizadas despesas com patrocínio no exercício de ${filters.ano || '2026'}.`} 
+                pntpCriterio="Critério 4.5 — Inexistência de despesas"
+                today={today}
+              />
+            }
             emptyFilteredMessage="Nenhuma despesa encontrada para os filtros selecionados."
             pageSize={PAGE_SIZE}
           />
@@ -977,7 +1001,13 @@ export default function DespesasPage() {
             error={error}
             paginationResetKey={filterKey}
             hasActiveFilters={hasActiveFilters}
-            emptyMessage="Nenhuma despesa com publicidade foi encontrada para este exercício."
+            emptyMessage={
+              <EmptyDeclaration 
+                text={`Não foram realizadas despesas com contratos de publicidade no exercício de ${filters.ano || '2026'}.`} 
+                pntpCriterio="Critério 4.6 — Inexistência de despesas"
+                today={today}
+              />
+            }
             emptyFilteredMessage="Nenhuma despesa encontrada para os filtros selecionados."
             pageSize={PAGE_SIZE}
           />
