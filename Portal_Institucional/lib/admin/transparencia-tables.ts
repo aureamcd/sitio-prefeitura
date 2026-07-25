@@ -633,6 +633,46 @@ export const TABELAS_TRANSPARENCIA: TableConfig[] = [
       { key: "ano", label: "Ano", getOptions: (items) => getUniqueYears(items).map(a => ({ value: String(a), label: String(a) })) },
     ],
   },
+
+  {
+    slug: "obras",
+    label: "Obras Públicas",
+    description: "Gestão das obras e serviços de engenharia (Critério 10 do PNTP)",
+    icon: HardHat,
+    color: "text-amber-600",
+    bgColor: "bg-amber-50",
+    schema: "transparencia",
+    table: "obras",
+    orderBy: { column: "data_inicio", ascending: false },
+    columns: [
+      { key: "contrato_numero", label: "Nº Contrato", width: "w-28" },
+      { key: "objeto", label: "Objeto da Obra", width: "min-w-[250px]" },
+      { key: "situacao", label: "Situação" },
+      { key: "empresa_responsavel", label: "Contratada", hideMobile: true },
+      { key: "valor_total", label: "Valor (R$)", type: "number", monetary: true, hideMobile: true },
+    ],
+    mobileColumns: ["contrato_numero", "objeto", "situacao"],
+    formFields: [
+      { key: "ano", label: "Ano Base", type: "number", required: true },
+      { key: "empresa", label: "Cód. Entidade (1=PM, 3=FMS, 4=FME, 5=FMAS)", type: "number", required: true, placeholder: "1" },
+      { key: "contrato_numero", label: "Nº do Contrato", required: true, placeholder: "ex: 008/2026" },
+      { key: "licitacao", label: "Licitação (Origem)", placeholder: "ex: CONCORRÊNCIA Nº 013/2025" },
+      { key: "empresa_responsavel", label: "Razão Social (Empresa contratada)", required: true },
+      { key: "cnpj_empresa", label: "CNPJ", type: "cpf_cnpj" },
+      { key: "objeto", label: "Objeto / Descrição da Obra", type: "textarea", fullWidth: true, required: true },
+      { key: "localizacao", label: "Localização", placeholder: "ex: Povoado Retiro", fullWidth: true },
+      { key: "situacao", label: "Situação da Obra", type: "select", options: ["Em andamento", "Concluída", "Paralisada", "Cancelada"], required: true },
+      { key: "data_inicio", label: "Data de Início", type: "date", required: true },
+      { key: "data_previsao_fim", label: "Data Prevista de Fim", type: "date", required: true },
+      { key: "percentual_executado", label: "Percentual Executado (%)", type: "number", placeholder: "ex: 45.5" },
+      { key: "valor_total", label: "Valor Contratado (R$)", type: "number", placeholder: "Pode deixar vazio p/ puxar do Contrato" },
+      { key: "valor_executado", label: "Valor Executado / Pago (R$)", type: "number" },
+    ],
+    filters: [
+      { key: "ano", label: "Ano", getOptions: (items) => getUniqueYears(items).map(a => ({ value: String(a), label: String(a) })) },
+      { key: "situacao", label: "Situação", getOptions: (items) => getUniqueValues(items, "situacao").map(s => ({ value: s, label: s })) },
+    ],
+  },
 ];
 
 /* ─── Slugs válidos (extraídos das configs) ─── */

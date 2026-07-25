@@ -21,6 +21,7 @@ import {
   Scale,
   Database,
   Gavel,
+  HardHat,
 } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { TABELAS_TRANSPARENCIA } from "@/lib/admin/transparencia-tables";
@@ -371,6 +372,24 @@ export default function AdminLayout({
               }`}
             />
             <span className="flex-1">Contratos</span>
+          </Link>
+
+          {/* ── Obras ── */}
+          <Link
+            href="/admin/obras"
+            onClick={onNavigate}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              pathname.startsWith("/admin/obras")
+                ? "bg-[#0B3D91] text-white font-semibold shadow-md shadow-blue-200"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            <HardHat
+              className={`w-5 h-5 ${
+                pathname.startsWith("/admin/obras") ? "text-white" : "text-amber-500"
+              }`}
+            />
+            <span className="flex-1">Obras</span>
           </Link>
 
           {/* ── Publicações ── */}
