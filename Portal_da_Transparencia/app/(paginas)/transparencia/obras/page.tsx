@@ -124,7 +124,7 @@ function useObrasData(filters: FilterValues & { situacao?: string }) {
       if (contratosNumeros.length > 0) {
         const { data: contratos } = await supabase
           .schema('transparencia')
-          .from('contratos')
+          .from('contratos_v2')
           .select('numero, valor')
           .in('numero', contratosNumeros);
 
