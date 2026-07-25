@@ -538,7 +538,7 @@ function EmptyDeclaration({ text, pntpCriterio, today }: { text: string, pntpCri
       </div>
       <div className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2">
         <Info size={14} className="text-blue-600 shrink-0" />
-        <p className="text-xs text-blue-700 font-medium">Declaração de inexistência atualizada em {today}.</p>
+        <p className="text-xs text-blue-700 font-medium">Declaração de inexistência atualizada em {formatDateISO(today) || today}.</p>
       </div>
     </div>
   );
