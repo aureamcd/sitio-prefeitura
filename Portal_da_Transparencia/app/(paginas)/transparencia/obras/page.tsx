@@ -116,6 +116,35 @@ function useObrasData(filters: FilterValues & { situacao?: string }) {
         return true;
       });
 
+      // Tentar buscar o valor no contrato se estiver zerado na obra
+      const contratosNumeros = finalData
+        .filter(o => !o.valor_total && o.contrato_numero)
+        .map(o => o.contrato_numero);
+
+      if (contratosNumeros.length > 0) {
+        const { data: contratos } = await supabase
+          .schema('transparencia')
+          .from('contratos')
+          .select('numero, valor')
+          .in('numero', contratosNumeros);
+
+        if (contratos && contratos.length > 0) {
+          const contratosMap = new Map(contratos.map(c => [c.numero, c]));
+          finalData = finalData.map(obra => {
+            if (!obra.valor_total && obra.contrato_numero) {
+              const contrato = contratosMap.get(obra.contrato_numero);
+              if (contrato && contrato.valor) {
+                return {
+                  ...obra,
+                  valor_total: contrato.valor,
+                };
+              }
+            }
+            return obra;
+          });
+        }
+      }
+
       setData(finalData);
       setLoading(false);
     }
