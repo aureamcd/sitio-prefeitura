@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/importar-despesas",
       "schedule": "30 6 * * *"
+    },
+    {
+      "path": "/api/cron/importar-diarias",
+      "schedule": "0 7 * * *"
     }
   ]
 }
