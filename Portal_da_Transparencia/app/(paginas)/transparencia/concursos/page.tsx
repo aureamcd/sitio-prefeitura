@@ -193,12 +193,13 @@ export default function ConcursosPage() {
       },
       {
         header: 'Documentos',
-        accessor: 'documentos',
-        render: (allDocs: any[], row: any) => {
-          const docs = (allDocs || []).filter((d) => {
+        accessor: 'documentos_gerais',
+        render: (_val: any, row: any) => {
+          const allDocs = row.documentos || [];
+          const docs = allDocs.filter((d: any) => {
             const t = (d.tipo_documento || '').toLowerCase();
             return !t.includes('nomea') && !t.includes('convoca');
-          }).map(d => ({
+          }).map((d: any) => ({
             id: d.id,
             nome_arquivo: d.titulo,
             caminho_r2: d.arquivo_url,

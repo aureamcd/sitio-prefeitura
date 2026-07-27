@@ -227,7 +227,7 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              fileName: item.name || item.file.name,
+              fileName: item.file.name,
               fileType: item.file.type || "application/pdf",
               tabela: config.table,
               ano: String(form.ano || new Date().getFullYear())
