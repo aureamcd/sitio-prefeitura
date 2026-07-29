@@ -47,7 +47,7 @@ const servicosOnline: ServicoOnline[] = [
     {
         nome: "Certidão Negativa",
         descricao: "Emissão de Certidões Negativas de Débitos (CND) municipais.",
-        link: "http://picontreina2.dcfiorilli.com.br:8084/issweb/home.jsf",
+        link: "http://picontreina2.dcfiorilli.com.br:8084/servicosweb/home.jsf",
         Icon: FileCheck,
         categoria: "Tributário e Empresas",
     },

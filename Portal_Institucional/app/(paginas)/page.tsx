@@ -47,7 +47,7 @@ const sections: SectionItem[] = [
       {
         title: "Certidão Negativa",
         description: "Emissão de Certidões Negativas de Débito.",
-        href: "http://picontreina2.dcfiorilli.com.br:8084/issweb/home.jsf",
+        href: "http://picontreina2.dcfiorilli.com.br:8084/servicosweb/home.jsf",
         Icon: FileCheck,
         featured: true,
       },
