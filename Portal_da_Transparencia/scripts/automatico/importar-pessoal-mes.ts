@@ -35,7 +35,7 @@ const supabase = createClient(
 );
 
 const BASE =
-    "https://transparencia.padremarcos.pi.gov.br/Transparencia/VersaoJson/Pessoal/";
+    "https://contreina.padremarcos.pi.gov.br/transparencia/VersaoJson/Pessoal";
 
 /**
  * BUSCAR ENTIDADES
@@ -144,6 +144,8 @@ async function importarMes(
         `\n📅 ${ano}/${String(mes).padStart(2, "0")} - ${entidade.codigo} - ${entidade.nome}`
     );
 
+    const lastDay = new Date(ano, mes, 0).getDate();
+
     const params = new URLSearchParams({
         ConectarExercicio: String(ano),
         Listagem: "Servidores",
@@ -151,7 +153,7 @@ async function importarMes(
         Ano: String(ano),
         DiaInicioPeriodo: "01",
         MesInicialPeriodo: String(mes).padStart(2, "0"),
-        DiaFinalPeriodo: "31",
+        DiaFinalPeriodo: String(lastDay).padStart(2, "0"),
         MesFinalPeriodo: String(mes).padStart(2, "0"),
         MostraDadosConsolidado: "False",
     });
@@ -322,6 +324,12 @@ async function importarMes(
          * REMUNERAÇÕES
          */
         if (remuneracoes.length > 0) {
+            // Remove existing records for this month/ano and entity (to simulate upsert)
+            await supabase.schema("transparencia").from("remuneracoes")
+                .delete()
+                .eq("ano", ano)
+                .eq("mes", mes);
+
             const BATCH = 200;
             let ok = 0;
             for (let i = 0; i < remuneracoes.length; i += BATCH) {
@@ -329,9 +337,7 @@ async function importarMes(
                 const { error } = await supabase
                     .schema("transparencia")
                     .from("remuneracoes")
-                    .upsert(batch, {
-                        onConflict: "matricula,ano,mes,tipo",
-                    });
+                    .insert(batch);
 
                 if (error) {
                     console.error("❌ remuneracoes:", error.message);

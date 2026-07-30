@@ -145,18 +145,6 @@ export default function RegulamentacaoGovernoDigitalPage() {
             </div>
           </div>
         </div>
-
-        <div className="mt-10 pt-6 border-t border-gray-100">
-          <h3 className="text-lg font-bold text-[#173572] mb-3">Formatos Alternativos</h3>
-          <a
-            href="/docs/decreto-governo-digital.pdf"
-            target="_blank"
-            className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
-          >
-            <FileText size={18} className="text-red-500" />
-            Baixar versão em PDF assinada
-          </a>
-        </div>
       </div>
     </ContentPage>
   );

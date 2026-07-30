@@ -55,9 +55,8 @@ async function main() {
   
   console.log(`Buscando licitações já cadastradas na licitacoes_v2...`);
 
-  // Removemos as importações parciais criadas anteriormente que ficaram duplicadas
-  console.log('Removendo duplicatas da importação anterior...');
-  await supabase.schema('transparencia').from('licitacoes_v2').delete().eq('origem', 'IMPORTACAO_XLSX');
+  // Removido a exclusão em lote para não apagar edições manuais (fiscais) e PDFs (anexos) inseridos pela Lorena.
+  // O script agora fará apenas o UPSERT (update se existir, insert se não existir).
 
   const { data: existentes, error: errorFetch } = await supabase
     .schema('transparencia')
