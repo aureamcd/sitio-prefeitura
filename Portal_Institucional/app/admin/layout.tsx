@@ -22,6 +22,8 @@ import {
   Database,
   Gavel,
   HardHat,
+  Landmark,
+  AlertTriangle,
 } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { TABELAS_TRANSPARENCIA } from "@/lib/admin/transparencia-tables";
@@ -438,57 +440,23 @@ export default function AdminLayout({
             <div className="border-t border-gray-100" />
           </div>
 
-          {/* ═══ PORTAL DA TRANSPARÊNCIA ═══ */}
-          <button
-            onClick={() => setTransparenciaOpen(!transparenciaOpen)}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-              isTransparenciaActive
-                ? "bg-[#0B3D91]/5 text-[#0B3D91]"
+          {/* ── Emendas Parlamentares ── */}
+          <Link
+            href="/admin/emendas"
+            onClick={onNavigate}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              pathname.startsWith("/admin/emendas")
+                ? "bg-[#0B3D91] text-white font-semibold shadow-md shadow-blue-200"
                 : "text-gray-600 hover:bg-gray-50"
             }`}
           >
-            <Database
+            <Landmark
               className={`w-5 h-5 ${
-                isTransparenciaActive ? "text-[#0B3D91]" : "text-gray-400"
+                pathname.startsWith("/admin/emendas") ? "text-white" : "text-purple-600"
               }`}
             />
-            <span className="flex-1 text-left">Portal da Transparência</span>
-            <ChevronDown
-              className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-                transparenciaOpen ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-
-          {/* Sub-items da Transparência */}
-          {transparenciaOpen && (
-            <div className="ml-4 pl-4 border-l-2 border-gray-100 space-y-0.5">
-              {TABELAS_TRANSPARENCIA.filter(t => t.slug !== 'licitacoes' && t.slug !== 'contratos').map((t) => {
-                const isActive = pathname.startsWith(`/admin/${t.slug}`);
-                const Icon = t.icon;
-
-                return (
-                  <Link
-                    key={t.slug}
-                    href={`/admin/${t.slug}`}
-                    onClick={onNavigate}
-                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${
-                      isActive
-                        ? "bg-[#0B3D91] text-white font-semibold shadow-md shadow-blue-200"
-                        : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-                    }`}
-                  >
-                    <Icon
-                      className={`w-4 h-4 ${
-                        isActive ? "text-white" : t.color
-                      }`}
-                    />
-                    <span className="flex-1">{t.label}</span>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
+            <span className="flex-1">Emendas</span>
+          </Link>
         </nav>
 
         {/* Footer: Home + User + Logout */}
