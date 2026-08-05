@@ -134,7 +134,7 @@ function DeclaracaoInexistencia({
 // ---------------------------------------------------------------------------
 
 function AtendimentoFilaTab({ filters }: { filters: FilterValues }) {
-  const [abaAtendimento, setAbaAtendimento] = useState<'servicos' | 'fila'>('servicos');
+  const [abaAtendimento, setAbaAtendimento] = useState<'servicos' | 'unidades' | 'fila'>('servicos');
 
   const servicosFiltrados = useMemo(() => {
     let list = [...SERVICOS_SAUDE];
@@ -173,7 +173,13 @@ function AtendimentoFilaTab({ filters }: { filters: FilterValues }) {
           className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
             abaAtendimento === 'servicos' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
           }`}>
-          <Stethoscope size={16} /> Serviços e Escalas
+          <Stethoscope size={16} /> Escala Médica
+        </button>
+        <button onClick={() => setAbaAtendimento('unidades')}
+          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
+            abaAtendimento === 'unidades' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}>
+          <Users size={16} /> Unidades (UBS)
         </button>
         <button onClick={() => setAbaAtendimento('fila')}
           className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${
@@ -233,68 +239,39 @@ function AtendimentoFilaTab({ filters }: { filters: FilterValues }) {
         </div>
       )}
 
-      {/* Sub-aba: Fila de Espera */}
-      {abaAtendimento === 'fila' && (
+      {/* Sub-aba: Unidades */}
+      {abaAtendimento === 'unidades' && (
         <div className="mt-4">
-          {/* Card de privacidade */}
-          <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
-            <div className="flex items-start gap-3">
-              <Info size={18} className="text-amber-600 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-amber-800">Privacidade dos Pacientes</p>
-                <p className="text-xs text-amber-700/80 mt-1">
-                  Em conformidade com a LGPD e o PNTP 2026, os nomes dos pacientes foram ocultados.
-                  A identificação é feita exclusivamente pelo número do Cartão Nacional de Saúde (CNS) anonimizado
-                  e pelo número do protocolo de regulação.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Totalizadores */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div className="bg-white border border-amber-100 rounded-xl p-4 text-center shadow-sm">
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Total na Fila</p>
-              <p className="text-2xl font-extrabold text-amber-700 tabular-nums mt-1">{totalFila}</p>
-              <p className="text-[11px] text-gray-400 mt-1">pacientes aguardando</p>
-            </div>
-            <div className="bg-white border border-blue-100 rounded-xl p-4 text-center shadow-sm">
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Tempo Médio</p>
-              <p className="text-2xl font-extrabold text-blue-700 tabular-nums mt-1">{tempoMedioGeral} dias</p>
-              <p className="text-[11px] text-gray-400 mt-1">espera geral</p>
-            </div>
-            <div className="bg-white border border-emerald-100 rounded-xl p-4 text-center shadow-sm">
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Critérios de Priorização</p>
-              <p className="text-xs font-semibold text-emerald-700 mt-1">Idade ≥ 60 anos · Gestantes · Deficiência</p>
-              <p className="text-[11px] text-gray-400 mt-1">Classificação de risco · Ordem cronológica</p>
-            </div>
-          </div>
-
           <DataTable
             columns={[
-              { header: 'CNS (Anonimizado)', accessor: 'cns', render: (v: string) => <span className="font-mono text-xs font-semibold text-gray-800">{v}</span> },
-              { header: 'Protocolo', accessor: 'protocolo', render: (v: string) => <span className="font-mono text-xs text-blue-700">{v}</span> },
-              { header: 'Especialidade', accessor: 'especialidade', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
-              { header: 'Data Protocolo', accessor: 'data_protocolo' },
-              { header: 'Tempo Médio (dias)', accessor: 'tempo_medio_dias', render: (v: number) => (
-                <span className={`tabular-nums font-semibold ${v > 90 ? 'text-red-600' : v > 60 ? 'text-amber-600' : 'text-emerald-600'}`}>
-                  {v} dias
-                </span>
-              )},
-              { header: 'Prioridade', accessor: 'prioridade', render: (v: string) => (
-                <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-                  v === 'Prioritário' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-700'
-                }`}>{v}</span>
+              { header: 'Unidade de Saúde', accessor: 'nome', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
+              { header: 'Endereço', accessor: 'endereco' },
+              { header: 'Horário de Funcionamento', accessor: 'horario', render: (v: string) => <span className="font-mono text-xs">{v}</span> },
+              { header: 'Documento da Unidade', accessor: 'arquivo', render: (v: string) => (
+                v ? <a href={v} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+                  <FileText size={13} /> Ver Documento
+                </a> : <span className="text-gray-400 text-xs font-semibold">-</span>
               )},
             ]}
-            data={filaFiltrada}
-            title="Fila de Espera — Regulação"
-            caption="Relação dos pacientes aguardando consultas especializadas, exames e cirurgias eletivas, com número de protocolo para acompanhamento."
+            data={[
+              { nome: 'Centro de Saúde', endereco: 'Conforme documento em anexo', horario: '07h às 17h (seg-sex)', arquivo: '/documentos/saude/ubs/cnpj-centro-de-saude.pdf' },
+              { nome: 'UBS Riacho do Padre', endereco: 'Povoado Riacho do Padre, S/N', horario: '07h às 17h (seg-sex)', arquivo: '/documentos/saude/ubs/ps-riacho-do-padre.pdf' },
+              { nome: 'UBS Canto Alegre', endereco: 'Povoado Canto Alegre, S/N', horario: '07h às 17h (seg-sex)', arquivo: '/documentos/saude/ubs/ps-canto-alegre.pdf' },
+            ]}
+            title="Unidades de Saúde (UBS e Hospitais)"
+            caption="Relação dos endereços e horários de funcionamento de todos os postos e unidades da rede de saúde."
             exportable
-            paginationResetKey={filters.busca || 'f'}
-            hasActiveFilters={!!filters.busca}
           />
         </div>
+      )}
+
+      {/* Sub-aba: Fila de Espera */}
+      {abaAtendimento === 'fila' && (
+        <DeclaracaoInexistencia 
+          titulo="Inexistência de Fila de Espera Municipal" 
+          descricao="A Secretaria Municipal de Saúde informa que não possui sistema de regulação próprio para fila de espera de consultas e exames especializados. As marcações e filas são geridas exclusivamente pelo Sistema Estadual de Regulação da SESAPI." 
+          icon={AlertCircle} 
+        />
       )}
 
       <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50 px-5 py-4">
@@ -391,6 +368,21 @@ function MedicamentosFarmaciasTab({ filters }: { filters: FilterValues }) {
             </div>
           </div>
 
+          {/* Aviso sobre o status da REMUME */}
+          <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle size={18} className="text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-amber-900">Aviso sobre a REMUME Municipal</p>
+                <p className="text-sm text-amber-800/90 mt-1 leading-relaxed">
+                  Informamos que o Projeto de Lei para sanção oficial da Relação Municipal de Medicamentos Essenciais (REMUME) encontra-se em tramitação na Câmara Municipal. 
+                  Até sua aprovação final, o município adota as diretrizes da <strong>RENAME (Relação Nacional de Medicamentos Essenciais)</strong> e da RESME estadual. 
+                  Abaixo, disponibilizamos a lista dos medicamentos de atenção básica e controlados atualmente fornecidos pelas farmácias da rede pública municipal.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <DataTable
             columns={[
               { header: 'Medicamento', accessor: 'medicamento', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
@@ -402,8 +394,8 @@ function MedicamentosFarmaciasTab({ filters }: { filters: FilterValues }) {
               )},
             ]}
             data={remumeFiltrados}
-            title="Relação Municipal de Medicamentos Essenciais (REMUME)"
-            caption="Lista padronizada de medicamentos disponíveis na rede pública municipal de saúde, com princípio ativo, forma farmacêutica e concentração."
+            title="Lista de Medicamentos Fornecidos (Baseada na RENAME)"
+            caption="Lista de medicamentos essenciais disponíveis na rede pública municipal de saúde, sujeita a alterações conforme aprovação da REMUME na Câmara."
             exportable
             paginationResetKey={filters.busca || 'r'}
             hasActiveFilters={!!filters.busca}
@@ -475,12 +467,15 @@ function MedicamentosFarmaciasTab({ filters }: { filters: FilterValues }) {
 
 function PlanejamentoTab() {
   const documentos = [
-    { titulo: 'Plano Municipal de Saúde 2025-2028', tipo: 'Plano', periodo: '2025-2028', situacao: 'Vigente' },
-    { titulo: 'Programação Anual de Saúde 2026', tipo: 'Programação', periodo: '2026', situacao: 'Em execução' },
-    { titulo: 'Relatório de Gestão 2025', tipo: 'Relatório', periodo: '2025', situacao: 'Aprovado' },
-    { titulo: 'Relatório de Gestão 2024', tipo: 'Relatório', periodo: '2024', situacao: 'Aprovado' },
-    { titulo: 'Relatório Anual de Gestão 2023', tipo: 'Relatório', periodo: '2023', situacao: 'Aprovado' },
-    { titulo: 'Programação Anual de Saúde 2025', tipo: 'Programação', periodo: '2025', situacao: 'Concluído' },
+    { titulo: 'Plano Municipal de Saúde 2026-2029 (Aprovado)', tipo: 'Plano', periodo: '2026', situacao: 'Publicado', arquivo: '/documentos/saude/pms-2026.pdf' },
+    { titulo: 'Plano Municipal de Saúde 2022-2025', tipo: 'Plano', periodo: '2022-2025', situacao: 'Encerrado', arquivo: '/documentos/saude/pms-2022-2025.pdf' },
+    { titulo: 'Programação Anual de Saúde 2026', tipo: 'Programação', periodo: '2026', situacao: 'Publicado', arquivo: '/documentos/saude/pas-2026.pdf' },
+    { titulo: 'Programação Anual de Saúde 2025', tipo: 'Programação', periodo: '2025', situacao: 'Aprovado', arquivo: '/documentos/saude/pas-2025.pdf' },
+    { titulo: 'Programação Anual de Saúde 2024', tipo: 'Programação', periodo: '2024', situacao: 'Aprovado', arquivo: '/documentos/saude/pas-2024.pdf' },
+    { titulo: 'Relatório Anual de Gestão 2025', tipo: 'Relatório', periodo: '2025', situacao: 'Publicado', arquivo: '/documentos/saude/rag-2025.pdf' },
+    { titulo: 'Relatório Anual de Gestão 2024', tipo: 'Relatório', periodo: '2024', situacao: 'Publicado', arquivo: '/documentos/saude/rag-2024.pdf' },
+    { titulo: 'Relatório Anual de Gestão 2023', tipo: 'Relatório', periodo: '2023', situacao: 'Aprovado', arquivo: '/documentos/saude/rag-2023.pdf' },
+    { titulo: 'Relatório Anual de Gestão 2022', tipo: 'Relatório', periodo: '2022', situacao: 'Aprovado', arquivo: '/documentos/saude/rag-2022.pdf' },
   ];
 
   return (
@@ -496,13 +491,13 @@ function PlanejamentoTab() {
           { header: 'Período', accessor: 'periodo' },
           { header: 'Situação', accessor: 'situacao', render: (v: string) => (
             <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-              v === 'Vigente' || v === 'Em execução' ? 'bg-emerald-100 text-emerald-800' : v === 'Aprovado' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
+              v === 'Vigente' || v === 'Em execução' ? 'bg-emerald-100 text-emerald-800' : v === 'Publicado' || v === 'Aprovado' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
             }`}>{v}</span>
           )},
-          { header: 'Anexo', accessor: 'titulo', render: () => (
-            <button className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
-              <FileText size={13} /> PDF
-            </button>
+          { header: 'Arquivo', accessor: 'arquivo', render: (v: string) => (
+            <a href={v} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+              <FileText size={13} /> Ver PDF
+            </a>
           )},
         ]}
         data={documentos}

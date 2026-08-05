@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import ContentPage from '@/components/layout/ContentPage';
 import DataTable from '@/components/ui/DataTable';
@@ -88,13 +88,13 @@ export default function ConselhoSaudePage() {
                   </tr>
                 </thead>
                 <tbody>
+                                    <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <td className="py-3 px-4 font-medium text-gray-800">Ata de Prorrogação do Conselho de Saúde</td>
+                    <td className="py-3 px-4 text-right"><a href="/documentos/conselhos/saude/ata-prorrogacao.docx" target="_blank" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">Baixar</a></td>
+                  </tr>
                   <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="py-3 px-4 font-medium text-gray-800">Ata da 1ª Reunião Ordinária - 2026</td>
-                    <td className="py-3 px-4 text-right">
-                      <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
-                        <ExternalLink size={14} /> Baixar
-                      </button>
-                    </td>
+                    <td className="py-3 px-4 font-medium text-gray-800">Ata de Reuniões CMS Ordinária</td>
+                    <td className="py-3 px-4 text-right"><a href="/documentos/conselhos/saude/ata-reunioes-cms.docx" target="_blank" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">Baixar</a></td>
                   </tr>
                 </tbody>
               </table>
@@ -115,13 +115,21 @@ export default function ConselhoSaudePage() {
                   </tr>
                 </thead>
                 <tbody>
+                                    <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <td className="py-3 px-4 font-medium text-gray-800">Resolução 02/2026 - Aprovação do RAG 2025</td>
+                    <td className="py-3 px-4 text-right"><a href="/documentos/conselhos/saude/resolucao-02-aprovacao-rag-2025.docx" target="_blank" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">Baixar</a></td>
+                  </tr>
                   <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="py-3 px-4 font-medium text-gray-800">Parecer sobre o Relatório de Gestão 2025</td>
-                    <td className="py-3 px-4 text-right">
-                      <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
-                        <ExternalLink size={14} /> Baixar
-                      </button>
-                    </td>
+                    <td className="py-3 px-4 font-medium text-gray-800">Resolução 03/2026 - Aprovação do PMS 2026-2029</td>
+                    <td className="py-3 px-4 text-right"><a href="/documentos/conselhos/saude/resolucao-03-pms-2026-2029.docx" target="_blank" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">Baixar</a></td>
+                  </tr>
+                  <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <td className="py-3 px-4 font-medium text-gray-800">Resolução de Prorrogação</td>
+                    <td className="py-3 px-4 text-right"><a href="/documentos/conselhos/saude/resolucao-prorrogacao.docx" target="_blank" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">Baixar</a></td>
+                  </tr>
+                  <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <td className="py-3 px-4 font-medium text-gray-800">Resolução RDQA</td>
+                    <td className="py-3 px-4 text-right"><a href="/documentos/conselhos/saude/resolucao-rdqa.docx" target="_blank" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">Baixar</a></td>
                   </tr>
                   <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                     <td className="py-3 px-4 font-medium text-gray-800">Resolução nº 001/2026</td>
@@ -141,3 +149,4 @@ export default function ConselhoSaudePage() {
     </ContentPage>
   );
 }
+

@@ -152,7 +152,66 @@ export default function RenunciasDeReceitasPage() {
 
       const { data, error } = await query;
       if (!cancelled) {
-        setIncentivos(error ? [] : (data as Incentivo[]));
+        const STATIC_INCENTIVOS: Incentivo[] = [
+          {
+            id: 'static-1',
+            projeto: 'Edital de Chamamento Público 001/2026',
+            area: 'cultura',
+            beneficiario: 'Agentes Culturais (Em fase de seleção)',
+            tipo_incentivo: 'patrocinio_abatimento',
+            valor_beneficio: 30400.00,
+            fundamento_legal: 'Lei 14.399/2022 (PNAB)',
+            ano: 2026
+          },
+          {
+            id: 'static-2',
+            projeto: 'Edital de Chamamento Público 002/2026 (Pontos de Cultura)',
+            area: 'cultura',
+            beneficiario: 'Pontos e Pontões de Cultura',
+            tipo_incentivo: 'patrocinio_abatimento',
+            valor_beneficio: 5400.00,
+            fundamento_legal: 'Lei 14.399/2022 (PNAB)',
+            ano: 2026
+          },
+          {
+            id: 'static-3',
+            projeto: 'Edital de Chamamento Público 001/2023',
+            area: 'cultura',
+            beneficiario: 'Agentes Culturais',
+            tipo_incentivo: 'patrocinio_abatimento',
+            valor_beneficio: 21300.00,
+            fundamento_legal: 'Lei Complementar 195/2022',
+            ano: 2023
+          },
+          {
+            id: 'static-4',
+            projeto: 'Edital de Chamamento Público 002/2023',
+            area: 'cultura',
+            beneficiario: 'Agentes Culturais e Cineastas',
+            tipo_incentivo: 'patrocinio_abatimento',
+            valor_beneficio: 21300.00,
+            fundamento_legal: 'Lei Complementar 195/2022',
+            ano: 2023
+          },
+          {
+            id: 'static-5',
+            projeto: 'Edital de Mapeamento Cultural 001/2024',
+            area: 'cultura',
+            beneficiario: 'Fazedores de Cultura do Município',
+            tipo_incentivo: 'outro',
+            valor_beneficio: 0.00,
+            fundamento_legal: 'Políticas Municipais de Cultura',
+            ano: 2024
+          }
+        ];
+
+        let finalData = (error || !data) ? STATIC_INCENTIVOS : [...STATIC_INCENTIVOS, ...(data as Incentivo[])];
+
+        if (filters.ano) {
+          finalData = finalData.filter(item => item.ano.toString() === filters.ano);
+        }
+
+        setIncentivos(finalData);
         setLoadingIncentivos(false);
       }
     }

@@ -89,11 +89,19 @@ export default function ConselhoEducacaoPage() {
                 </thead>
                 <tbody>
                   <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="py-3 px-4 font-medium text-gray-800">Ata da 1ª Reunião Ordinária - 2026</td>
+                    <td className="py-3 px-4 font-medium text-gray-800">Ata de Eleição e Renovação do Conselho do FUNDEB</td>
                     <td className="py-3 px-4 text-right">
-                      <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+                      <a href="/documentos/conselhos/educacao/ata-eleicao-renovacao-fundeb.pdf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
                         <ExternalLink size={14} /> Baixar
-                      </button>
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <td className="py-3 px-4 font-medium text-gray-800">Ata de Posse dos Conselheiros do FUNDEB</td>
+                    <td className="py-3 px-4 text-right">
+                      <a href="/documentos/conselhos/educacao/ata-posse-fundeb.pdf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+                        <ExternalLink size={14} /> Baixar
+                      </a>
                     </td>
                   </tr>
                 </tbody>

@@ -258,6 +258,69 @@
 ---
 *Checklist gerado em Junho/2026 - Baseado na Cartilha PNTP 2026 da Atricon*
 
+## ✅ DIMENSÃO 5 — Convênios e Transferências
+**Resultado: 3/3 critérios atendidos (`✅ OK`)**
+
+| Critério | Exigibilidade | Status | Observação / Onde está no Portal |
+|----------|:------------:|:------:|-----------------------------------|
+| 5.1 Transferências Recebidas (Convênios/Repasses) | Obrigatório | ✅ OK | Página de Transferências (via anexos) |
+| 5.2 Transferências Concedidas (Repasses a ONGs) | Obrigatório | ✅ OK | Abas específicas na página de repasses |
+| 5.3 Acordos firmados sem repasse financeiro | Obrigatório | ✅ OK | Declaração ativa de inexistência |
+
+## ✅ DIMENSÃO 6 — Recursos Humanos
+**Resultado: 7/7 critérios atendidos (`✅ OK`)**
+
+| Critério | Exigibilidade | Status | Observação / Onde está no Portal |
+|----------|:------------:|:------:|-----------------------------------|
+| 6.1 Relação nominal de servidores (cargo, lotação) | Obrigatório | ✅ OK | Tabela de Servidores na seção de RH |
+| 6.2 Remuneração nominal de cada servidor | Obrigatório | ✅ OK | Aba de Remuneração em RH |
+| 6.3 Tabela com o padrão remuneratório | Obrigatório | ✅ OK | Aba Padrão Remuneratório em RH |
+| 6.4 Lista de estagiários | Recomendado | ✅ OK | Aba de Estagiários |
+| 6.5 Lista de terceirizados | Recomendado | ✅ OK | Aba de Terceirizados |
+| 6.6 Íntegra dos editais de concursos e seleções | Obrigatório | ✅ OK | /transparencia/concursos |
+| 6.7 Demais atos dos concursos (Aprovações/Nomeações)| Obrigatório | ✅ OK | Anexos categorizados dos Concursos |
+
+## ✅ DIMENSÃO 7 — Diárias
+**Resultado: 2/2 critérios atendidos (`✅ OK`)**
+
+| Critério | Exigibilidade | Status | Observação / Onde está no Portal |
+|----------|:------------:|:------:|-----------------------------------|
+| 7.1 Detalhamento de diárias (nome, valor, destino) | Obrigatório | ✅ OK | Tabela Diárias e Passagens |
+| 7.2 Tabela de valores (Dentro/Fora do Estado) | Obrigatório | ✅ OK | Aviso explícito com link para a legislação |
+
+## ✅ DIMENSÃO 8 — Licitações
+**Resultado: 7/7 critérios atendidos (`✅ OK`)**
+
+| Critério | Exigibilidade | Status | Observação / Onde está no Portal |
+|----------|:------------:|:------:|-----------------------------------|
+| 8.1 Relação sequencial de licitações | Obrigatório | ✅ OK | /transparencia/licitacoes |
+| 8.2 Íntegra dos editais de licitação | Obrigatório | ✅ OK | Anexos do certame |
+| 8.3 Documentos das fases interna e externa (TR, anexos)| Obrigatório | ✅ OK | Anexos do certame |
+| 8.4 Processos de dispensa e inexigibilidade | Obrigatório | ✅ OK | Módulo de Licitações - Modalidades |
+| 8.5 Íntegra das Atas de Adesão (SRP) | Obrigatório | ✅ OK | Botão de Atas SRP (Caronas) ativo |
+| 8.6 Plano de Contratações Anual (PCA) | Recomendado | ✅ OK | Tabela e aviso do PCA 2026/2027 integrados |
+| 8.7 Licitantes e/ou contratados sancionados | Recomendado | ✅ OK | Sistema inteligente de declaração anual |
+
+## ✅ DIMENSÃO 9 — Contratos
+**Resultado: 4/4 critérios atendidos (`✅ OK`)**
+
+| Critério | Exigibilidade | Status | Observação / Onde está no Portal |
+|----------|:------------:|:------:|-----------------------------------|
+| 9.1 Relação dos contratos em ordem sequencial | Obrigatório | ✅ OK | /transparencia/contratos |
+| 9.2 Inteiro teor dos contratos e aditivos | Obrigatório | ✅ OK | Anexos em lote ativos |
+| 9.3 Relação dos fiscais de cada contrato | Obrigatório | ✅ OK | Coluna "Fiscal" mapeada na tabela |
+| 9.4 Ordem cronológica de pagamentos | Obrigatório | ✅ OK | Aba específica com aviso da Lei 14.133 |
+
+## ✅ DIMENSÃO 10 — Obras Públicas
+**Resultado: 4/4 critérios atendidos (`✅ OK`)**
+
+| Critério | Exigibilidade | Status | Observação / Onde está no Portal |
+|----------|:------------:|:------:|-----------------------------------|
+| 10.1 Situação atual, datas, empresa e percentual | Recomendado | ✅ OK | /transparencia/obras |
+| 10.2 Quantitativos, preços unitários e totais | Obrigatório | ✅ OK | Integrado na consulta detalhada |
+| 10.3 Quantitativos executados e preços pagos | Obrigatório | ✅ OK | Integrado na consulta detalhada |
+| 10.4 Obras paralisadas (motivo e responsável) | Obrigatório | ✅ OK | Aba específica com declaração automática |
+
 ## 📌 DIMENSÃO 11 — Prestação de Contas (Arquivos da Contreina)
 
 1️⃣ BALANÇOS (Quadros 27 a 32)
@@ -356,7 +419,7 @@ Downloads\Contreina\ e R2 Cloudflare:
 | 15.6 Pesquisa de Satisfação | Recomendado | ✅ |
 
 ## ✅ DIMENSÃO 16 — Renúncias de Receita
-**Resultado: 3/4 critérios confirmados, 1 pendente**
+**Resultado: 4/4 critérios confirmados**
 
 | Critério | Exigibilidade | Status | Observação |
 |----------|:------------:|:------:|------------|
