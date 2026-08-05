@@ -322,9 +322,16 @@ export async function sincronizarDespesasAno(ano: number) {
     console.log(`   🔸 Empenhos Orçamentários retornados pela API: ${listaEmpenhosApi.length}`);
 
     const novosParaInserir: any[] = [];
+    const EMPENHOS_FANTASMAS = ["630006", "716003", "202001"];
 
     for (const itemApi of listaEmpenhosApi) {
       if (!itemApi.CODIGO) continue;
+
+      // Pula os empenhos fantasmas da Entidade 1 em 2026
+      if (ano === 2026 && emp.codigo === "1" && EMPENHOS_FANTASMAS.includes(String(itemApi.CODIGO).trim())) {
+        continue;
+      }
+
       const pkemp = String(itemApi.PKEMP || `${ano}-${emp.codigo}-${itemApi.CODIGO}`).trim();
       const numEmp = String(itemApi.CODIGO).trim();
       const rowBanco = mapaDespesasBanco.get(`${emp.codigo}_${pkemp}`) || mapaDespesasBanco.get(`${emp.codigo}_num_${numEmp}`);
