@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { Download, FileText, Info } from 'lucide-react';
-import DataTable from '@/components/admin/DataTable';
+import DataTable from '@/components/ui/DataTable';
 
 export const metadata: Metadata = {
   title: 'Cultura - Portal da Transparência',
