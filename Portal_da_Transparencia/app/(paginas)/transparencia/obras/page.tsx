@@ -19,6 +19,8 @@ import {
   Building2,
   Search,
   PauseCircle,
+  Download,
+  ExternalLink,
 } from 'lucide-react';
 
 const MESES = [
@@ -312,6 +314,40 @@ function DetalhamentoObra({ obra }: { obra: any }) {
               </div>
             </div>
           </div>
+
+          {/* Documentos e Processos */}
+          {(obra.arquivo_r2_url || obra.link_tce) && (
+            <div className="bg-white rounded-xl border border-gray-100 p-4">
+              <h4 className="text-xs font-black text-gray-800 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <FileText size={14} />
+                Documentos e Processos
+              </h4>
+              <div className="flex flex-wrap gap-3">
+                {obra.arquivo_r2_url && (
+                  <a
+                    href={obra.arquivo_r2_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    <Download size={16} />
+                    {obra.arquivo_nome || 'Baixar Documento da Obra'}
+                  </a>
+                )}
+                {obra.link_tce && (
+                  <a
+                    href={obra.link_tce}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-700 hover:bg-gray-100 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    <ExternalLink size={16} />
+                    Ver Processo no TCE
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
     </div>
   );
 }
