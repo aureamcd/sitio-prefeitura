@@ -116,7 +116,7 @@ async function fetchJson(url: string, tentativas = 3): Promise<any> {
       }
     }
   }
-  return [];
+  return null;
 }
 
 function buildDespesasGeraisUrl(ano: number, empresa: string): string {
@@ -319,10 +319,16 @@ export async function sincronizarDespesasAno(ano: number) {
     // --- A. DESPESAS ORÇAMENTÁRIAS (Empenhos) ---
     const urlGerais = buildDespesasGeraisUrl(ano, emp.codigo);
     const listaEmpenhosApi = await fetchJson(urlGerais);
+    
+    if (listaEmpenhosApi === null) {
+      console.warn(`   ⚠️ Falha de rede. Pulando empenhos da entidade ${emp.codigo} por segurança.`);
+      continue;
+    }
     console.log(`   🔸 Empenhos Orçamentários retornados pela API: ${listaEmpenhosApi.length}`);
 
     const novosParaInserir: any[] = [];
     const EMPENHOS_FANTASMAS = ["630006", "716003", "202001"];
+    const idsMantidos = new Set<string>();
 
     for (const itemApi of listaEmpenhosApi) {
       if (!itemApi.CODIGO) continue;
@@ -341,6 +347,7 @@ export async function sincronizarDespesasAno(ano: number) {
       const valorPago = parseValor(itemApi.PAGO);
 
       if (rowBanco) {
+        idsMantidos.add(rowBanco.id);
         // Verifica se houve variação financeira
         const mudouFinanceiro =
           Math.abs((Number(rowBanco.empenhado) || 0) - valorEmp) > 0.01 ||
@@ -386,10 +393,21 @@ export async function sincronizarDespesasAno(ano: number) {
       }
     }
 
+    const empenhosDestaEmpresa = (despesasBanco || []).filter((d: any) => d.empresa === emp.codigo);
+    const idsParaApagar = empenhosDestaEmpresa.filter((d: any) => !idsMantidos.has(d.id)).map((d: any) => d.id);
+    if (idsParaApagar.length > 0) {
+      console.log(`      🗑️ Removendo ${idsParaApagar.length} empenhos órfãos/cancelados...`);
+      await supabase.from("despesas").delete().in("id", idsParaApagar);
+    }
+
     // --- B. DESPESAS EXTRAORÇAMENTÁRIAS ---
     const urlExtra = buildExtraOrcamentariasUrl(ano, emp.codigo);
     const listaExtraApi = await fetchJson(urlExtra);
-    console.log(`   🔸 Despesas Extraorçamentárias retornadas pela API: ${listaExtraApi.length}`);
+    
+    if (listaExtraApi === null) {
+      console.warn(`   ⚠️ Falha de rede. Pulando despesas extras da entidade ${emp.codigo} por segurança.`);
+    } else {
+      console.log(`   🔸 Despesas Extraorçamentárias retornadas pela API: ${listaExtraApi.length}`);
 
     if (listaExtraApi.length > 0) {
       // Carregar existentes da entidade no banco
@@ -405,6 +423,8 @@ export async function sincronizarDespesasAno(ano: number) {
         else if (rx.codigo) mapaExtra.set(`cod_${rx.codigo}`, rx);
       }
 
+      const idsExtraMantidos = new Set<string>();
+
       for (const itemEx of listaExtraApi) {
         const numGuia = String(itemEx.NUMEROGUIA || itemEx.NUMGUIA || itemEx.NUMERO_GUIA || "").trim();
         const codEx = String(itemEx.CODIGO || "").trim();
@@ -412,6 +432,7 @@ export async function sincronizarDespesasAno(ano: number) {
         const vPagoEx = parseValor(itemEx.PAGO || itemEx.VALOR);
 
         if (rowEx) {
+          idsExtraMantidos.add(rowEx.id);
           const dataParsed = parseDateBR(itemEx.DATAE || itemEx.DATA || itemEx.DATA_PAGAMENTO);
           const dataGuiaParsed = parseDateBR(itemEx.DATAGUIA || itemEx.DATA_GUIA);
           const cnpjParsed = itemEx.INSMF || itemEx.CNPJ_INSCRICAO || itemEx.CNPJ || null;
@@ -452,12 +473,22 @@ export async function sincronizarDespesasAno(ano: number) {
           extraInseridas++;
         }
       }
+      
+      const idsExtraParaApagar = (extraBanco || []).filter((d: any) => !idsExtraMantidos.has(d.id)).map((d: any) => d.id);
+      if (idsExtraParaApagar.length > 0) {
+        console.log(`      🗑️ Removendo ${idsExtraParaApagar.length} despesas extras órfãs/canceladas...`);
+        await supabase.from("despesas_extra_orcamentarias").delete().in("id", idsExtraParaApagar);
+      }
     }
 
     // --- C. RESTOS A PAGAR ---
     const urlRestos = buildRestosPagarUrl(ano, emp.codigo);
     const listaRestosApi = await fetchJson(urlRestos);
-    console.log(`   🔸 Restos a Pagar retornados pela API: ${listaRestosApi.length}`);
+    
+    if (listaRestosApi === null) {
+      console.warn(`   ⚠️ Falha de rede. Pulando restos a pagar da entidade ${emp.codigo} por segurança.`);
+    } else {
+      console.log(`   🔸 Restos a Pagar retornados pela API: ${listaRestosApi.length}`);
 
     if (listaRestosApi.length > 0) {
       const { data: restosBanco } = await supabase
@@ -471,6 +502,8 @@ export async function sincronizarDespesasAno(ano: number) {
         if (rr.codigo) mapaRestos.set(String(rr.codigo).trim(), rr);
       }
 
+      const idsRestosMantidos = new Set<string>();
+
       for (const itemRp of listaRestosApi) {
         const codRp = String(itemRp.CODIGO || itemRp.NUMERO_EMPENHO || "").trim();
         if (!codRp) continue;
@@ -480,6 +513,7 @@ export async function sincronizarDespesasAno(ano: number) {
         const vPagoRp = parseValor(itemRp.PAGO || itemRp.VALOR_PAGO);
 
         if (rowRp) {
+          idsRestosMantidos.add(rowRp.id);
           if (
             Math.abs((Number(rowRp.empenhado) || 0) - vEmpRp) > 0.01 ||
             Math.abs((Number(rowRp.liquidado) || 0) - vLiqRp) > 0.01 ||
@@ -503,6 +537,12 @@ export async function sincronizarDespesasAno(ano: number) {
           });
           restosInseridos++;
         }
+      }
+
+      const idsRestosParaApagar = (restosBanco || []).filter((d: any) => !idsRestosMantidos.has(d.id)).map((d: any) => d.id);
+      if (idsRestosParaApagar.length > 0) {
+        console.log(`      🗑️ Removendo ${idsRestosParaApagar.length} restos a pagar órfãos/cancelados...`);
+        await supabase.from("restos_pagar").delete().in("id", idsRestosParaApagar);
       }
     }
   }

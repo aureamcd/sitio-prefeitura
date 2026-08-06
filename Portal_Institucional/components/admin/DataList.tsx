@@ -79,10 +79,8 @@ export default function DataList({ slug }: Props) {
 
       // Apply search
       if (q) {
-        const searchableFields = ["titulo", "descricao", "objeto", "nome", "favorecido", "fornecedor", "fornecedor_nome", "codigo_contabil", "codigo", "entidade_pagadora", "entidade_recebedora", "nomenclatura", "localizacao", "empresa_responsavel", "receita_transferencia", "contrato_numero", "licitacao"];
-        const match = searchableFields.some((field) => {
-          const val = i[field];
-          return val && String(val).toLowerCase().includes(q);
+        const match = Object.values(i).some((val) => {
+          return val !== null && val !== undefined && String(val).toLowerCase().includes(q);
         });
         if (!match) return false;
       }

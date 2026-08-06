@@ -55,59 +55,6 @@ export default function AdminPage() {
 
   return (
     <div className="space-y-10">
-      {/* ═══ SEÇÃO: PORTAL DA TRANSPARÊNCIA ═══ */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
-            <Database className="w-5 h-5 text-blue-600" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">
-              Portal da Transparência
-            </h2>
-            <p className="text-sm text-gray-500">
-              {countsLoading ? "Carregando..." : `${Object.values(counts).reduce((a, b) => a + b, 0)} registros no total`}
-            </p>
-          </div>
-        </div>
-
-        {countsLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 text-gray-300 animate-spin" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            {TABELAS_TRANSPARENCIA.map((t) => {
-              const count = counts[t.slug] ?? 0;
-              const Icon = t.icon;
-
-              return (
-                <Link
-                  key={t.slug}
-                  href={`/admin/${t.slug}`}
-                  className="group bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-gray-300 transition-all duration-200 flex items-center gap-4"
-                >
-                  <div className={`w-10 h-10 ${t.bgColor} rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform`}>
-                    <Icon className={`w-5 h-5 ${t.color}`} />
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-gray-900 truncate">
-                      {t.label}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      {count === 1 ? "1 registro" : `${count} registros`}
-                    </p>
-                  </div>
-
-                  <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors shrink-0" />
-                </Link>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
       {/* ═══ SEÇÃO: NOTÍCIAS ═══ */}
       <div className="space-y-4">
         <div className="flex items-center gap-3">

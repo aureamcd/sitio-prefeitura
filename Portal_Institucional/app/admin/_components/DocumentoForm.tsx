@@ -14,6 +14,7 @@ import ModalTarjamentoInterativo from "./ModalTarjamentoInterativo";
 import {
   TIPOS_LEGISLACAO,
   TIPOS_PUBLICACAO,
+  TIPOS_PRESTACAO_CONTAS,
   CATEGORIA_LABEL,
   CATEGORIA_TABELA,
   type CategoriaForm,
@@ -109,7 +110,9 @@ export default function DocumentoForm({ initialData, mode, categoriaInicial }: P
   const tabelaDestino = CATEGORIA_TABELA[form.categoria];
 
   /* ── Tipos disponíveis conforme categoria ── */
-  const tiposDisponiveis = form.categoria === "leis-normas" ? TIPOS_LEGISLACAO : TIPOS_PUBLICACAO;
+  const tiposDisponiveis = 
+    form.categoria === "leis-normas" ? TIPOS_LEGISLACAO : 
+    form.categoria === "prestacao-contas" ? TIPOS_PRESTACAO_CONTAS : TIPOS_PUBLICACAO;
 
   const temTipoCustomValue = form.tipo === "__outro__";
   const tipoExibicao = temTipoCustomValue ? (form.tipoCustom ?? "") : form.tipo;
@@ -255,10 +258,11 @@ export default function DocumentoForm({ initialData, mode, categoriaInicial }: P
         titulo: form.titulo.trim(),
         descricao: form.descricao.trim() || null,
         data_publicacao: form.data_publicacao || null,
-        arquivo_r2_url: finalUrl || null,
+        arquivo_url: finalUrl || null,
+        arquivo_nome: file?.name || null,
         tipo: tipoExibicao,
-        numero: form.numero.trim() || null,
-        ano: form.ano.toString(),
+        categoria: ["PPA", "LDO", "LOA"].includes(tipoExibicao) ? "PLANEJAMENTO_ORCAMENTARIO" : null,
+        exercicio: Number(form.ano),
       };
     }
 
@@ -415,14 +419,14 @@ export default function DocumentoForm({ initialData, mode, categoriaInicial }: P
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Categoria <span className="text-red-600">*</span></label>
               <div className="flex gap-2">
-                {(["leis-normas", "publicacoes-oficiais"] as CategoriaForm[]).map(cat => (
+                {(["leis-normas", "publicacoes-oficiais", "prestacao-contas"] as CategoriaForm[]).map(cat => (
                   <button
                     key={cat}
                     type="button"
                     onClick={() => {
                       set("categoria", cat);
                       // Reset tipo ao mudar de categoria
-                      const defaultTipo = cat === "leis-normas" ? "Lei" : "Boletim";
+                      const defaultTipo = cat === "leis-normas" ? "Lei" : cat === "prestacao-contas" ? "RGF" : "Boletim";
                       set("tipo", defaultTipo);
                       set("tipoCustom", "");
                     }}

@@ -10,14 +10,21 @@ export const TIPOS_PUBLICACAO = [
   "Protocolo", "Questionário", "Requerimento",
 ] as const;
 
-export type CategoriaForm = "leis-normas" | "publicacoes-oficiais";
+export const TIPOS_PRESTACAO_CONTAS = [
+  "RGF", "RREO", "BALANCO_GERAL", "RELATORIO_GESTAO", "PARECER_TCE", 
+  "PPA", "LDO", "LOA"
+] as const;
+
+export type CategoriaForm = "leis-normas" | "publicacoes-oficiais" | "prestacao-contas";
 
 export const CATEGORIA_TABELA: Record<CategoriaForm, string> = {
   "leis-normas": "legislacoes",
   "publicacoes-oficiais": "publicacoes",
+  "prestacao-contas": "planejamento_documentos",
 };
 
 export const CATEGORIA_LABEL: Record<CategoriaForm, string> = {
   "leis-normas": "Leis e Normas",
   "publicacoes-oficiais": "Publicações Oficiais",
+  "prestacao-contas": "Prestação de Contas",
 };

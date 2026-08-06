@@ -125,9 +125,65 @@ async function importarEmpresaAno(empresa: { codigo: string; nome: string }, ano
   }
 
   if (!Array.isArray(data) || data.length === 0) {
-    console.log(`   📭 Nenhum registro para ${empresa.nome} em ${ano}. (Deletando do banco se houver lixo)`);
-    await supabase.from('diarias').delete().eq('ano', ano).eq('empresa', empresa.codigo);
+    console.log(`   📭 Nenhum registro para ${empresa.nome} em ${ano}. (Ignorando para evitar wipe acidental em caso de erro da API)`);
+    // await supabase.from('diarias').delete().eq('ano', ano).eq('empresa', empresa.codigo);
     return 0;
+  }
+
+  // Pre-processamento: preencher cargos vazios buscando no banco
+  const nomesSemCargo = new Set<string>();
+  for (const item of data) {
+    const favorecido = (item.FAVORECIDO || '').trim().toUpperCase();
+    const cargoStr = String(item.CARGO || '').trim();
+    if (favorecido && !cargoStr) {
+      nomesSemCargo.add(favorecido);
+    }
+  }
+
+  const mapCargosEncontrados = new Map<string, string>();
+
+  if (nomesSemCargo.size > 0) {
+    console.log(`   🔍 Buscando cargos faltantes de ${nomesSemCargo.size} pessoas no banco de dados...`);
+    const nomesArray = Array.from(nomesSemCargo);
+
+    // 1. Buscar em servidores
+    for (let i = 0; i < nomesArray.length; i += 100) {
+      const chunk = nomesArray.slice(i, i + 100);
+      const { data: servs } = await supabase
+        .from('servidores')
+        .select('nome, cargo')
+        .in('nome', chunk);
+      
+      if (servs) {
+        for (const s of servs) {
+          if (s.nome && s.cargo && !mapCargosEncontrados.has(s.nome.toUpperCase())) {
+            mapCargosEncontrados.set(s.nome.toUpperCase(), String(s.cargo).trim());
+          }
+        }
+      }
+    }
+
+    // 2. Buscar em diarias anteriores
+    const aindaSemCargo = nomesArray.filter(n => !mapCargosEncontrados.has(n));
+    if (aindaSemCargo.length > 0) {
+      for (let i = 0; i < aindaSemCargo.length; i += 100) {
+        const chunk = aindaSemCargo.slice(i, i + 100);
+        const { data: dirs } = await supabase
+          .from('diarias')
+          .select('favorecido, cargo')
+          .in('favorecido', chunk)
+          .neq('cargo', '')
+          .not('cargo', 'is', null);
+        
+        if (dirs) {
+          for (const d of dirs) {
+            if (d.favorecido && d.cargo && !mapCargosEncontrados.has(d.favorecido.toUpperCase())) {
+              mapCargosEncontrados.set(d.favorecido.toUpperCase(), String(d.cargo).trim());
+            }
+          }
+        }
+      }
+    }
   }
 
   const mapRegistros = new Map<string, any>();
@@ -150,6 +206,16 @@ async function importarEmpresaAno(empresa: { codigo: string; nome: string }, ano
     const quantAtual = parseQuantidade(item.QUANT, item.DESCRICAO);
     const dataAtual = parseDateBR(item.DATA);
 
+    const favorecido = (item.FAVORECIDO || 'NÃO INFORMADO').trim();
+    let cargoAtual = String(item.CARGO || '').trim();
+    
+    if (!cargoAtual && favorecido !== 'NÃO INFORMADO') {
+      const cargoBuscado = mapCargosEncontrados.get(favorecido.toUpperCase());
+      if (cargoBuscado) {
+        cargoAtual = cargoBuscado;
+      }
+    }
+
     if (mapRegistros.has(key)) {
       const ex = mapRegistros.get(key);
       ex.valor += valorAtual;
@@ -163,6 +229,10 @@ async function importarEmpresaAno(empresa: { codigo: string; nome: string }, ano
       if ((item.DESCRICAO || '').length > (ex.descricao || '').length) {
         ex.descricao = item.DESCRICAO;
       }
+      // Se não tinha cargo antes, mas o novo registro trouxe, atualizamos
+      if (!ex.cargo && cargoAtual) {
+        ex.cargo = cargoAtual;
+      }
       ex.quantidade += quantAtual;
     } else {
       mapRegistros.set(key, {
@@ -174,8 +244,8 @@ async function importarEmpresaAno(empresa: { codigo: string; nome: string }, ano
         valor: valorAtual,
         valor_anulado: valorAnuladoAtual,
         descricao: item.DESCRICAO || '',
-        favorecido: item.FAVORECIDO || 'NÃO INFORMADO',
-        cargo: item.CARGO || '',
+        favorecido: favorecido,
+        cargo: cargoAtual,
         cpf_formatado: item.CPFFORMATADO || '',
         orgao_codigo: orgaoCod,
         orgao_nome: orgaoNome,

@@ -168,12 +168,12 @@ async function fetchApiJson(listagem: string, ano: number, mes: string, empresa:
   }
   try {
     const response = await fetch(url, { headers: { "Accept": "application/json" } });
-    if (!response.ok) return [];
+    if (!response.ok) return null;
     const text = await response.text();
     const json = JSON.parse(text);
     return Array.isArray(json) ? json : [];
   } catch {
-    return [];
+    return null;
   }
 }
 
@@ -215,11 +215,19 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
     console.log(`\n📦 Consultando Entidade ${emp.codigo} - ${emp.nome}...`);
     const dadosOrc = await fetchApiJson("ReceitaOrcamentaria", anoAtual, mesAtualPadrao, emp.codigo);
     const dadosExtra = await fetchApiJson("ReceitaExtraOrcamentaria", anoAtual, mesAtualPadrao, emp.codigo);
+    
+    if (dadosOrc === null) {
+      console.warn(`   ⚠️ Falha de rede. Pulando receitas orçamentárias da entidade ${emp.codigo} por segurança.`);
+      continue;
+    }
+    
     const todosApi = dadosOrc; // dadosExtra será processado separadamente abaixo
+    const chavesMantidas = new Set<string>();
 
     for (const itemApi of todosApi) {
       if (!itemApi.CODIGO) continue;
       const chave = `${emp.codigo}_${String(itemApi.CODIGO).trim()}`;
+      chavesMantidas.add(chave);
       const registroNovo = montarRegistroOrcamentario(itemApi, emp, anoAtual);
       const registroExistente = mapaExistentes.get(chave);
 
@@ -268,12 +276,32 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
     }
   }
 
+  // Apagar receitas orçamentárias órfãs (não vieram na API)
+  const idsReceitasApagar: string[] = [];
+  for (const [chave, regBanco] of mapaExistentes.entries()) {
+    if (!chavesMantidas.has(chave) && regBanco.id !== "TEMP_ID") {
+      idsReceitasApagar.push(regBanco.id);
+    }
+  }
+  if (idsReceitasApagar.length > 0) {
+    console.log(`\n🗑️ Removendo ${idsReceitasApagar.length} receitas orçamentárias órfãs/canceladas...`);
+    await supabase.from("receitas").delete().in("id", idsReceitasApagar);
+  }
+
   // 2.5. Sincronizar Receitas Extra-orçamentárias (Tabela Específica)
   let extraAtualizados = 0;
   let extraInseridos = 0;
   for (const emp of empresas) {
     const dadosExtra = await fetchApiJson("ReceitaExtraOrcamentaria", anoAtual, mesAtualPadrao, emp.codigo);
-    if (!dadosExtra || dadosExtra.length === 0) continue;
+    
+    if (dadosExtra === null) {
+      console.warn(`   ⚠️ Falha de rede. Pulando receitas extras da entidade ${emp.codigo} por segurança.`);
+      continue;
+    }
+    
+    if (!dadosExtra || dadosExtra.length === 0) {
+      // Se a API retornou [] com status OK, prossegue (pode ser que tenham apagado todas as extras)
+    }
 
     const registrosExtraFormatados = dadosExtra.map((item: any) => ({
       ano: anoAtual,
@@ -306,11 +334,14 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
       contagemExtraDB.set(key, (contagemExtraDB.get(key) || 0) + 1);
     }
 
+    const chavesExtraMantidas = new Set<string>();
+
     for (const reg of registrosExtraFormatados) {
       const key = `${reg.codigo}_${reg.data_lancamento}_${reg.valor}_${reg.historico}`;
       const qtdDb = contagemExtraDB.get(key) || 0;
       if (qtdDb > 0) {
         contagemExtraDB.set(key, qtdDb - 1);
+        chavesExtraMantidas.add(key); // Marca que encontramos um correspondente
         extraAtualizados++;
       } else {
         novosExtraParaInserir.push(reg);
@@ -325,6 +356,21 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
         if (!error) extraInseridos += chunk.length;
       }
     }
+    
+    // Apagar extras órfãs
+    const idsExtraApagar = [];
+    for (const e of existentesExtra) {
+      const key = `${e.codigo}_${e.data_lancamento}_${e.valor}_${e.historico}`;
+      // Se sobrou na contagem, significa que existe no DB mas não veio na API (ou vieram menos repetições)
+      if ((contagemExtraDB.get(key) || 0) > 0) {
+        idsExtraApagar.push(e.id);
+        contagemExtraDB.set(key, contagemExtraDB.get(key)! - 1); // Consome 1 fantasma
+      }
+    }
+    if (idsExtraApagar.length > 0) {
+      console.log(`      🗑️ Removendo ${idsExtraApagar.length} receitas extras órfãs/canceladas da entidade ${emp.codigo}...`);
+      await supabase.schema("transparencia").from("receitas_extra_orcamentarias").delete().in("id", idsExtraApagar);
+    }
   }
 
   // 3. Atualizar Transferências da União (ReceitaUniao) e do Estado (ReceitaEstado)
@@ -336,6 +382,13 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
 
   for (const lt of listagensTransf) {
     const dadosTransf = await fetchApiJson(lt.nome, anoAtual, mesAtualPadrao, "1");
+    if (dadosTransf === null) {
+      console.warn(`   ⚠️ Falha de rede. Pulando transferências (${lt.nome}) por segurança.`);
+      continue;
+    }
+    
+    const idsTransfMantidos = new Set<string>();
+
     for (const item of dadosTransf) {
       if (!item.CODIGO) continue;
       const vPrev = parseValor(item.PREVISAO_ATUALIZADA || item.PREVISAO_INICIAL);
@@ -365,6 +418,7 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
             .eq("id", rowExist.id);
           transferenciasAtualizadas++;
         }
+        idsTransfMantidos.add(rowExist.id);
       } else {
         await supabase
           .schema("transparencia")
@@ -382,6 +436,14 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
         transferenciasAtualizadas++;
       }
     }
+    
+    // Apagar as que não vieram
+    const { data: transfExistentes } = await supabase.schema("transparencia").from("receitas_transferencias").select("id").eq("exercicio", anoAtual).eq("tipo", lt.tipo);
+    const idsTransfApagar = (transfExistentes || []).filter(t => !idsTransfMantidos.has(t.id)).map(t => t.id);
+    if (idsTransfApagar.length > 0) {
+      console.log(`      🗑️ Removendo ${idsTransfApagar.length} transferências (${lt.nome}) órfãs/canceladas...`);
+      await supabase.schema("transparencia").from("receitas_transferencias").delete().in("id", idsTransfApagar);
+    }
   }
 
   // Sincronizar Transferências entre Entidades (Listagem = Transf)
@@ -392,7 +454,7 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
       const textTransf = await respTransf.text();
       const cleanTransf = textTransf.replace(/^\uFEFF/, "");
       const dataTransf = JSON.parse(cleanTransf);
-      if (Array.isArray(dataTransf) && dataTransf.length > 0) {
+      if (Array.isArray(dataTransf)) {
         const regTransf = dataTransf.map((item: any) => ({
           exercicio: anoAtual,
           mes: parseInt(item.MES) || null,
@@ -441,7 +503,23 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
           await supabase.schema("transparencia").from("transferencias_entre_entidades").insert(novosParaInserir);
           transferenciasAtualizadas += novosParaInserir.length;
         }
+        
+        // Apagar as transferências órfãs
+        const idsTransfEntApagar = [];
+        for (const e of existentes) {
+          const key = `${e.mes}_${e.entidade_pagadora}_${e.entidade_recebedora}_${e.repasse}_${e.data_lancamento || ''}`;
+          if ((contagemDB.get(key) || 0) > 0) {
+            idsTransfEntApagar.push(e.id);
+            contagemDB.set(key, contagemDB.get(key)! - 1); // Consome 1 fantasma
+          }
+        }
+        if (idsTransfEntApagar.length > 0) {
+          console.log(`      🗑️ Removendo ${idsTransfEntApagar.length} transferências entre entidades órfãs/canceladas...`);
+          await supabase.schema("transparencia").from("transferencias_entre_entidades").delete().in("id", idsTransfEntApagar);
+        }
       }
+    } else {
+       console.warn(`   ⚠️ Falha de rede. Pulando transferências entre entidades por segurança.`);
     }
   } catch (e) {
     console.warn("Aviso na importação de transferências entre entidades:", e);

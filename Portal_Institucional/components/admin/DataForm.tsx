@@ -6,10 +6,11 @@ import Link from "next/link";
 import { createBrowserClient } from "@/lib/supabase/client";
 import {
   Save, ArrowLeft, Loader2, CheckCircle2, XCircle,
-  FileUp, X, Eye,
+  FileUp, X, Eye, ShieldAlert
 } from "lucide-react";
 import { getTableConfig } from "@/lib/admin/transparencia-tables";
 import BatchDocumentManager from "./BatchDocumentManager";
+import PdfRedactionEditor from "./PdfRedactionEditor";
 
 
 
@@ -64,6 +65,7 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
+  const [showRedactor, setShowRedactor] = useState(false);
 
   function showToast(type: Toast["type"], msg: string) {
     setToast({ type, msg });
@@ -144,6 +146,14 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
       } else if (val === "") {
         val = null;
       }
+      
+      // Previne erros de limite de string (varchar) no banco
+      if (typeof val === "string") {
+        if (field.key === "empresa") val = val.substring(0, 10);
+        if (field.key === "carona") val = val.substring(0, 10);
+        if (field.key === "registro_preco") val = val.substring(0, 5);
+      }
+
       payload[field.key] = val;
     });
 
@@ -295,6 +305,19 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      {showRedactor && (
+        <PdfRedactionEditor
+          fileUrl={file ? undefined : form.arquivo_r2_url}
+          fileObj={file || undefined}
+          onSave={(redactedFile) => {
+            setFile(redactedFile);
+            setShowRedactor(false);
+            showToast("success", "Tarjas aplicadas com sucesso! Salve o formulário para efetivar.");
+          }}
+          onCancel={() => setShowRedactor(false)}
+        />
+      )}
+
       {/* Toast */}
       {toast && (
         <div
@@ -584,6 +607,16 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
                           <Eye size={16} />
                         </a>
                       )}
+                      {(file || form.arquivo_r2_url) && (
+                        <button
+                          type="button"
+                          onClick={() => setShowRedactor(true)}
+                          className="p-2 text-black hover:bg-gray-200 rounded-lg transition"
+                          title="Aplicar Tarja (Ocultar Dados Sensíveis)"
+                        >
+                          <ShieldAlert size={16} />
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => { setFile(null); set("arquivo_r2_url", ""); set("arquivo_nome", ""); }}
@@ -622,6 +655,19 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
           </button>
         </div>
       </form>
+
+      {showRedactor && (
+        <PdfRedactionEditor
+          fileObj={file || undefined}
+          fileUrl={!file && form.arquivo_r2_url ? form.arquivo_r2_url : undefined}
+          onSave={(redactedFile) => {
+            setFile(redactedFile);
+            showToast("success", "Tarjas aplicadas com sucesso! O novo PDF foi anexado para salvamento.");
+            setShowRedactor(false);
+          }}
+          onCancel={() => setShowRedactor(false)}
+        />
+      )}
     </div>
   );
 }
