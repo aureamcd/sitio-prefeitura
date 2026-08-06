@@ -156,7 +156,7 @@ export default function PdfRedactionEditor({ fileUrl, fileObj, onSave, onCancel 
       }
 
       const pdfBytes = await pdfDoc.save();
-      const redactedFile = new File([pdfBytes], "Documento_Tarjado.pdf", { type: "application/pdf" });
+      const redactedFile = new File([new Uint8Array(pdfBytes)], "Documento_Tarjado.pdf", { type: "application/pdf" });
       onSave(redactedFile);
     } catch (err) {
       console.error("Error applying redaction", err);

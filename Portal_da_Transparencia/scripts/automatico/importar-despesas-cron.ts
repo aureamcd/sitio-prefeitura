@@ -480,6 +480,7 @@ export async function sincronizarDespesasAno(ano: number) {
         await supabase.from("despesas_extra_orcamentarias").delete().in("id", idsExtraParaApagar);
       }
     }
+    }
 
     // --- C. RESTOS A PAGAR ---
     const urlRestos = buildRestosPagarUrl(ano, emp.codigo);
@@ -544,6 +545,7 @@ export async function sincronizarDespesasAno(ano: number) {
         console.log(`      🗑️ Removendo ${idsRestosParaApagar.length} restos a pagar órfãos/cancelados...`);
         await supabase.from("restos_pagar").delete().in("id", idsRestosParaApagar);
       }
+    }
     }
   }
 
