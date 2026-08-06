@@ -284,9 +284,7 @@ export const TABELAS_TRANSPARENCIA: TableConfig[] = [
       { key: "percentual_executado", label: "Percentual Executado (%)", type: "number", placeholder: "ex: 45.5" },
       { key: "valor_total", label: "Valor Total da Obra (R$)", type: "number" },
       { key: "valor_executado", label: "Valor Executado / Pago (R$)", type: "number" },
-      { key: "motivo_paralisacao", label: "Motivo da Paralisação (se houver)", type: "text", placeholder: "ex: Falta de repasse" },
-      { key: "responsavel_inexecucao", label: "Responsável pela Inexecução (se houver)", type: "text" },
-      { key: "data_prevista_reinicio", label: "Data Prevista p/ Reinício (se paralisada)", type: "date" },
+
       { key: "link_tce", label: "Link do TCE (se houver)", type: "text", fullWidth: true },
     ],
     filters: [

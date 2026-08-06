@@ -741,7 +741,6 @@ function ObrasParalisadasTab({ filters }: { filters: FilterValues }) {
 // Main Page
 // ---------------------------------------------------------------------------
 export default function ObrasPage() {
-  const [activeTab, setActiveTab] = useState<'geral' | 'paralisadas'>('geral');
   const [filters, setFilters] = useState<FilterValues & { situacao?: string }>({
     ano: '',
     mes: '',
@@ -806,54 +805,13 @@ export default function ObrasPage() {
         </div>
       </FilterPanel>
 
-      {/* Abas lado a lado */}
-      <div
-        className="mt-6 flex flex-wrap gap-1 border-b border-gray-200"
-        role="tablist"
-        aria-label="Seções de obras públicas"
-      >
-        <button
-          onClick={() => setActiveTab('geral')}
-          role="tab"
-          aria-selected={activeTab === 'geral'}
-          aria-controls="panel-geral"
-          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-            activeTab === 'geral'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-          }`}
-        >
-          <Construction size={16} aria-hidden="true" />
-          Painel Geral de Obras
-        </button>
-        <button
-          onClick={() => setActiveTab('paralisadas')}
-          role="tab"
-          aria-selected={activeTab === 'paralisadas'}
-          aria-controls="panel-paralisadas"
-          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-            activeTab === 'paralisadas'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-          }`}
-        >
-          <PauseCircle size={16} aria-hidden="true" />
-          Obras Paralisadas
-        </button>
-      </div>
-
-      {/* Conteúdo das Abas */}
-      {activeTab === 'geral' && (
+      <div className="mt-6">
         <PainelGeralObrasTab
           filters={filters}
           filterKey={filterKey}
           hasActiveFilters={hasActiveFilters}
         />
-      )}
-
-      {activeTab === 'paralisadas' && (
-        <ObrasParalisadasTab filters={filters} />
-      )}
+      </div>
     </ContentPage>
   );
 }

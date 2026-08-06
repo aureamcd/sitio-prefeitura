@@ -160,7 +160,7 @@ async function buscarEmpresas(): Promise<Empresa[]> {
     .map((e: any) => ({ codigo: String(e.codigo), nome: e.nome }));
 }
 
-async function fetchApiJson(listagem: string, ano: number, mes: string, empresa: string, codigoExtra = ""): Promise<any[]> {
+async function fetchApiJson(listagem: string, ano: number, mes: string, empresa: string, codigoExtra = ""): Promise<any[] | null> {
   // Sempre busca do periodo 01 ao 12 (ou mes final) para obter o acumulado total exato do exercicio sem distorcoes
   let url = `${FIORILLI_BASE_URL}/?ConectarExercicio=${ano}&Listagem=${listagem}&DiaInicioPeriodo=01&MesInicialPeriodo=01&DiaFinalPeriodo=31&MesFinalPeriodo=12&Ano=${ano}&Empresa=${empresa}&MostraDadosConsolidado=False`;
   if (codigoExtra) {
@@ -209,6 +209,7 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
   let atualizados = 0;
   let inseridos = 0;
   const registrosParaInserir: any[] = [];
+  const chavesMantidas = new Set<string>();
 
   // 2. Varrer as APIs (ReceitaOrcamentaria e ReceitaExtraOrcamentaria) em passagem única limpa por empresa
   for (const emp of empresas) {
@@ -222,7 +223,6 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
     }
     
     const todosApi = dadosOrc; // dadosExtra será processado separadamente abaixo
-    const chavesMantidas = new Set<string>();
 
     for (const itemApi of todosApi) {
       if (!itemApi.CODIGO) continue;
@@ -278,7 +278,7 @@ export async function executarSincronizacaoSemanalReceitas(mesesAlvo?: string[])
 
   // Apagar receitas orçamentárias órfãs (não vieram na API)
   const idsReceitasApagar: string[] = [];
-  for (const [chave, regBanco] of mapaExistentes.entries()) {
+  for (const [chave, regBanco] of Array.from(mapaExistentes.entries())) {
     if (!chavesMantidas.has(chave) && regBanco.id !== "TEMP_ID") {
       idsReceitasApagar.push(regBanco.id);
     }
