@@ -309,6 +309,11 @@ export default function TransferenciasPage() {
   // Combine unique years
   const ANOS = Array.from(new Set([...anosTransf.anos, ...anosReceitas.anos, '2026', '2025', '2024', '2023'])).sort((a, b) => Number(b) - Number(a));
 
+  const dbUpdateDate = useMemo(() => {
+    if (!transferenciasData || transferenciasData.length === 0) return "";
+    return transferenciasData.reduce((max: string, r: any) => (r.data_transferencia && r.data_transferencia > max) ? r.data_transferencia : max, "");
+  }, [transferenciasData]);
+
   return (
     <ContentPage
       showSearch={false}
@@ -318,7 +323,7 @@ export default function TransferenciasPage() {
         { label: 'Portal da Transparência', href: '/' },
         { label: 'Transferências' },
       ]}
-      lastUpdate={today}
+      lastUpdate={dbUpdateDate || today}
       responsible="Secretaria Municipal de Finanças"
     >
       <FilterPanel

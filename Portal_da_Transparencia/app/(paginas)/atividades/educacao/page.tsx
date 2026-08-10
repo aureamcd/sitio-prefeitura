@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useMemo, useCallback } from 'react';
 import ContentPage from '@/components/layout/ContentPage';
@@ -81,24 +81,6 @@ function VagasCrechesTab() {
   );
 }
 
-function EscolasTab() {
-  return (
-    <div className="mt-4">
-      <div className="mb-6 bg-blue-50 border border-blue-100 p-4 rounded-xl flex items-center justify-between"><div><h3 className="font-semibold text-blue-900">Relação de Alunos por Escola</h3><p className="text-sm text-blue-800 mt-1">Acesse o documento oficial contendo o total de alunos matriculados por unidade escolar no exercício de 2026.</p></div><a href="/documentos/educacao/alunos-por-escola-2026.pdf" target="_blank" className="shrink-0 bg-blue-600 text-white px-4 py-2.5 rounded-lg font-medium text-sm hover:bg-blue-700 transition-colors">Acessar PDF</a></div><DataTable columns={[{ header: 'Escola Municipal', accessor: 'nome', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
-          { header: 'N�veis de Ensino', accessor: 'niveis' },
-          { header: 'Endere�o', accessor: 'endereco' },
-          { header: 'Hor�rio de Funcionamento', accessor: 'horario', render: (v: string) => <span className="font-mono text-xs">{v}</span> },
-          { header: 'Telefone', accessor: 'telefone' },
-        ]}
-        data={ESCOLAS_MUNICIPAIS}
-        title="Rela��o de Escolas Municipais"
-        caption="Endere�os, telefones e n�veis de ensino de todas as escolas da rede municipal."
-        exportable
-      />
-    </div>
-  );
-}
-
 function PlanejamentoEducacaoTab() {
   return (
     <div className="mt-6">
@@ -106,15 +88,15 @@ function PlanejamentoEducacaoTab() {
         columns={[
           { header: 'Documento', accessor: 'documento', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
           { header: 'Tipo', accessor: 'tipo' },
-          { header: 'Per�odo', accessor: 'ano' },
-          { header: 'Situa��o', accessor: 'situacao' },
+          { header: 'Período', accessor: 'ano' },
+          { header: 'Situação', accessor: 'situacao' },
           { header: 'Anexo', accessor: 'arquivo', render: (v: string) => v ? (
             <a href={v} target="_blank" className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
               <FileText size={13} /> PDF</a>
           ) : null },
         ]}
         data={PLANEJAMENTO_EDUCACAO}
-        title="Planejamento da Educa��o"
+        title="Planejamento da Educação"
         caption="Documentos oficiais de planejamento educacional."
         exportable
       />
@@ -123,7 +105,7 @@ function PlanejamentoEducacaoTab() {
 }
 
 export default function EducacaoPage() {
-  const [activeTab, setActiveTab] = useState<'escolas' | 'creches' | 'merenda' | 'transporte' | 'planejamento'>('escolas');
+  const [activeTab, setActiveTab] = useState<'creches' | 'planejamento'>('creches');
   const [filters, setFilters] = useState<FilterValues>({ ano: '', mes: '', busca: '' });
 
   const handleChange = useCallback((field: 'ano' | 'mes' | 'busca', value: string) => {
@@ -134,34 +116,22 @@ export default function EducacaoPage() {
   return (
     <ContentPage
       showSearch={false}
-      title="Educa��o"
-      description="Informa��es sobre Escolas, Creches, Merenda e Transporte Escolar do munic�pio � conforme Dimens�o 19 do PNTP 2026."
+      title="Educação"
+      description="Informações sobre Escolas, Creches, Merenda e Transporte Escolar do município – conforme Dimensão 19 do PNTP 2026."
       breadcrumb={[
-        { label: 'In�cio', href: '/' },
-        { label: 'Atividades Final�sticas' },
-        { label: 'Educa��o' },
+        { label: 'Início', href: '/' },
+        { label: 'Atividades Finalísticas' },
+        { label: 'Educação' },
       ]}
       lastUpdate={getTodayDate()}
-      responsible="Secretaria Municipal de Educa��o"
+      responsible="Secretaria Municipal de Educação"
     >
       <FilterPanel anos={[{ value: '2026', label: '2026' }]} meses={MESES} values={filters} onChange={handleChange} onClear={handleClear} />
 
       <div className="mt-6 flex flex-wrap gap-1 border-b border-gray-200" role="tablist">
-        <button onClick={() => setActiveTab('escolas')} role="tab"
-          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${activeTab === 'escolas' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
-          <School size={16} /> Escolas Municipais
-        </button>
         <button onClick={() => setActiveTab('creches')} role="tab"
           className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${activeTab === 'creches' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
           <Home size={16} /> Vagas em Creches
-        </button>
-        <button onClick={() => setActiveTab('merenda')} role="tab"
-          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${activeTab === 'merenda' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
-          <Utensils size={16} /> Merenda Escolar
-        </button>
-        <button onClick={() => setActiveTab('transporte')} role="tab"
-          className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${activeTab === 'transporte' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
-          <Bus size={16} /> Transporte Escolar
         </button>
         <button onClick={() => setActiveTab('planejamento')} role="tab"
           className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors ${activeTab === 'planejamento' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
@@ -169,27 +139,8 @@ export default function EducacaoPage() {
         </button>
       </div>
 
-      {activeTab === 'escolas' && <EscolasTab />}
       {activeTab === 'creches' && <VagasCrechesTab />}
       {activeTab === 'planejamento' && <PlanejamentoEducacaoTab />}
-      
-      {activeTab === 'merenda' && (
-        <DeclaracaoInexistencia 
-          titulo="Card�pio da Merenda Escolar" 
-          descricao="O munic�pio publicar� em breve o card�pio nutricional detalhado (semanal/mensal) servido nas escolas." 
-          icon={Utensils} 
-        />
-      )}
-      
-      {activeTab === 'transporte' && (
-        <DeclaracaoInexistencia 
-          titulo="Rotas do Transporte Escolar" 
-          descricao="Os itiner�rios dos �nibus, hor�rios, placas e motoristas respons�veis ser�o publicados em breve." 
-          icon={Bus} 
-        />
-      )}
     </ContentPage>
   );
 }
-
-

@@ -30,7 +30,7 @@ type Incentivo = {
   valor_beneficio: number;
   fundamento_legal: string;
   ano: number;
-  descricao?: string;
+  arquivo?: string;
 };
 
 const TIPO_INCENTIVO_LABEL: Record<string, string> = {
@@ -91,6 +91,7 @@ function TabelaIncentivos({ itens }: { itens: Incentivo[] }) {
             <th className="text-left py-3 px-4 font-semibold text-gray-700">Incentivo</th>
             <th className="text-right py-3 px-4 font-semibold text-gray-700">Valor</th>
             <th className="text-left py-3 px-4 font-semibold text-gray-700">Fundamento Legal</th>
+            <th className="text-center py-3 px-4 font-semibold text-gray-700">Documento</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -112,6 +113,15 @@ function TabelaIncentivos({ itens }: { itens: Incentivo[] }) {
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.valor_beneficio)}
               </td>
               <td className="py-3 px-4 text-xs text-gray-500">{item.fundamento_legal}</td>
+              <td className="py-3 px-4 text-center">
+                {item.arquivo ? (
+                  <a href={item.arquivo} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors" title="Visualizar Documento">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  </a>
+                ) : (
+                  <span className="text-gray-400 text-xs">-</span>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -125,7 +135,11 @@ function TabelaIncentivos({ itens }: { itens: Incentivo[] }) {
 // ============================================================================
 export default function RenunciasDeReceitasPage() {
   const today = useTodayDate();
-  const { anos: ANOS } = useAvailableYears('renuncias');
+  const { anos: dbAnos } = useAvailableYears('renuncias');
+  
+  // Combina os anos do banco com a série histórica necessária (2020-2026)
+  const ALL_YEARS = Array.from(new Set([...dbAnos, '2026', '2025', '2024', '2023', '2022', '2021', '2020'])).sort().reverse();
+
   const [activeTab, setActiveTab] = useState<'desoneracoes' | 'incentivos'>('desoneracoes');
   const [filters, setFilters] = useState<FilterValues>({ ano: '', mes: '', busca: '', entidade: '' });
 
@@ -161,7 +175,8 @@ export default function RenunciasDeReceitasPage() {
             tipo_incentivo: 'patrocinio_abatimento',
             valor_beneficio: 30400.00,
             fundamento_legal: 'Lei 14.399/2022 (PNAB)',
-            ano: 2026
+            ano: 2026,
+            arquivo: 'https://pub-dc316bdb1d204c4fa9d36b369c385b97.r2.dev/renuncias/DM_5536_440_Padre_Marcos_Edital_Chamamento_Publico_001-26_pag_307.pdf'
           },
           {
             id: 'static-2',
@@ -171,7 +186,8 @@ export default function RenunciasDeReceitasPage() {
             tipo_incentivo: 'patrocinio_abatimento',
             valor_beneficio: 5400.00,
             fundamento_legal: 'Lei 14.399/2022 (PNAB)',
-            ano: 2026
+            ano: 2026,
+            arquivo: 'https://pub-dc316bdb1d204c4fa9d36b369c385b97.r2.dev/renuncias/DM_5558_469_Padre_Marcos_Edital_Chamamento_Publico_002-26_PNAB_pag_67.pdf'
           },
           {
             id: 'static-3',
@@ -181,7 +197,74 @@ export default function RenunciasDeReceitasPage() {
             tipo_incentivo: 'patrocinio_abatimento',
             valor_beneficio: 21300.00,
             fundamento_legal: 'Lei Complementar 195/2022',
-            ano: 2023
+            ano: 2023,
+            arquivo: 'https://pub-dc316bdb1d204c4fa9d36b369c385b97.r2.dev/renuncias/DM_4916_241_Padre_Marcos_Edital_Chamamento_Publico_001-23_SEMCULT_pag_188.pdf'
+          },
+          {
+            id: 'whatsapp-DM_4089_312_Padre_Marcos_Chamamento_Publico_Simplificado_Edital_001-20_pag_29-32',
+            projeto: 'Edital de Chamamento Público Simplificado Nº 01/2020 (Saúde - Covid19)',
+            area: 'cultura',
+            beneficiario: 'Profissionais de Saúde',
+            tipo_incentivo: 'patrocinio_abatimento',
+            valor_beneficio: 0,
+            fundamento_legal: 'Enfrentamento Covid-19',
+            ano: 2020,
+            arquivo: 'https://pub-dc316bdb1d204c4fa9d36b369c385b97.r2.dev/renuncias/DM_4089_312_Padre_Marcos_Chamamento_Publico_Simplificado_Edital_001-20_pag_29-32.pdf'
+          },
+          {
+            id: 'whatsapp-DM_4132_250_Padre_Marcos_Edital_de_Mapeamento_Cultural_001-20_pag_218-221',
+            projeto: 'Edital de Mapeamento Cultural 001/2020',
+            area: 'cultura',
+            beneficiario: 'Agentes e Espaços Culturais',
+            tipo_incentivo: 'patrocinio_abatimento',
+            valor_beneficio: 0,
+            fundamento_legal: 'Mapeamento Cultural',
+            ano: 2020,
+            arquivo: 'https://pub-dc316bdb1d204c4fa9d36b369c385b97.r2.dev/renuncias/DM_4132_250_Padre_Marcos_Edital_de_Mapeamento_Cultural_001-20_pag_218-221.pdf'
+          },
+          {
+            id: 'whatsapp-DM_4178_205_Padre_Marcos_Edital_02-20_Emergencia_Cultural_pag_14-19',
+            projeto: 'Edital Nº 02/2020 Lei Aldir Blanc de Emergência Cultural',
+            area: 'cultura',
+            beneficiario: 'Agentes Culturais, Grupos e Coletivos',
+            tipo_incentivo: 'patrocinio_abatimento',
+            valor_beneficio: 23000,
+            fundamento_legal: 'Lei Aldir Blanc',
+            ano: 2020,
+            arquivo: 'https://pub-dc316bdb1d204c4fa9d36b369c385b97.r2.dev/renuncias/DM_4178_205_Padre_Marcos_Edital_02-20_Emergencia_Cultural_pag_14-19.pdf'
+          },
+          {
+            id: 'whatsapp-DM_4178_206_Padre_Marcos_Edital_03-20_pag_16-19',
+            projeto: 'Edital Nº 003/2020 Lei Aldir Blanc de Emergência Cultural',
+            area: 'cultura',
+            beneficiario: 'Grupos, Coletivos e Espaços Culturais',
+            tipo_incentivo: 'patrocinio_abatimento',
+            valor_beneficio: 0,
+            fundamento_legal: 'Lei Aldir Blanc',
+            ano: 2020,
+            arquivo: 'https://pub-dc316bdb1d204c4fa9d36b369c385b97.r2.dev/renuncias/DM_4178_206_Padre_Marcos_Edital_03-20_pag_16-19.pdf'
+          },
+          {
+            id: 'whatsapp-DM_4638_390_Padre_Marcos_Edital_001-22_pag_307',
+            projeto: 'Edital de Mapeamento Cultural 001/2022',
+            area: 'cultura',
+            beneficiario: 'Agentes e Espaços Culturais',
+            tipo_incentivo: 'patrocinio_abatimento',
+            valor_beneficio: 0,
+            fundamento_legal: 'Mapeamento Cultural',
+            ano: 2022,
+            arquivo: 'https://pub-dc316bdb1d204c4fa9d36b369c385b97.r2.dev/renuncias/DM_4638_390_Padre_Marcos_Edital_001-22_pag_307.pdf'
+          },
+          {
+            id: 'whatsapp-DM_5382_261_Padre_Marcos_Edital_de_Mapeamento_Cultural_001-25_pag_179',
+            projeto: 'Edital de Mapeamento Cultural 001/2025',
+            area: 'cultura',
+            beneficiario: 'Agentes e Espaços Culturais',
+            tipo_incentivo: 'patrocinio_abatimento',
+            valor_beneficio: 0,
+            fundamento_legal: 'Mapeamento Cultural',
+            ano: 2025,
+            arquivo: 'https://pub-dc316bdb1d204c4fa9d36b369c385b97.r2.dev/renuncias/DM_5382_261_Padre_Marcos_Edital_de_Mapeamento_Cultural_001-25_pag_179.pdf'
           },
           {
             id: 'static-4',
@@ -191,7 +274,8 @@ export default function RenunciasDeReceitasPage() {
             tipo_incentivo: 'patrocinio_abatimento',
             valor_beneficio: 21300.00,
             fundamento_legal: 'Lei Complementar 195/2022',
-            ano: 2023
+            ano: 2023,
+            arquivo: 'https://pub-dc316bdb1d204c4fa9d36b369c385b97.r2.dev/renuncias/DM_4915_278_Padre_Marcos_Edital_Chamamento_Publico_002-23_SEMCULT_pag_73.pdf'
           },
           {
             id: 'static-5',
@@ -232,16 +316,12 @@ export default function RenunciasDeReceitasPage() {
       lastUpdate={today}
     >
       <FilterPanel
-        anos={ANOS}
+        anos={ALL_YEARS}
         meses={MESES}
         values={filters}
         onChange={handleChange}
         onClear={handleClear}
       >
-        <p className="text-[11px] text-amber-700 font-medium flex items-center gap-1.5">
-          <AlertCircle size={14} />
-          Filtro por ano e beneficiário obrigatórios conforme critérios 16.1–16.4
-        </p>
       </FilterPanel>
 
       {/* ═══════ ABAS ═══════ */}
