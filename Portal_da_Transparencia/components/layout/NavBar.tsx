@@ -41,7 +41,6 @@ export default function Navbar({ mobileOpen, setMobileOpen }: NavbarProps): JSX.
   const atividadesItems: MenuItem[] = [
     { href: "/atividades/saude", label: "Saúde" },
     { href: "/atividades/educacao", label: "Educação" },
-    { href: "/atividades/cultura", label: "Cultura e Fomento" },
   ];
 
   const conselhosItems: MenuItem[] = [

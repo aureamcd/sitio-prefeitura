@@ -217,6 +217,23 @@ function AtendimentoFilaTab({ filters }: { filters: FilterValues }) {
             </div>
           </div>
 
+            <div className="mb-6 bg-blue-50 rounded-xl p-6 border border-blue-100 shadow-sm text-center">
+              <FileText size={48} className="mx-auto text-blue-500 mb-4" />
+              <h3 className="text-xl font-bold text-blue-900 mb-2">Escala da Equipe Médica</h3>
+              <p className="text-sm text-blue-700/80 mb-6 max-w-xl mx-auto">
+                Consulte o arquivo oficial com a escala completa e detalhada da equipe médica, contendo horários e unidades de atendimento de todos os profissionais.
+              </p>
+              <a
+                href="/documentos/saude/escala-equipe-medica-julho.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-sm"
+              >
+                <ExternalLink size={18} />
+                Baixar Escala da Equipe Médica
+              </a>
+            </div>
+
           <DataTable
             columns={[
               { header: 'Unidade', accessor: 'unidade', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
@@ -254,6 +271,7 @@ function AtendimentoFilaTab({ filters }: { filters: FilterValues }) {
               )},
             ]}
             data={[
+              { nome: 'Hospital Municipal de Padre Marcos', endereco: 'Conforme documento em anexo', horario: '24h', arquivo: '/documentos/saude/hospital-municipal-de-padre-marcos.pdf' },
               { nome: 'Centro de Saúde', endereco: 'Conforme documento em anexo', horario: '07h às 17h (seg-sex)', arquivo: '/documentos/saude/ubs/cnpj-centro-de-saude.pdf' },
               { nome: 'UBS Riacho do Padre', endereco: 'Povoado Riacho do Padre, S/N', horario: '07h às 17h (seg-sex)', arquivo: '/documentos/saude/ubs/ps-riacho-do-padre.pdf' },
               { nome: 'UBS Canto Alegre', endereco: 'Povoado Canto Alegre, S/N', horario: '07h às 17h (seg-sex)', arquivo: '/documentos/saude/ubs/ps-canto-alegre.pdf' },
@@ -406,13 +424,6 @@ function MedicamentosFarmaciasTab({ filters }: { filters: FilterValues }) {
       {/* Sub-aba: Estoque */}
       {abaMedicamento === 'estoque' && (
         <div className="mt-4">
-          {/* Totalizador */}
-          <div className="mb-4 bg-white border border-green-100 rounded-xl p-4 text-center shadow-sm">
-            <p className="text-xs text-gray-500 uppercase tracking-wider">Total de Itens em Estoque</p>
-            <p className="text-2xl font-extrabold text-green-700 tabular-nums mt-1">{totalEstoque.toLocaleString('pt-BR')}</p>
-            <p className="text-[11px] text-gray-400 mt-1">unidades disponíveis nas farmácias públicas</p>
-          </div>
-
           {/* Alerta de prazo */}
           <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-3">
             <div className="flex items-center gap-2">
@@ -424,28 +435,22 @@ function MedicamentosFarmaciasTab({ filters }: { filters: FilterValues }) {
             </div>
           </div>
 
-          <DataTable
-            columns={[
-              { header: 'Medicamento', accessor: 'medicamento', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
-              { header: 'Quantidade', accessor: 'quantidade', render: (v: number) => (
-                <span className={`tabular-nums font-semibold ${v < 300 ? 'text-red-600' : v < 1000 ? 'text-amber-600' : 'text-emerald-600'}`}>
-                  {v.toLocaleString('pt-BR')}
-                </span>
-              )},
-              { header: 'Validade', accessor: 'validade', render: (v: string) => <span className="font-mono text-xs">{v}</span> },
-              { header: 'Farmácia', accessor: 'farmacia', render: (v: string) => (
-                <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-                  v.includes('Alto Custo') ? 'bg-purple-100 text-purple-800' : 'bg-emerald-100 text-emerald-800'
-                }`}>{v}</span>
-              )},
-            ]}
-            data={estoqueFiltrado}
-            title="Estoque das Farmácias Públicas"
-            caption="Quantidade de medicamentos disponíveis nas farmácias públicas municipais, com data de validade e localização."
-            exportable
-            paginationResetKey={filters.busca || 'e'}
-            hasActiveFilters={!!filters.busca}
-          />
+          <div className="mb-6 bg-white rounded-xl p-6 border border-gray-200 shadow-sm text-center">
+            <Pill size={48} className="mx-auto text-emerald-500 mb-4" />
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Relatório Posição de Estoque</h3>
+            <p className="text-sm text-gray-500 mb-6 max-w-xl mx-auto">
+              Acesse o relatório completo e detalhado da posição de estoque de medicamentos nas farmácias públicas municipais, conforme gerado pelo sistema Horus.
+            </p>
+            <a
+              href="/documentos/saude/posicao-estoque-diaria-horus.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors shadow-sm"
+            >
+              <ExternalLink size={18} />
+              Acessar Posição de Estoque Diária
+            </a>
+          </div>
         </div>
       )}
 
