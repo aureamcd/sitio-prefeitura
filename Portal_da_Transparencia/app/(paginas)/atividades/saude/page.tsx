@@ -96,22 +96,46 @@ function AtendimentoFilaTab() {
       {/* Sub-aba: Serviços */}
       {abaAtendimento === 'servicos' && (
         <div className="mt-4">
-            <div className="mb-6 bg-blue-50 rounded-xl p-6 border border-blue-100 shadow-sm text-center">
-              <FileText size={48} className="mx-auto text-blue-500 mb-4" />
-              <h3 className="text-xl font-bold text-blue-900 mb-2">Escala da Equipe Médica</h3>
-              <p className="text-sm text-blue-700/80 mb-6 max-w-xl mx-auto">
-                Consulte o arquivo oficial com a escala completa e detalhada da equipe médica, contendo horários e unidades de atendimento de todos os profissionais.
+          <DataTable
+            columns={[
+              { header: 'Profissional', accessor: 'nome', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
+              { header: 'CRM-PI', accessor: 'crm' },
+              { header: 'Especialidade', accessor: 'especialidade' },
+              { header: 'Unidade', accessor: 'unidade' },
+              { header: 'Horário/Modalidade', accessor: 'horario', render: (v: string) => (
+                <span className="inline-block px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold">{v}</span>
+              )},
+            ]}
+            data={[
+              { nome: 'Dr. Adernil Roberto Jaco Dantas', crm: '10887', especialidade: 'Clínico Geral', horario: 'Plantão 24h (Escala)', unidade: 'Hospital Municipal de Padre Marcos' },
+              { nome: 'Dra. Maria Clara Sousa Lima', crm: '9849', especialidade: 'Clínico Geral', horario: 'Plantão 24h (Escala)', unidade: 'Hospital Municipal de Padre Marcos' },
+              { nome: 'Dr. Matheus Costa Fontes', crm: '10637', especialidade: 'Clínico Geral', horario: 'Plantão 24h (Escala)', unidade: 'Hospital Municipal de Padre Marcos' },
+              { nome: 'Dra. Melissa Dias Leal', crm: '11441', especialidade: 'Clínico Geral', horario: 'Plantão 24h (Escala)', unidade: 'Hospital Municipal de Padre Marcos' },
+              { nome: 'Dr. Rubens Batista', crm: '657', especialidade: 'Clínico Geral', horario: 'Plantão 24h (Escala)', unidade: 'Hospital Municipal de Padre Marcos' },
+              { nome: 'Dra. Sarah Jaco Dantas', crm: '11808', especialidade: 'Clínico Geral', horario: 'Plantão 24h (Escala)', unidade: 'Hospital Municipal de Padre Marcos' },
+            ]}
+            title="Corpo Clínico - Escala Médica (Julho/2026)"
+            caption="Relação oficial dos profissionais médicos de plantão no Hospital Municipal (Atendimento 24h Urgência/Emergência)."
+            exportable
+          />
+
+          <div className="mt-6 bg-blue-50 rounded-xl p-6 border border-blue-100 shadow-sm text-center flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-left">
+              <h3 className="text-lg font-bold text-blue-900 mb-1">Escala Completa em PDF</h3>
+              <p className="text-sm text-blue-700/80">
+                Consulte o arquivo oficial assinado com a escala detalhada, contendo os dias exatos de plantão de cada médico.
               </p>
-              <a
-                href="/documentos/saude/escala-equipe-medica-julho.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-sm"
-              >
-                <ExternalLink size={18} />
-                Baixar Escala da Equipe Médica
-              </a>
             </div>
+            <a
+              href="/documentos/saude/escala-equipe-medica-julho.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex shrink-0 items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-sm text-sm"
+            >
+              <ExternalLink size={16} />
+              Baixar Escala Completa
+            </a>
+          </div>
         </div>
       )}
 
