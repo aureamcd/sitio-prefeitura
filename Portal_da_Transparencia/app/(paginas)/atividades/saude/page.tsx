@@ -34,74 +34,7 @@ const MESES = [
 // Mock Data
 // ---------------------------------------------------------------------------
 
-const SERVICOS_SAUDE = [
-  { unidade: 'UBS Centro de Saúde', especialidade: 'Clínica Geral', profissional: 'Dr. Carlos Alves', horario: '07h-17h (seg-sex)', tipo: 'Atenção Básica' },
-  { unidade: 'UBS Centro de Saúde', especialidade: 'Pediatria', profissional: 'Dra. Maria Oliveira', horario: '08h-12h (seg-qua)', tipo: 'Atenção Básica' },
-  { unidade: 'UBS Centro de Saúde', especialidade: 'Ginecologia', profissional: 'Dra. Ana Costa', horario: '08h-12h (ter-qui)', tipo: 'Atenção Básica' },
-  { unidade: 'UBS Centro de Saúde', especialidade: 'Enfermagem', profissional: 'Enf. João Santos', horario: '07h-17h (seg-sex)', tipo: 'Atenção Básica' },
-  { unidade: 'PSF São Francisco', especialidade: 'Clínica Geral', profissional: 'Dr. Paulo Lima', horario: '07h-12h (seg-sex)', tipo: 'Atenção Básica' },
-  { unidade: 'PSF São Francisco', especialidade: 'Enfermagem', profissional: 'Enf. Lucineide Dias', horario: '07h-12h (seg-sex)', tipo: 'Atenção Básica' },
-  { unidade: 'PSF Santa Teresinha', especialidade: 'Clínica Geral', profissional: 'Dr. Roberto Sousa', horario: '07h-12h (seg-sex)', tipo: 'Atenção Básica' },
-  { unidade: 'PSF Santa Teresinha', especialidade: 'Odontologia', profissional: 'Dra. Fernanda Luz', horario: '08h-12h (seg-qua)', tipo: 'Atenção Básica' },
-  { unidade: 'NASF-AB', especialidade: 'Psicologia', profissional: 'Psi. Mariana Gomes', horario: '08h-16h (seg-sex)', tipo: 'Apoio Especializado' },
-  { unidade: 'NASF-AB', especialidade: 'Nutrição', profissional: 'Nut. Rafael Torres', horario: '08h-16h (seg-qua)', tipo: 'Apoio Especializado' },
-  { unidade: 'NASF-AB', especialidade: 'Fisioterapia', profissional: 'Ft. Camila Rocha', horario: '08h-16h (ter-qui)', tipo: 'Apoio Especializado' },
-];
 
-const FILA_ESPERA = [
-  { cns: 'CNS ***1234', protocolo: 'PROT-2025-00042', especialidade: 'Ortopedia', data_protocolo: '15/03/2025', tempo_medio_dias: 45, prioridade: 'Prioritário' },
-  { cns: 'CNS ***5678', protocolo: 'PROT-2025-00058', especialidade: 'Cardiologia', data_protocolo: '22/03/2025', tempo_medio_dias: 60, prioridade: 'Eletivo' },
-  { cns: 'CNS ***9012', protocolo: 'PROT-2025-00103', especialidade: 'Oftalmologia', data_protocolo: '10/04/2025', tempo_medio_dias: 90, prioridade: 'Eletivo' },
-  { cns: 'CNS ***3456', protocolo: 'PROT-2025-00121', especialidade: 'Cirurgia Geral', data_protocolo: '18/04/2025', tempo_medio_dias: 120, prioridade: 'Prioritário' },
-  { cns: 'CNS ***7890', protocolo: 'PROT-2025-00148', especialidade: 'Dermatologia', data_protocolo: '05/05/2025', tempo_medio_dias: 75, prioridade: 'Eletivo' },
-  { cns: 'CNS ***2345', protocolo: 'PROT-2025-00167', especialidade: 'Endocrinologia', data_protocolo: '12/05/2025', tempo_medio_dias: 55, prioridade: 'Eletivo' },
-  { cns: 'CNS ***6789', protocolo: 'PROT-2025-00189', especialidade: 'Neurologia', data_protocolo: '20/05/2025', tempo_medio_dias: 80, prioridade: 'Prioritário' },
-  { cns: 'CNS ***0123', protocolo: 'PROT-2025-00204', especialidade: 'Reumatologia', data_protocolo: '01/06/2025', tempo_medio_dias: 65, prioridade: 'Eletivo' },
-  { cns: 'CNS ***4567', protocolo: 'PROT-2025-00218', especialidade: 'Urologia', data_protocolo: '08/06/2025', tempo_medio_dias: 70, prioridade: 'Eletivo' },
-  { cns: 'CNS ***8901', protocolo: 'PROT-2025-00235', especialidade: 'Cirurgia Geral', data_protocolo: '15/06/2025', tempo_medio_dias: 110, prioridade: 'Prioritário' },
-];
-
-const REMUME = [
-  { medicamento: 'Paracetamol 500mg', principio_ativo: 'Paracetamol', forma: 'Comprimido', concentracao: '500 mg', via: 'Oral' },
-  { medicamento: 'Amoxicilina 500mg', principio_ativo: 'Amoxicilina', forma: 'Cápsula', concentracao: '500 mg', via: 'Oral' },
-  { medicamento: 'Losartana 50mg', principio_ativo: 'Losartana Potássica', forma: 'Comprimido', concentracao: '50 mg', via: 'Oral' },
-  { medicamento: 'Hidroclorotiazida 25mg', principio_ativo: 'Hidroclorotiazida', forma: 'Comprimido', concentracao: '25 mg', via: 'Oral' },
-  { medicamento: 'Metformina 850mg', principio_ativo: 'Cloridrato de Metformina', forma: 'Comprimido', concentracao: '850 mg', via: 'Oral' },
-  { medicamento: 'Omeprazol 20mg', principio_ativo: 'Omeprazol', forma: 'Cápsula', concentracao: '20 mg', via: 'Oral' },
-  { medicamento: 'Ibuprofeno 600mg', principio_ativo: 'Ibuprofeno', forma: 'Comprimido', concentracao: '600 mg', via: 'Oral' },
-  { medicamento: 'Dipirona 500mg/mL', principio_ativo: 'Dipirona Sódica', forma: 'Solução Gotas', concentracao: '500 mg/mL', via: 'Oral' },
-  { medicamento: 'Sinvastatina 20mg', principio_ativo: 'Sinvastatina', forma: 'Comprimido', concentracao: '20 mg', via: 'Oral' },
-  { medicamento: 'Enalapril 10mg', principio_ativo: 'Maleato de Enalapril', forma: 'Comprimido', concentracao: '10 mg', via: 'Oral' },
-  { medicamento: 'Captopril 25mg', principio_ativo: 'Captopril', forma: 'Comprimido', concentracao: '25 mg', via: 'Oral' },
-  { medicamento: 'Insulina NPH 100UI/mL', principio_ativo: 'Insulina Humana NPH', forma: 'Suspensão Injetável', concentracao: '100 UI/mL', via: 'Subcutânea' },
-  { medicamento: 'Prednisona 20mg', principio_ativo: 'Prednisona', forma: 'Comprimido', concentracao: '20 mg', via: 'Oral' },
-  { medicamento: 'Dipirona Sódica 500mg', principio_ativo: 'Dipirona Sódica', forma: 'Comprimido', concentracao: '500 mg', via: 'Oral' },
-  { medicamento: 'Ácido Acetilsalicílico 100mg', principio_ativo: 'AAS', forma: 'Comprimido', concentracao: '100 mg', via: 'Oral' },
-];
-
-const ESTOQUE_FARMACIA = [
-  { medicamento: 'Paracetamol 500mg', quantidade: 1200, validade: '08/2026', farmacia: 'Farmácia Básica Municipal' },
-  { medicamento: 'Amoxicilina 500mg', quantidade: 850, validade: '12/2025', farmacia: 'Farmácia Básica Municipal' },
-  { medicamento: 'Losartana 50mg', quantidade: 2000, validade: '06/2027', farmacia: 'Farmácia Básica Municipal' },
-  { medicamento: 'Metformina 850mg', quantidade: 3000, validade: '03/2027', farmacia: 'Farmácia Básica Municipal' },
-  { medicamento: 'Insulina NPH 100UI/mL', quantidade: 240, validade: '05/2026', farmacia: 'Farmácia de Alto Custo' },
-  { medicamento: 'Omeprazol 20mg', quantidade: 1500, validade: '09/2026', farmacia: 'Farmácia Básica Municipal' },
-  { medicamento: 'Sinvastatina 20mg', quantidade: 1800, validade: '10/2026', farmacia: 'Farmácia Básica Municipal' },
-  { medicamento: 'Enalapril 10mg', quantidade: 2200, validade: '07/2026', farmacia: 'Farmácia Básica Municipal' },
-  { medicamento: 'Dipirona 500mg/mL', quantidade: 400, validade: '11/2025', farmacia: 'Farmácia Básica Municipal' },
-  { medicamento: 'Prednisona 20mg', quantidade: 600, validade: '02/2026', farmacia: 'Farmácia Básica Municipal' },
-];
-
-const CONSELHEIROS_SAUDE = [
-  { nome: 'Maria Aparecida Santos', entidade: 'Usuários SUS', segmento: 'Usuário', contato: '(89) 99999-0001' },
-  { nome: 'José Fernando Lima', entidade: 'Sindicato dos Servidores', segmento: 'Trabalhador', contato: '(89) 99999-0002' },
-  { nome: 'Dr. Carlos Alves Neto', entidade: 'Secretaria Municipal de Saúde', segmento: 'Gestor', contato: 'carlos.alves@pmpsaude.gov.br' },
-  { nome: 'Enf. Lucineide Dias', entidade: 'Conselho Regional de Enfermagem', segmento: 'Trabalhador', contato: '(89) 99999-0003' },
-  { nome: 'Roberto Carlos Sousa', entidade: 'Associação de Moradores', segmento: 'Usuário', contato: '(89) 99999-0004' },
-  { nome: 'Ana Maria Costa', entidade: 'Pastoral da Saúde', segmento: 'Usuário', contato: '(89) 99999-0005' },
-  { nome: 'Dr. Paulo Roberto Lima', entidade: 'CRM-PI', segmento: 'Gestor', contato: 'paulo.lima@pmpsaude.gov.br' },
-  { nome: 'Fernanda Luz Oliveira', entidade: 'Conselho Regional de Odontologia', segmento: 'Trabalhador', contato: '(89) 99999-0006' },
-];
 
 // ---------------------------------------------------------------------------
 // Empty State
@@ -133,37 +66,8 @@ function DeclaracaoInexistencia({
 // Tab 1: Atendimento e Fila de Espera
 // ---------------------------------------------------------------------------
 
-function AtendimentoFilaTab({ filters }: { filters: FilterValues }) {
+function AtendimentoFilaTab() {
   const [abaAtendimento, setAbaAtendimento] = useState<'servicos' | 'unidades' | 'fila'>('servicos');
-
-  const servicosFiltrados = useMemo(() => {
-    let list = [...SERVICOS_SAUDE];
-    if (filters.busca) {
-      const q = filters.busca.toLowerCase();
-      list = list.filter(s =>
-        s.unidade.toLowerCase().includes(q) ||
-        s.especialidade.toLowerCase().includes(q) ||
-        s.profissional.toLowerCase().includes(q)
-      );
-    }
-    return list;
-  }, [filters.busca]);
-
-  const filaFiltrada = useMemo(() => {
-    let list = [...FILA_ESPERA];
-    if (filters.busca) {
-      const q = filters.busca.toLowerCase();
-      list = list.filter(f =>
-        f.especialidade.toLowerCase().includes(q) ||
-        f.protocolo.toLowerCase().includes(q) ||
-        f.prioridade.toLowerCase().includes(q)
-      );
-    }
-    return list;
-  }, [filters.busca]);
-
-  const totalFila = FILA_ESPERA.length;
-  const tempoMedioGeral = Math.round(FILA_ESPERA.reduce((s, f) => s + f.tempo_medio_dias, 0) / FILA_ESPERA.length);
 
   return (
     <div>
@@ -192,31 +96,6 @@ function AtendimentoFilaTab({ filters }: { filters: FilterValues }) {
       {/* Sub-aba: Serviços */}
       {abaAtendimento === 'servicos' && (
         <div className="mt-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white border border-gray-100 rounded-xl p-4 text-center shadow-sm">
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Unidades</p>
-              <p className="text-2xl font-extrabold text-blue-700 tabular-nums mt-1">
-                {new Set(SERVICOS_SAUDE.map(s => s.unidade)).size}
-              </p>
-            </div>
-            <div className="bg-white border border-gray-100 rounded-xl p-4 text-center shadow-sm">
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Especialidades</p>
-              <p className="text-2xl font-extrabold text-emerald-700 tabular-nums mt-1">
-                {new Set(SERVICOS_SAUDE.map(s => s.especialidade)).size}
-              </p>
-            </div>
-            <div className="bg-white border border-gray-100 rounded-xl p-4 text-center shadow-sm">
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Profissionais</p>
-              <p className="text-2xl font-extrabold text-purple-700 tabular-nums mt-1">
-                {new Set(SERVICOS_SAUDE.map(s => s.profissional)).size}
-              </p>
-            </div>
-            <div className="bg-white border border-gray-100 rounded-xl p-4 text-center shadow-sm">
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Atendimento</p>
-              <p className="text-2xl font-extrabold text-amber-700 tabular-nums mt-1">Seg-Sex</p>
-            </div>
-          </div>
-
             <div className="mb-6 bg-blue-50 rounded-xl p-6 border border-blue-100 shadow-sm text-center">
               <FileText size={48} className="mx-auto text-blue-500 mb-4" />
               <h3 className="text-xl font-bold text-blue-900 mb-2">Escala da Equipe Médica</h3>
@@ -233,26 +112,6 @@ function AtendimentoFilaTab({ filters }: { filters: FilterValues }) {
                 Baixar Escala da Equipe Médica
               </a>
             </div>
-
-          <DataTable
-            columns={[
-              { header: 'Unidade', accessor: 'unidade', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
-              { header: 'Especialidade', accessor: 'especialidade' },
-              { header: 'Profissional', accessor: 'profissional' },
-              { header: 'Horário', accessor: 'horario', render: (v: string) => <span className="font-mono text-xs">{v}</span> },
-              { header: 'Tipo', accessor: 'tipo', render: (v: string) => (
-                <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-                  v === 'Atenção Básica' ? 'bg-emerald-100 text-emerald-800' : 'bg-purple-100 text-purple-800'
-                }`}>{v}</span>
-              )},
-            ]}
-            data={servicosFiltrados}
-            title="Serviços e Escalas de Profissionais"
-            caption="Relação dos profissionais de saúde, especialidades ofertadas, locais de atendimento e horários de funcionamento da rede municipal de saúde."
-            exportable
-            paginationResetKey={filters.busca || 's'}
-            hasActiveFilters={!!filters.busca}
-          />
         </div>
       )}
 
@@ -309,34 +168,8 @@ function AtendimentoFilaTab({ filters }: { filters: FilterValues }) {
 // Tab 2: Medicamentos e Farmácias
 // ---------------------------------------------------------------------------
 
-function MedicamentosFarmaciasTab({ filters }: { filters: FilterValues }) {
+function MedicamentosFarmaciasTab() {
   const [abaMedicamento, setAbaMedicamento] = useState<'remume' | 'estoque'>('remume');
-
-  const remumeFiltrados = useMemo(() => {
-    let list = [...REMUME];
-    if (filters.busca) {
-      const q = filters.busca.toLowerCase();
-      list = list.filter(r =>
-        r.medicamento.toLowerCase().includes(q) ||
-        r.principio_ativo.toLowerCase().includes(q)
-      );
-    }
-    return list;
-  }, [filters.busca]);
-
-  const estoqueFiltrado = useMemo(() => {
-    let list = [...ESTOQUE_FARMACIA];
-    if (filters.busca) {
-      const q = filters.busca.toLowerCase();
-      list = list.filter(e =>
-        e.medicamento.toLowerCase().includes(q) ||
-        e.farmacia.toLowerCase().includes(q)
-      );
-    }
-    return list;
-  }, [filters.busca]);
-
-  const totalEstoque = ESTOQUE_FARMACIA.reduce((s, e) => s + e.quantidade, 0);
 
   return (
     <div>
@@ -401,23 +234,6 @@ function MedicamentosFarmaciasTab({ filters }: { filters: FilterValues }) {
             </div>
           </div>
 
-          <DataTable
-            columns={[
-              { header: 'Medicamento', accessor: 'medicamento', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
-              { header: 'Princípio Ativo', accessor: 'principio_ativo' },
-              { header: 'Forma Farmacêutica', accessor: 'forma' },
-              { header: 'Concentração', accessor: 'concentracao' },
-              { header: 'Via de Administração', accessor: 'via', render: (v: string) => (
-                <span className="inline-block px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 text-[11px] font-semibold">{v}</span>
-              )},
-            ]}
-            data={remumeFiltrados}
-            title="Lista de Medicamentos Fornecidos (Baseada na RENAME)"
-            caption="Lista de medicamentos essenciais disponíveis na rede pública municipal de saúde, sujeita a alterações conforme aprovação da REMUME na Câmara."
-            exportable
-            paginationResetKey={filters.busca || 'r'}
-            hasActiveFilters={!!filters.busca}
-          />
         </div>
       )}
 
@@ -588,8 +404,8 @@ export default function SaudePage() {
       </div>
 
       {/* Conteúdo das abas */}
-      {activeTab === 'atendimento' && <AtendimentoFilaTab filters={filters} />}
-      {activeTab === 'medicamentos' && <MedicamentosFarmaciasTab filters={filters} />}
+      {activeTab === 'atendimento' && <AtendimentoFilaTab />}
+      {activeTab === 'medicamentos' && <MedicamentosFarmaciasTab />}
       {activeTab === 'planejamento' && <PlanejamentoTab />}
 
       {/* Nota Legal */}

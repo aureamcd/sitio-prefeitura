@@ -52,19 +52,13 @@ export default function ConselhoAssistenciaPage() {
         <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
           <Users size={20} className="text-blue-700" /> Composição do Conselho
         </h2>
-        <DataTable
-          columns={[
-            { header: 'Nome do Conselheiro', accessor: 'nome', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
-            { header: 'Entidade / Segmento Representado', accessor: 'entidade' },
-          ]}
-          data={[
-            { nome: 'Exemplo: Carlos Eduardo', entidade: 'Representante Governamental' },
-            { nome: 'Exemplo: Maria do Socorro', entidade: 'Representante dos Usuários do SUAS' },
-          ]}
-          title="Membros do Conselho"
-          caption="Lista nominal dos membros titulares e suplentes do Conselho Municipal de Assistência Social (CMAS) e suas respectivas representações."
-          exportable={true}
-        />
+        <div className="bg-blue-50 border border-blue-200 text-blue-800 rounded-xl p-6 text-center shadow-sm">
+          <Users size={40} className="mx-auto text-blue-500 mb-3" />
+          <h3 className="text-lg font-bold mb-1">Membros do Conselho</h3>
+          <p className="text-sm opacity-90 max-w-md mx-auto">
+            A lista nominal dos membros titulares e suplentes do Conselho Municipal de Assistência Social (CMAS) encontra-se em atualização e será publicada em breve.
+          </p>
+        </div>
       </div>
 
       {/* 3. Documentos e Reuniões */}
@@ -79,25 +73,8 @@ export default function ConselhoAssistenciaPage() {
             <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
               <h3 className="text-sm font-bold text-gray-800">Atas das reuniões realizadas</h3>
             </div>
-            <div className="p-0">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="bg-gray-50/50 border-b border-gray-100 text-gray-500">
-                    <th className="py-2.5 px-4 font-semibold text-xs">Documento</th>
-                    <th className="py-2.5 px-4 font-semibold text-xs w-24 text-right">Arquivo</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="py-3 px-4 font-medium text-gray-800">Ata da 1ª Reunião Ordinária - 2026</td>
-                    <td className="py-3 px-4 text-right">
-                      <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
-                        <ExternalLink size={14} /> Baixar
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="p-8 text-center text-gray-500">
+              <p className="text-sm font-medium">Nenhuma ata publicada no período atual.</p>
             </div>
           </div>
 
@@ -106,33 +83,8 @@ export default function ConselhoAssistenciaPage() {
             <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
               <h3 className="text-sm font-bold text-gray-800">Relatórios e Pareceres emitidos</h3>
             </div>
-            <div className="p-0">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="bg-gray-50/50 border-b border-gray-100 text-gray-500">
-                    <th className="py-2.5 px-4 font-semibold text-xs">Documento</th>
-                    <th className="py-2.5 px-4 font-semibold text-xs w-24 text-right">Arquivo</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="py-3 px-4 font-medium text-gray-800">Parecer sobre o Plano de Ação da Assistência Social 2026</td>
-                    <td className="py-3 px-4 text-right">
-                      <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
-                        <ExternalLink size={14} /> Baixar
-                      </button>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="py-3 px-4 font-medium text-gray-800">Resolução nº 001/2026</td>
-                    <td className="py-3 px-4 text-right">
-                      <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
-                        <ExternalLink size={14} /> Baixar
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="p-8 text-center text-gray-500">
+              <p className="text-sm font-medium">Nenhum relatório ou parecer publicado no período atual.</p>
             </div>
           </div>
         </div>

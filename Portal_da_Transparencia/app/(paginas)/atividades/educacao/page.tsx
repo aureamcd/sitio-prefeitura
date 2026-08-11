@@ -20,23 +20,15 @@ import {
 const MESES = [
   { value: '01', label: 'Janeiro' }, { value: '02', label: 'Fevereiro' },
   { value: '03', label: 'Mar�o' },   { value: '04', label: 'Abril' },
+  { value: '03', label: 'Março' },   { value: '04', label: 'Abril' },
   { value: '05', label: 'Maio' },    { value: '06', label: 'Junho' },
   { value: '07', label: 'Julho' },   { value: '08', label: 'Agosto' },
   { value: '09', label: 'Setembro' },{ value: '10', label: 'Outubro' },
   { value: '11', label: 'Novembro' },{ value: '12', label: 'Dezembro' },
 ];
 
-const QUANTIDADE_VAGAS_CRECHE = [
-  { creche: 'Creche Municipal Tio Zezito', bairro: 'Centro', vagas_ofertadas: 150, vagas_ocupadas: 140, vagas_disponiveis: 10 },
-  { creche: 'Creche Municipal Ideal', bairro: 'S�o Francisco', vagas_ofertadas: 100, vagas_ocupadas: 100, vagas_disponiveis: 0 },
-];
-
-const ESCOLAS_MUNICIPAIS = [
-  { nome: 'Escola Municipal Francisco', endereco: 'Rua Principal', niveis: 'Ensino Fundamental I', horario: '07h as 17h', telefone: 'N�o possui' },
-];
-
 const PLANEJAMENTO_EDUCACAO = [
-  { documento: 'Plano Municipal de Educa��o 2025-2035', tipo: 'Plano', ano: '2025-2035', situacao: 'Vigente', arquivo: '/documentos/educacao/pme.pdf' },
+  { documento: 'Plano Municipal de Educação 2025-2035', tipo: 'Plano', ano: '2025-2035', situacao: 'Vigente', arquivo: '/documentos/educacao/pme.pdf' },
 ];
 
 function DeclaracaoInexistencia({ titulo, descricao, icon: Icon }: { titulo: string; descricao: string; icon: React.ElementType; }) {
@@ -57,26 +49,10 @@ function VagasCrechesTab() {
   return (
     <div>
       <DeclaracaoInexistencia 
-        titulo="Inexist�ncia de Fila de Espera" 
-        descricao="Informamos que o munic�pio n�o possui fila de espera para vagas em creches no momento, pois a oferta atual supre a demanda. Abaixo est� o quantitativo atualizado de vagas ofertadas e ocupadas." 
+        titulo="Inexistência de Fila de Espera" 
+        descricao="Informamos que o município não possui fila de espera para vagas em creches no momento, pois a oferta atual supre a demanda e não há demanda reprimida." 
         icon={AlertCircle} 
       />
-      <div className="mt-8">
-        <DataTable
-          columns={[
-            { header: 'Creche', accessor: 'creche', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
-            { header: 'Bairro', accessor: 'bairro' },
-            { header: 'Vagas Ofertadas', accessor: 'vagas_ofertadas' },
-            { header: 'Vagas Ocupadas', accessor: 'vagas_ocupadas' },
-            { header: 'Vagas Dispon�veis', accessor: 'vagas_disponiveis', render: (v: number) => (
-              <span className={`font-semibold ${v > 0 ? 'text-emerald-600' : 'text-red-600'}`}>{v}</span>
-            ) },
-          ]}
-          data={QUANTIDADE_VAGAS_CRECHE}
-          title="Quantitativo de Vagas em Creches"
-          exportable
-        />
-      </div>
     </div>
   );
 }
