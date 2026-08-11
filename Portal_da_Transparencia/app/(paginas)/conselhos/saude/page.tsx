@@ -65,6 +65,54 @@ export default function ConselhoSaudePage() {
                 nome: 'Iana Mécia da Silva Ribeiro',
                 funcao: 'Presidente',
                 representacao: 'Representante do Governo Municipal'
+              },
+              {
+                id: '2',
+                nome: 'Gracirlene Perpétua de Carvalho',
+                funcao: 'Titular',
+                representacao: 'Sindicato dos Trabalhadores Rurais'
+              },
+              {
+                id: '3',
+                nome: 'Jovelando José de Carvalho',
+                funcao: 'Titular',
+                representacao: 'Igreja Católica'
+              },
+              {
+                id: '4',
+                nome: 'Jannaína Antônia de Alencar Castro',
+                funcao: 'Titular',
+                representacao: 'Igreja Evangélica'
+              },
+              {
+                id: '5',
+                nome: 'Kaelles Dias Santos',
+                funcao: 'Titular',
+                representacao: 'Associação dos Pequenos Produtores Rurais da Comunidade Malhadinha'
+              },
+              {
+                id: '6',
+                nome: 'Arrigo Jhordam de Carvalho',
+                funcao: 'Titular',
+                representacao: 'Secretaria de Administração (Governo Municipal)'
+              },
+              {
+                id: '7',
+                nome: 'Ozéias de Araújo Silva',
+                funcao: 'Titular',
+                representacao: 'Secretaria de Assistência Social (Governo Municipal)'
+              },
+              {
+                id: '8',
+                nome: 'Iana Mécia da Silva Ribeiro',
+                funcao: 'Titular',
+                representacao: 'Servidores de Saúde (Trabalhadores da Saúde)'
+              },
+              {
+                id: '9',
+                nome: 'Julieta Tereza de Carvalho Silva',
+                funcao: 'Titular',
+                representacao: 'Servidores de Saúde (Trabalhadores da Saúde)'
               }
             ]}
             emptyMessage="Lista de membros indisponível."
