@@ -52,13 +52,29 @@ export default function ConselhoAssistenciaPage() {
         <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
           <Users size={20} className="text-blue-700" /> Composição do Conselho
         </h2>
-        <div className="bg-blue-50 border border-blue-200 text-blue-800 rounded-xl p-6 text-center shadow-sm">
-          <Users size={40} className="mx-auto text-blue-500 mb-3" />
-          <h3 className="text-lg font-bold mb-1">Membros do Conselho</h3>
-          <p className="text-sm opacity-90 max-w-md mx-auto">
-            A lista nominal dos membros titulares e suplentes do Conselho Municipal de Assistência Social (CMAS) encontra-se em atualização e será publicada em breve.
-          </p>
-        </div>
+        <DataTable
+          columns={[
+            { header: 'Titular', accessor: 'titular', render: (v: string) => <span className="font-semibold text-sm">{v}</span> },
+            { header: 'Suplente', accessor: 'suplente' },
+            { header: 'Representação', accessor: 'representacao' },
+          ]}
+          data={[
+            { titular: 'Carla Lariza Ribeiro Carvalho', suplente: 'Débora Lima Barros', representacao: 'Sec. Municipal de Assistência Social' },
+            { titular: 'Thales Manoel da Silva', suplente: 'Virlândia Maria de Sousa', representacao: 'Sec. Municipal de Saúde' },
+            { titular: 'Eraldo Carvalho Gomes', suplente: 'Avelanjo Sebastião de Macedo', representacao: 'Sec. Municipal de Educação' },
+            { titular: 'Thuanny Mikaella Conceicao Silva', suplente: 'Mychell Umbelino Ribeiro', representacao: 'Sec. Municipal de Administração' },
+            { titular: 'Geneilza Ana de Oliveira Sousa', suplente: 'Francisco Everaldo dos Reis Junior', representacao: 'Sec. Municipal do Meio Ambiente' },
+            { titular: 'Arthur Ribeiro Modesto', suplente: 'Linnara Emily Benedito Moura', representacao: 'Sec. Municipal de Cultura' },
+            { titular: 'Maria do Perpetuo Socorro Sousa Alves', suplente: 'Clóvis Francisco de Morais', representacao: 'Trabalhadores do SUAS' },
+            { titular: 'Leonardo Homero de Carvalho', suplente: 'Carlos Eduardo de Sousa Leal', representacao: 'Trabalhadores do SUAS' },
+            { titular: 'Jarbas da Silva Sousa', suplente: 'Maria Laísia de Araújo', representacao: 'Trabalhadores do SUAS' },
+            { titular: 'Antônia Zenaide da Silva Carvalho', suplente: 'Bernadete da Conceição', representacao: 'Usuários dos Programas Sociais' },
+            { titular: 'Eva Ângela Ribeiro', suplente: 'Jéssica Michaele de Brito', representacao: 'Usuários dos Programas Sociais' },
+            { titular: 'Maria Carolina de Araújo Silva', suplente: 'Marcos Antônio de Carvalho Leal', representacao: 'Usuários dos Programas Sociais' },
+          ]}
+          title="Membros do CMAS (Portaria 269/2025)"
+          caption="Relação oficial dos conselheiros titulares e suplentes."
+        />
       </div>
 
       {/* 3. Documentos e Reuniões */}
@@ -73,8 +89,25 @@ export default function ConselhoAssistenciaPage() {
             <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
               <h3 className="text-sm font-bold text-gray-800">Atas das reuniões realizadas</h3>
             </div>
-            <div className="p-8 text-center text-gray-500">
-              <p className="text-sm font-medium">Nenhuma ata publicada no período atual.</p>
+            <div className="p-0">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="bg-gray-50/50 border-b border-gray-100 text-gray-500">
+                    <th className="py-2.5 px-4 font-semibold text-xs">Documento</th>
+                    <th className="py-2.5 px-4 font-semibold text-xs w-24 text-right">Arquivo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <td className="py-3 px-4 font-medium text-gray-800">Ata de Reunião de 21 de Janeiro e outras Reuniões Ordinárias CMAS</td>
+                    <td className="py-3 px-4 text-right">
+                      <a href="/documentos/assistencia/atas-cmas-2026.pdf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+                        <ExternalLink size={14} /> Baixar
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
