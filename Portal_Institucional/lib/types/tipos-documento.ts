@@ -11,8 +11,8 @@ export const TIPOS_PUBLICACAO = [
 ] as const;
 
 export const TIPOS_PRESTACAO_CONTAS = [
-  "RGF", "RREO", "BALANCO_GERAL", "RELATORIO_GESTAO", "PARECER_TCE", 
-  "PPA", "LDO", "LOA"
+  "RGF", "RREO", "BALANCO_GERAL", "RELATORIO_GESTAO", "PARECER_TCE", "JULGAMENTO_CAMARA",
+  "PPA", "LDO", "LOA", "PLANO_ESTRATEGICO"
 ] as const;
 
 export type CategoriaForm = "leis-normas" | "publicacoes-oficiais" | "prestacao-contas";

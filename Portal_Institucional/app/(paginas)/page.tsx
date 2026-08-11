@@ -85,7 +85,7 @@ const sections: SectionItem[] = [
       {
         title: "Portal do Servidor",
         description: "Acesso exclusivo para servidores municipais.",
-        href: "https://transparencia.padremarcos.pi.gov.br/transparencia/Servidores.aspx",
+        href: "https://transparencia.padremarcos.pi.gov.br/transparencia/recursos-humanos/servidores",
         Icon: IdCard,
       },
       {
@@ -125,7 +125,7 @@ const sections: SectionItem[] = [
       {
         title: "Licitações",
         description: "Acompanhe os processos licitatórios.",
-        href: "https://transparencia.padremarcos.pi.gov.br/transparencia/?AcessoIndividual=lnkLicitacoes",
+        href: "https://transparencia.padremarcos.pi.gov.br/S3-Compras_Cont_e_Conven/licitacoes",
         Icon: Gavel,
       },      
       {
@@ -139,7 +139,7 @@ const sections: SectionItem[] = [
       {
         title: "Concursos e Processo Seletivos",
         description: "Informações sobre concursos e seletivos.",
-        href: "https://transparencia.padremarcos.pi.gov.br/transparencia/?AcessoIndividual=LnkConcursos",
+        href: "https://transparencia.padremarcos.pi.gov.br/transparencia/concursos",
         Icon: Briefcase,
         variant: "highlight",
       },
@@ -169,7 +169,7 @@ const sections: SectionItem[] = [
       {
         title: "Contratos",
         description: "Íntegra dos contratos vigentes.",
-        href: "https://transparencia.padremarcos.pi.gov.br/transparencia/?AcessoIndividual=lnkContratos",
+        href: "https://transparencia.padremarcos.pi.gov.br/transparencia/contratos",
         Icon: Handshake,
         featured: true,
       },

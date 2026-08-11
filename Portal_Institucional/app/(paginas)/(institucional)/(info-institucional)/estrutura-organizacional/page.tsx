@@ -266,7 +266,7 @@ export default function EstruturaOrganizacionalPage() {
                 {/* Competências */}
                 <div className="text-left">
                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2.5">O que o Gabinete faz:</p>
-                  <ul className="space-y-2 text-xs text-gray-600 font-medium">
+                  <ul className="space-y-2 text-xs text-gray-600 font-medium list-none pl-0 m-0">
                     <li className="flex items-start gap-2.5">
                       <span>Assessoria e assistência direta ao Chefe do Executivo nas relações político-administrativas e sociais;</span>
                     </li>
@@ -355,7 +355,7 @@ export default function EstruturaOrganizacionalPage() {
                       <h4 className="text-xs font-black text-[#d97706] uppercase tracking-wider mb-3 flex items-center gap-2">
                         <ShieldCheck size={14} /> Competências e Atribuições
                       </h4>
-                      <ul className="space-y-2">
+                      <ul className="space-y-2 list-none pl-0 m-0">
                         {(controladoria?.competencias || []).map((item, i) => (
                           <li key={i} className="flex items-start gap-2 text-xs text-gray-600 leading-relaxed">
                             <span className="w-1 h-1 rounded-full bg-amber-400 mt-1.5 shrink-0" />
@@ -453,7 +453,7 @@ export default function EstruturaOrganizacionalPage() {
                       <h4 className="text-xs font-black text-purple-600 uppercase tracking-wider mb-3 flex items-center gap-2">
                         <Scale size={14} /> Competências e Atribuições
                       </h4>
-                      <ul className="space-y-2">
+                      <ul className="space-y-2 list-none pl-0 m-0">
                         {(procuradoria?.competencias || []).map((item, i) => (
                           <li key={i} className="flex items-start gap-2 text-xs text-gray-600 leading-relaxed">
                             <span className="w-1 h-1 rounded-full bg-purple-400 mt-1.5 shrink-0" />
@@ -626,7 +626,7 @@ export default function EstruturaOrganizacionalPage() {
                           Competências e Atribuições
                         </h4>
 
-                        <ul className="space-y-2">
+                        <ul className="space-y-2 list-none pl-0 m-0">
                           {sec.competencias.map((item, i) => (
                             <li
                               key={i}

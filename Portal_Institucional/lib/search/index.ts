@@ -94,7 +94,7 @@ const searchItems: SearchResult[] = [
   {
     title: "Concursos e Seleções",
     description: "Editais, resultados, lista de aprovados e nomeações de concursos e processos seletivos.",
-    href: "/transparencia/concursos",
+    href: "https://transparencia.padremarcos.pi.gov.br/transparencia/concursos",
     category: "Transparência",
     keywords: ["concurso", "processo seletivo", "edital", "aprovados", "nomeacao"],
   },

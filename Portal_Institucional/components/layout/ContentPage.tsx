@@ -34,7 +34,10 @@ type ContentPageProps = {
    HELPERS
 ========================= */
 function formatDate(dateStr: string): string {
-  const [year, month, day] = dateStr.split("-").map(Number);
+  if (!dateStr) return "";
+  const cleanDate = dateStr.split("T")[0];
+  const [year, month, day] = cleanDate.split("-").map(Number);
+  if (!year || !month || !day) return dateStr;
   const date = new Date(year, month - 1, day);
   return date.toLocaleDateString("pt-BR", {
     day: "numeric",

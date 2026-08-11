@@ -130,8 +130,8 @@ function AtendimentoFilaTab() {
               )},
             ]}
             data={[
-              { nome: 'Hospital Municipal de Padre Marcos', endereco: 'Conforme documento em anexo', horario: '24h', arquivo: '/documentos/saude/hospital-municipal-de-padre-marcos.pdf' },
-              { nome: 'Centro de Saúde', endereco: 'Conforme documento em anexo', horario: '07h às 17h (seg-sex)', arquivo: '/documentos/saude/ubs/cnpj-centro-de-saude.pdf' },
+              { nome: 'Hospital Municipal de Padre Marcos', endereco: 'Av. José de Moura Leal, nº 260, Centro', horario: '24h', arquivo: '/documentos/saude/hospital-municipal-de-padre-marcos.pdf' },
+              { nome: 'Centro de Saúde', endereco: 'Rua Petronio Portela, 25, Centro', horario: '07h às 17h (seg-sex)', arquivo: '/documentos/saude/ubs/cnpj-centro-de-saude.pdf' },
               { nome: 'UBS Riacho do Padre', endereco: 'Povoado Riacho do Padre, S/N', horario: '07h às 17h (seg-sex)', arquivo: '/documentos/saude/ubs/ps-riacho-do-padre.pdf' },
               { nome: 'UBS Canto Alegre', endereco: 'Povoado Canto Alegre, S/N', horario: '07h às 17h (seg-sex)', arquivo: '/documentos/saude/ubs/ps-canto-alegre.pdf' },
             ]}
