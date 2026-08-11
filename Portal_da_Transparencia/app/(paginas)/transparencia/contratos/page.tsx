@@ -5,9 +5,11 @@ import ContentPage from '@/components/layout/ContentPage';
 import FilterPanel, { FilterValues } from '@/components/ui/FilterPanel';
 import DataTable from '@/components/ui/DataTable';
 import { createBrowserClient, useAvailableYears } from '@/lib/supabase/client';
+import { useTodayDate } from '@/lib/hooks/useTodayDate';
 import { EMPRESAS } from '@/lib/empresas';
 import { FileText, FileSearch, Info, CalendarDays } from 'lucide-react';
 import DocumentListModal from '@/components/ui/DocumentListModal';
+import { formatDateBR } from '@/lib/utils/date';
 
 const MESES = [
   { value: '01', label: 'Janeiro' }, { value: '02', label: 'Fevereiro' },
@@ -23,18 +25,7 @@ function formatBRL(value: number): string {
 }
 
 function formatDate(dateStr: string | null): string {
-  if (!dateStr) return '-';
-  try {
-    // If already in DD/MM/YYYY format, return as-is
-    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return dateStr;
-    // ISO format (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss)
-    const clean = dateStr.split('T')[0];
-    const [year, month, day] = clean.split('-').map(Number);
-    if (!year || !month || !day) return dateStr;
-    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
-  } catch {
-    return dateStr;
-  }
+  return formatDateBR(dateStr);
 }
 
 // Hook: busca contratos_v2 do banco
@@ -82,6 +73,7 @@ function useContratosData(filters: FilterValues) {
 }
 
 export default function ContratosPage() {
+  const today = useTodayDate();
   const [activeTab, setActiveTab] = useState<'contratos' | 'ordem_cronologica'>('contratos');
 
   const [filters, setFilters] = useState<FilterValues>({
@@ -282,8 +274,10 @@ export default function ContratosPage() {
       description="Contratos celebrados pela administração municipal, com base na Lei nº 14.133/2021."
       breadcrumb={[
         { label: 'Portal da Transparência', href: '/' },
+        { label: 'Compras, Contratos e Convênios', href: '/#secao-2' },
         { label: 'Contratos' },
       ]}
+      lastUpdate={today}
     >
       <FilterPanel
         anos={ANOS}

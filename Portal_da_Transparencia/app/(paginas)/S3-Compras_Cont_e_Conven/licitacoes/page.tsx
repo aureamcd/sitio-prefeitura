@@ -5,6 +5,7 @@ import ContentPage from '@/components/layout/ContentPage';
 import FilterPanel, { FilterValues } from '@/components/ui/FilterPanel';
 import DataTable from '@/components/ui/DataTable';
 import { createBrowserClient, useAvailableYears } from '@/lib/supabase/client';
+import { useTodayDate } from '@/lib/hooks/useTodayDate';
 import { EMPRESAS } from '@/lib/empresas';
 import {
   FileSearch,
@@ -20,6 +21,7 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import DocumentListModal from '@/components/ui/DocumentListModal';
+import { formatDateBR } from '@/lib/utils/date';
 
 const MESES = [
   { value: '01', label: 'Janeiro' }, { value: '02', label: 'Fevereiro' },
@@ -67,18 +69,7 @@ function formatBRL(value: number): string {
 }
 
 function formatDateISO(dateStr: string | null): string {
-  if (!dateStr) return '-';
-  try {
-    // If already in DD/MM/YYYY format, return as-is
-    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return dateStr;
-    // ISO format (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss)
-    const clean = dateStr.split('T')[0];
-    const [year, month, day] = clean.split('-').map(Number);
-    if (!year || !month || !day) return dateStr;
-    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
-  } catch {
-    return dateStr;
-  }
+  return formatDateBR(dateStr);
 }
 
 const SITUACAO_BADGE: Record<string, { label: string; className: string }> = {
@@ -243,6 +234,7 @@ function useLicitacoesData(filters: FilterValues & { modalidade?: string; situac
 }
 
 export default function LicitacoesPage() {
+  const today = useTodayDate();
   const [activeTab, setActiveTab] = useState<TabType>('licitacoes');
   const [pcaData, setPcaData] = useState<any[]>([]);
   const [sancionadosData, setSancionadosData] = useState<any[]>([]);
@@ -526,8 +518,10 @@ export default function LicitacoesPage() {
       description="Acompanhe os processos licitatórios, dispensas, inexigibilidades e atas de adesão a registros de preços."
       breadcrumb={[
         { label: 'Portal da Transparência', href: '/' },
+        { label: 'Compras, Contratos e Convênios', href: '/#secao-2' },
         { label: 'Licitações' },
       ]}
+      lastUpdate={today}
     >
       <FilterPanel
         anos={ANOS}

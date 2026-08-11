@@ -311,7 +311,7 @@ export default function TransferenciasPage() {
 
   const dbUpdateDate = useMemo(() => {
     if (!transferenciasData || transferenciasData.length === 0) return "";
-    return transferenciasData.reduce((max: string, r: any) => (r.data_transferencia && r.data_transferencia > max) ? r.data_transferencia : max, "");
+    return transferenciasData.reduce((max: string, r: any) => (r.data_lancamento && r.data_lancamento > max) ? r.data_lancamento : max, "");
   }, [transferenciasData]);
 
   return (
@@ -321,6 +321,7 @@ export default function TransferenciasPage() {
       description="Consulta interativa às receitas arrecadadas através de transferências da União (FPM, FUNDEB, SUS) e Estado (ICMS, IPVA), além do detalhamento completo de repasses e devoluções entre as próprias entidades municipais."
       breadcrumb={[
         { label: 'Portal da Transparência', href: '/' },
+        { label: 'Compras, Contratos e Convênios', href: '/#secao-2' },
         { label: 'Transferências' },
       ]}
       lastUpdate={dbUpdateDate || today}

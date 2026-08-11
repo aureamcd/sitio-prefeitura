@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { ChevronRight, ChevronDown, Download, Search, AlertCircle, ArrowRightLeft, FileSpreadsheet, FileText } from 'lucide-react';
 import { formatBRL } from '@/lib/receitas/types';
+import { formatDateBR } from '@/lib/utils/date';
 import Pagination from '@/components/ui/Pagination';
 import { usePagination } from '@/lib/hooks/usePagination';
 
@@ -368,7 +369,7 @@ function FragmentGroup({ group, isExpanded, onToggle }: FragmentGroupProps) {
                   <tbody className="divide-y divide-gray-200">
                     {group.filhos.map((filho, idx) => {
                       const dataFormatada = filho.data_lancamento
-                        ? filho.data_lancamento.split('-').reverse().join('/')
+                        ? formatDateBR(filho.data_lancamento, `Mês ${mesFormatado}`)
                         : `Mês ${mesFormatado}`;
 
                       return (

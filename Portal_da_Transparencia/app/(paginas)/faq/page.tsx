@@ -181,6 +181,7 @@ export default function FAQPage() {
       title="Perguntas Frequentes (FAQ)"
       breadcrumb={[
         { label: "Início", href: "/" },
+        { label: "Informações Institucionais", href: "/#secao-0" },
         { label: "FAQ" },
       ]}
       lastUpdate={today}

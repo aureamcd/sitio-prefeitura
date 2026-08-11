@@ -403,7 +403,7 @@ function EmpenhosTable({
                                       <p className="text-[10px] font-bold text-purple-700 uppercase tracking-wider">Licitação Originária</p>
                                       {termoBusca ? (
                                         <Link
-                                          href={`/#secao-2/licitacoes?busca=${encodeURIComponent(termoBusca)}&abrirDoc=true`}
+                                          href={`/S3-Compras_Cont_e_Conven/licitacoes?busca=${encodeURIComponent(termoBusca)}&abrirDoc=true`}
                                           className="text-sm font-bold text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center gap-1 leading-snug"
                                           title={`Abrir ${fullVal} em Licitações e visualizar anexos`}
                                         >
@@ -437,7 +437,7 @@ function EmpenhosTable({
                                   
                                   {numLic && (
                                     <Link
-                                      href={`/#secao-2/licitacoes?busca=${encodeURIComponent(numLic)}&abrirDoc=true`}
+                                      href={`/S3-Compras_Cont_e_Conven/licitacoes?busca=${encodeURIComponent(numLic)}&abrirDoc=true`}
                                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors shadow-2xs"
                                     >
                                       <Gavel size={13} />
@@ -457,7 +457,7 @@ function EmpenhosTable({
 
                                   {(row.credor_documento || row.credor_nome) && (
                                     <Link
-                                      href={`/#secao-2/licitacoes?busca=${encodeURIComponent(row.credor_documento || row.credor_nome || '')}`}
+                                      href={`/S3-Compras_Cont_e_Conven/licitacoes?busca=${encodeURIComponent(row.credor_documento || row.credor_nome || '')}`}
                                       className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-medium bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 transition-colors"
                                     >
                                       <ExternalLink size={13} className="text-gray-400" />
@@ -501,7 +501,7 @@ function DetailItem({ icon, label, value }: { icon?: React.ReactNode; label: str
   if (isLic && strVal !== '-' && strVal !== 'OUTRO NÃO APLICÁVEL' && strVal !== 'Não se Aplica') {
     const numMatch = strVal.match(/(\d{1,4}[\/\.\-_]\d{4}|\d{1,4}\/\d{2})/);
     const termo = numMatch ? numMatch[1] : strVal;
-    licUrl = `/#secao-2/licitacoes?busca=${encodeURIComponent(termo)}&abrirDoc=true`;
+    licUrl = `/S3-Compras_Cont_e_Conven/licitacoes?busca=${encodeURIComponent(termo)}&abrirDoc=true`;
   }
 
   return (

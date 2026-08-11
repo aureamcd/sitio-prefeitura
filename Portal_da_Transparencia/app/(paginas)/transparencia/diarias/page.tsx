@@ -498,6 +498,7 @@ export default function DiariasPage() {
       description="Consulte os pagamentos de diárias concedidas aos servidores municipais, incluindo beneficiário, valor, período, motivo e local de destino, além da tabela de padrão de valores praticados pelo município."
       breadcrumb={[
         { label: 'Portal da Transparência', href: '/' },
+        { label: 'Gestão de Pessoas e Benefícios', href: '/#secao-4' },
         { label: 'Diárias e Passagens' },
       ]}
       lastUpdate={today}

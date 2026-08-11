@@ -107,6 +107,7 @@ export default async function LeisNormasPage() {
             description="Consulte a legislação municipal, decretos, portarias e outros atos normativos."
             breadcrumb={[
                 { label: "Início", href: "/" },
+                { label: "Informações Institucionais", href: "/#secao-0" },
                 { label: "Leis e Normas" },
             ]}
             lastUpdate={latest?.updated_at ?? ""}

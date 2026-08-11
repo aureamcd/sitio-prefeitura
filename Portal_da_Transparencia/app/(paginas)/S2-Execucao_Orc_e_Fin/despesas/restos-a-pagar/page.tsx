@@ -204,7 +204,7 @@ export default function RestosPagarPage() {
       breadcrumb={[
         { label: 'Portal da Transparência', href: '/' },
         { label: 'Execução Orçamentária e Financeira', href: '/#secao-1' },
-        { label: 'Despesas', href: '/#secao-1/despesas' },
+        { label: 'Despesas', href: '/S2-Execucao_Orc_e_Fin/despesas' },
         { label: 'Restos a Pagar' },
       ]}
       lastUpdate={today}

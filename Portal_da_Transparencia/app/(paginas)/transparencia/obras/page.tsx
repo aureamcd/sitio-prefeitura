@@ -774,6 +774,7 @@ export default function ObrasPage() {
       description="Acompanhamento da execução física e financeira de obras e serviços de engenharia, incluindo a relação de obras paralisadas — em conformidade com a Lei nº 14.133/2021 e PNTP 2026."
       breadcrumb={[
         { label: 'Portal da Transparência', href: '/' },
+        { label: 'Obras e Infraestrutura', href: '/#secao-3' },
         { label: 'Obras Públicas' },
       ]}
     >

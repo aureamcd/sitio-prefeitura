@@ -10,6 +10,7 @@ import {
 
 import Breadcrumb from "../ui/Breadcrumb";
 import PageActions from "../ui/PageActions";
+import { formatDateLongBR, toISODateBR } from "@/lib/utils/date";
 
 /* =========================
    TIPOS
@@ -35,14 +36,7 @@ type ContentPageProps = {
    HELPERS
 ========================= */
 function formatDate(dateStr: string): string {
-  const cleanDate = dateStr.split("T")[0];
-  const [year, month, day] = cleanDate.split("-").map(Number);
-  const date = new Date(year, month - 1, day);
-  return date.toLocaleDateString("pt-BR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  return formatDateLongBR(dateStr, dateStr || "-");
 }
 
 /* =========================
@@ -169,7 +163,7 @@ export default function ContentPage({
                 {lastUpdate && (
                   <p className="text-xs text-gray-500">
                     <span className="font-medium text-gray-600">Última atualização:</span>{" "}
-                    <time dateTime={lastUpdate}>{formatDate(lastUpdate)}</time>
+                    <time dateTime={toISODateBR(lastUpdate)}>{formatDate(lastUpdate)}</time>
                   </p>
                 )}
                 {responsible && (

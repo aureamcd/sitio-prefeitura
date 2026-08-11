@@ -28,7 +28,7 @@ const MESES = [
 ];
 
 const PLANEJAMENTO_EDUCACAO = [
-  { documento: 'Plano Municipal de Educação 2025-2035', tipo: 'Plano', ano: '2025-2035', situacao: 'Vigente', arquivo: '/documentos/educacao/pme.pdf' },
+  { documento: 'Plano Municipal de Educação 2026-2036', tipo: 'Plano', ano: '2026-2036', situacao: 'Vigente', arquivo: '/documentos/educacao/pme.pdf' },
 ];
 
 function DeclaracaoInexistencia({ titulo, descricao, icon: Icon }: { titulo: string; descricao: string; icon: React.ElementType; }) {
@@ -96,7 +96,7 @@ export default function EducacaoPage() {
       description="Informações sobre Escolas, Creches, Merenda e Transporte Escolar do município – conforme Dimensão 19 do PNTP 2026."
       breadcrumb={[
         { label: 'Início', href: '/' },
-        { label: 'Atividades Finalísticas', href: '/#secao-0' },
+        { label: 'Serviços ao Cidadão', href: '/#secao-6' },
         { label: 'Educação' },
       ]}
       lastUpdate={getTodayDate()}
