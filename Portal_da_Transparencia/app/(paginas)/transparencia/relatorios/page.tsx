@@ -776,7 +776,7 @@ export default function RelatoriosPage() {
       description="Consulte as peças de planejamento orçamentário (PPA, LDO, LOA), relatórios fiscais da LRF (RGF, RREO), balanços anuais, prestação de contas e pareceres do Tribunal de Contas."
       breadcrumb={[
         { label: 'Portal da Transparência', href: '/' },
-        { label: 'Planejamento e Prestação de Contas' },
+        { label: 'Planejamento e Prestação de Contas', href: '/#secao-5' },
       ]}
       lastUpdate={today}
     >

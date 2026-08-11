@@ -96,7 +96,7 @@ export default function EducacaoPage() {
       description="Informações sobre Escolas, Creches, Merenda e Transporte Escolar do município – conforme Dimensão 19 do PNTP 2026."
       breadcrumb={[
         { label: 'Início', href: '/' },
-        { label: 'Atividades Finalísticas' },
+        { label: 'Atividades Finalísticas', href: '/#secao-0' },
         { label: 'Educação' },
       ]}
       lastUpdate={getTodayDate()}

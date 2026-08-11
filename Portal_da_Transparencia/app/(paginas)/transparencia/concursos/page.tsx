@@ -232,7 +232,7 @@ export default function ConcursosPage() {
       description="Acesse a relação completa de concursos públicos e processos seletivos simplificados, com editais, lista de aprovados e nomeações."
       breadcrumb={[
         { label: "Portal da Transparência", href: "/" },
-        { label: "Gestão de Pessoas" },
+        { label: 'Gestão de Pessoas', href: '/#secao-4' },
         { label: "Concursos e Seleções" },
       ]}
     >

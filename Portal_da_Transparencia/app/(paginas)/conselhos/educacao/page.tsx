@@ -12,7 +12,7 @@ export default function ConselhoEducacaoPage() {
       description="Acompanhamento e controle social da aplicação dos recursos da Educação Básica — Critério 19.3 do PNTP."
       breadcrumb={[
         { label: 'Início', href: '/' },
-        { label: 'Conselhos Municipais' },
+        { label: 'Conselhos Municipais', href: '/#secao-7' },
         { label: 'Conselho do FUNDEB' },
       ]}
       lastUpdate={getTodayDate()}

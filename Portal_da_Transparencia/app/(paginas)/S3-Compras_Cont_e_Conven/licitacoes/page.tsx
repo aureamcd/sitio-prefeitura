@@ -69,8 +69,13 @@ function formatBRL(value: number): string {
 function formatDateISO(dateStr: string | null): string {
   if (!dateStr) return '-';
   try {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+    // If already in DD/MM/YYYY format, return as-is
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return dateStr;
+    // ISO format (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss)
+    const clean = dateStr.split('T')[0];
+    const [year, month, day] = clean.split('-').map(Number);
+    if (!year || !month || !day) return dateStr;
+    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
   } catch {
     return dateStr;
   }

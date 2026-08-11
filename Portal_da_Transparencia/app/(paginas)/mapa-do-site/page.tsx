@@ -28,15 +28,15 @@ const sections: { title: string; icon?: string; links: SiteLink[] }[] = [
   {
     title: "Execução Orçamentária e Financeira",
     links: [
-      { href: "/S2-Execucao_Orc_e_Fin/receitas", label: "Receitas", description: "Previsão, arrecadação, classificação por natureza, dívida ativa e receitas extra-orçamentárias" },
-      { href: "/S2-Execucao_Orc_e_Fin/despesas", label: "Despesas", description: "Empenhos, liquidações, pagamentos, despesas extra-orçamentárias e restos a pagar" },
-      { href: "/S2-Execucao_Orc_e_Fin/renuncias-de-receitas", label: "Renúncias de Receita", description: "Desonerações tributárias, isenções fiscais e beneficiários" },
+      { href: "/#secao-1/receitas", label: "Receitas", description: "Previsão, arrecadação, classificação por natureza, dívida ativa e receitas extra-orçamentárias" },
+      { href: "/#secao-1/despesas", label: "Despesas", description: "Empenhos, liquidações, pagamentos, despesas extra-orçamentárias e restos a pagar" },
+      { href: "/#secao-1/renuncias-de-receitas", label: "Renúncias de Receita", description: "Desonerações tributárias, isenções fiscais e beneficiários" },
     ],
   },
   {
     title: "Compras, Contratos e Transferências",
     links: [
-      { href: "/S3-Compras_Cont_e_Conven/licitacoes", label: "Licitações", description: "Editais, atas, dispensas, inexigibilidades e licitantes sancionados" },
+      { href: "/#secao-2/licitacoes", label: "Licitações", description: "Editais, atas, dispensas, inexigibilidades e licitantes sancionados" },
       { href: "/transparencia/contratos", label: "Contratos", description: "Íntegra dos contratos vigentes, aditivos, fiscais e ordem cronológica de pagamentos" },
       { href: "/transparencia/transferencias", label: "Transferências e Convênios", description: "Consultas de Receitas da União, Receitas do Estado e transferências financeiras entre entidades municipais" },
     ],

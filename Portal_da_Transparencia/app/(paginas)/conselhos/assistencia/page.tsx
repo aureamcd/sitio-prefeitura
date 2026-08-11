@@ -12,7 +12,7 @@ export default function ConselhoAssistenciaPage() {
       description="Acompanhamento e controle social da Política Municipal de Assistência Social — Critério 19.4 do PNTP."
       breadcrumb={[
         { label: 'Início', href: '/' },
-        { label: 'Conselhos Municipais' },
+        { label: 'Conselhos Municipais', href: '/#secao-7' },
         { label: 'Conselho de Assistência Social' },
       ]}
       lastUpdate={getTodayDate()}

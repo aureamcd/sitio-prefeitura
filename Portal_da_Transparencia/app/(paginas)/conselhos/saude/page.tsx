@@ -12,7 +12,7 @@ export default function ConselhoSaudePage() {
       description="Acompanhamento e controle social das ações e serviços públicos de saúde — Critério 18.6 do PNTP."
       breadcrumb={[
         { label: 'Início', href: '/' },
-        { label: 'Conselhos Municipais' },
+        { label: 'Conselhos Municipais', href: '/#secao-7' },
         { label: 'Conselho de Saúde' },
       ]}
       lastUpdate={getTodayDate()}
@@ -52,12 +52,23 @@ export default function ConselhoSaudePage() {
         <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
           <Users size={20} className="text-blue-700" /> Composição do Conselho
         </h2>
-        <div className="bg-blue-50 border border-blue-200 text-blue-800 rounded-xl p-6 text-center shadow-sm">
-          <Users size={40} className="mx-auto text-blue-500 mb-3" />
-          <h3 className="text-lg font-bold mb-1">Membros do Conselho</h3>
-          <p className="text-sm opacity-90 max-w-md mx-auto">
-            A lista nominal dos membros titulares e suplentes do Conselho Municipal de Saúde (CMS) encontra-se em atualização e será publicada em breve.
-          </p>
+        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+          <DataTable
+            columns={[
+              { header: 'Nome', accessor: 'nome' },
+              { header: 'Função', accessor: 'funcao' },
+              { header: 'Representação/Segmento', accessor: 'representacao' }
+            ]}
+            data={[
+              {
+                id: '1',
+                nome: 'Iana Mécia da Silva Ribeiro',
+                funcao: 'Presidente',
+                representacao: 'Representante do Governo Municipal'
+              }
+            ]}
+            emptyMessage="Lista de membros indisponível."
+          />
         </div>
       </div>
 

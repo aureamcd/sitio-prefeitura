@@ -38,10 +38,10 @@ export default function DashboardResumo() {
         const { data: despData } = await supabase
           .schema('transparencia')
           .from('despesas')
-          .select('valor_pago')
+          .select('pago')
           .eq('ano', currentYear);
         
-        const totalDespesa = (despData || []).reduce((acc, curr) => acc + (Number(curr.valor_pago) || 0), 0);
+        const totalDespesa = (despData || []).reduce((acc, curr) => acc + (Number(curr.pago) || 0), 0);
 
         // 3. Servidores
         const { count: servCount } = await supabase

@@ -163,7 +163,7 @@ export default function DiariasPage() {
       description="Consulte os pagamentos de diárias e passagens concedidas aos servidores e autoridades para custear despesas de viagens a serviço do município."
       breadcrumb={[
         { label: "Portal da Transparência", href: "/" },
-        { label: "Recursos Humanos" },
+        { label: 'Recursos Humanos', href: '/#secao-4' },
         { label: "Diárias e Passagens" },
       ]}
       lastUpdate={today}

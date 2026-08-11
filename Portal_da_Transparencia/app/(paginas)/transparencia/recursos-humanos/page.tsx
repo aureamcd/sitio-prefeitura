@@ -637,8 +637,8 @@ export default function RecursosHumanosPage() {
       description="Consulte a relação nominal de servidores públicos, estagiários e terceirizados, detalhando cargos, lotação, carga horária e remuneração."
       breadcrumb={[
         { label: 'Portal da Transparência', href: '/' },
-        { label: 'Gestão de Pessoas' },
-        { label: 'Recursos Humanos' },
+        { label: 'Gestão de Pessoas', href: '/#secao-4' },
+        { label: 'Recursos Humanos', href: '/#secao-4' },
       ]}
       lastUpdate={today}
     >

@@ -162,7 +162,7 @@ export default function ServidoresPage() {
       description="Consulte a relação nominal de todos os servidores ativos, inativos and pensionistas, com seus respectivos cargos, lotações e detalhamento da remuneração."
       breadcrumb={[
         { label: "Portal da Transparência", href: "/" },
-        { label: "Recursos Humanos" },
+        { label: 'Recursos Humanos', href: '/#secao-4' },
         { label: "Servidores" },
       ]}
       lastUpdate={today}

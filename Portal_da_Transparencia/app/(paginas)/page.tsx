@@ -79,7 +79,7 @@ const sections: SectionItem[] = [
         title: "Receitas",
         description:
           "Previsão e arrecadação, classificação orçamentária por natureza e a lista de inscritos em Dívida Ativa do município.",
-        href: "/S2-Execucao_Orc_e_Fin/receitas",
+        href: "/#secao-1/receitas",
         Icon: Banknote,
         variant: "highlight",
       },
@@ -87,7 +87,7 @@ const sections: SectionItem[] = [
         title: "Despesas",
         description:
           "Total de despesas empenhadas, liquidadas e pagas, classificação orçamentária e possibilidade de consulta detalhada de pagamentos por credor e fornecedor.",
-        href: "/S2-Execucao_Orc_e_Fin/despesas",
+        href: "/#secao-1/despesas",
         Icon: Receipt,
         variant: "highlight",
       },
@@ -95,7 +95,7 @@ const sections: SectionItem[] = [
         title: "Renúncias de Receita",
         description:
           "Desonerações tributárias concedidas, fundamentação legal, beneficiários e isenções fiscais.",
-        href: "/S2-Execucao_Orc_e_Fin/renuncias-de-receitas",
+        href: "/#secao-1/renuncias-de-receitas",
         Icon: AlertTriangle,
       },
     ],
@@ -108,7 +108,7 @@ const sections: SectionItem[] = [
         title: "Licitações",
         description:
           "Editais, documentos das fases interna e externa, atas de adesão (SRP), dispensas e inexigibilidades, Plano de Contratações Anual e relação de Licitantes Sancionados.",
-        href: "/S3-Compras_Cont_e_Conven/licitacoes",
+        href: "/#secao-2/licitacoes",
         Icon: FileText,
         variant: "highlight",
       },

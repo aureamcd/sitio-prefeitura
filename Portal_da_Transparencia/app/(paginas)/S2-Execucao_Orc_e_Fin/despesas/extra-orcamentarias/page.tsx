@@ -211,8 +211,8 @@ export default function DespesasExtraPage() {
       description="Pagamentos que independem de autorização orçamentária — consignações, cauções, restituições e outros valores transitórios. Consulte por período, nomenclatura ou número de guia."
       breadcrumb={[
         { label: 'Portal da Transparência', href: '/' },
-        { label: 'Execução Orçamentária e Financeira', href: '/S2-Execucao_Orc_e_Fin' },
-        { label: 'Despesas', href: '/S2-Execucao_Orc_e_Fin/despesas' },
+        { label: 'Execução Orçamentária e Financeira', href: '/#secao-1' },
+        { label: 'Despesas', href: '/#secao-1/despesas' },
         { label: 'Despesas Extra-orçamentárias' },
       ]}
       lastUpdate={today}

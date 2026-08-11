@@ -203,8 +203,8 @@ export default function RestosPagarPage() {
       description="Despesas empenhadas em exercícios anteriores que ainda não foram pagas — consulte por período, código ou descrição, conforme PNTP 2026."
       breadcrumb={[
         { label: 'Portal da Transparência', href: '/' },
-        { label: 'Execução Orçamentária e Financeira', href: '/S2-Execucao_Orc_e_Fin' },
-        { label: 'Despesas', href: '/S2-Execucao_Orc_e_Fin/despesas' },
+        { label: 'Execução Orçamentária e Financeira', href: '/#secao-1' },
+        { label: 'Despesas', href: '/#secao-1/despesas' },
         { label: 'Restos a Pagar' },
       ]}
       lastUpdate={today}

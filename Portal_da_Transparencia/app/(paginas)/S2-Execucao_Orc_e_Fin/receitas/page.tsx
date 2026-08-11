@@ -691,7 +691,7 @@ export default function ReceitasPage() {
       description="Demonstrativo da execução orçamentária das receitas do município, com previsão, arrecadação e classificação hierárquica conforme PNTP 2026 / TCE-PI."
       breadcrumb={[
         { label: 'Portal da Transparência', href: '/' },
-        { label: 'Execução Orçamentária e Financeira', href: '/S2-Execucao_Orc_e_Fin' },
+        { label: 'Execução Orçamentária e Financeira', href: '/#secao-1' },
         { label: 'Receitas' },
       ]}
       lastUpdate={dbUpdateDate}

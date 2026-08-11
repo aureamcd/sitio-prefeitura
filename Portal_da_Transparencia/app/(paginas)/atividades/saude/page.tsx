@@ -390,7 +390,7 @@ export default function SaudePage() {
       description="Informações sobre as políticas públicas e ações da Secretaria Municipal de Saúde — conforme Dimensão 18 do PNTP 2026."
       breadcrumb={[
         { label: 'Início', href: '/' },
-        { label: 'Atividades Finalísticas' },
+        { label: 'Atividades Finalísticas', href: '/#secao-0' },
         { label: 'Saúde' },
       ]}
       lastUpdate={getTodayDate()}
