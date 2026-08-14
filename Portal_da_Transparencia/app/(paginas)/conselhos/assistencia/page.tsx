@@ -114,10 +114,67 @@ export default function ConselhoAssistenciaPage() {
           {/* Categoria 2: Relatórios e Pareceres */}
           <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
             <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
-              <h3 className="text-sm font-bold text-gray-800">Relatórios e Pareceres emitidos</h3>
+              <h3 className="text-sm font-bold text-gray-800">Relatórios e Pareceres emitidos pelo CMAS (2026)</h3>
             </div>
-            <div className="p-8 text-center text-gray-500">
-              <p className="text-sm font-medium">Nenhum relatório ou parecer publicado no período atual.</p>
+            <div className="p-0">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="bg-gray-50/50 border-b border-gray-100 text-gray-500">
+                    <th className="py-2.5 px-4 font-semibold text-xs">Documento / Mês de Referência</th>
+                    <th className="py-2.5 px-4 font-semibold text-xs w-24 text-right">Arquivo</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  <tr className="hover:bg-gray-50 transition-colors">
+                    <td className="py-3 px-4 font-medium text-gray-800">Parecer do Conselho Municipal de Assistência Social — Janeiro/2026</td>
+                    <td className="py-3 px-4 text-right">
+                      <a href="/documentos/conselhos/assistencia/parecer-cmas-janeiro-2026.pdf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+                        <ExternalLink size={14} /> Baixar
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 transition-colors">
+                    <td className="py-3 px-4 font-medium text-gray-800">Parecer do Conselho Municipal de Assistência Social — Fevereiro/2026</td>
+                    <td className="py-3 px-4 text-right">
+                      <a href="/documentos/conselhos/assistencia/parecer-cmas-fevereiro-2026.pdf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+                        <ExternalLink size={14} /> Baixar
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 transition-colors">
+                    <td className="py-3 px-4 font-medium text-gray-800">Parecer do Conselho Municipal de Assistência Social — Março/2026</td>
+                    <td className="py-3 px-4 text-right">
+                      <a href="/documentos/conselhos/assistencia/parecer-cmas-marco-2026.pdf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+                        <ExternalLink size={14} /> Baixar
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 transition-colors">
+                    <td className="py-3 px-4 font-medium text-gray-800">Parecer do Conselho Municipal de Assistência Social — Abril/2026</td>
+                    <td className="py-3 px-4 text-right">
+                      <a href="/documentos/conselhos/assistencia/parecer-cmas-abril-2026.pdf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+                        <ExternalLink size={14} /> Baixar
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 transition-colors">
+                    <td className="py-3 px-4 font-medium text-gray-800">Parecer do Conselho Municipal de Assistência Social — Maio/2026</td>
+                    <td className="py-3 px-4 text-right">
+                      <a href="/documentos/conselhos/assistencia/parecer-cmas-maio-2026.pdf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+                        <ExternalLink size={14} /> Baixar
+                      </a>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 transition-colors">
+                    <td className="py-3 px-4 font-medium text-gray-800">Parecer do Conselho Municipal de Assistência Social — Junho/2026</td>
+                    <td className="py-3 px-4 text-right">
+                      <a href="/documentos/conselhos/assistencia/parecer-cmas-junho-2026.pdf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+                        <ExternalLink size={14} /> Baixar
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
