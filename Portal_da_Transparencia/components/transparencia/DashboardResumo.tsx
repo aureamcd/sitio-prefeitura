@@ -25,14 +25,20 @@ export default function DashboardResumo() {
       const currentYear = new Date().getFullYear();
 
       try {
-        // 1. Receitas
+        // 1. Receitas (Apenas contas-raiz para evitar duplicar subníveis hierárquicos)
         const { data: recData } = await supabase
           .schema('transparencia')
           .from('receitas')
-          .select('arrecadado_total')
+          .select('arrecadado_total, codigo_contabil, nivel')
           .eq('ano', currentYear);
         
-        const totalReceita = (recData || []).reduce((acc, curr) => acc + (Number(curr.arrecadado_total) || 0), 0);
+        const totalReceita = (recData || []).reduce((s, r) => {
+          const isRoot = r.nivel === 1 || ['1000.00.0.0.00', '2000.00.0.0.00', '7000.00.0.0.00', '9000.00.0.0.00'].includes(r.codigo_contabil);
+          if (!isRoot) return s;
+          const isDeducao = r.codigo_contabil?.startsWith('9');
+          const v = Number(r.arrecadado_total) || 0;
+          return s + (isDeducao ? -Math.abs(v) : v);
+        }, 0);
 
         // 2. Despesas
         const { data: despData } = await supabase
