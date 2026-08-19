@@ -22,7 +22,6 @@ import {
   HardHat,
   HeartPulse,
   Vote,
-  ArrowRight,
 } from "lucide-react";
 
 import { LucideIcon } from "lucide-react";
@@ -202,38 +201,6 @@ export default function TransparenciaPage() {
 
       {/* ─── Hero ─── */}
       <DashboardResumo />
-
-      {/* ─── BANNER DE DESTAQUE: ORÇAMENTO PARTICIPATIVO 2027 ─── */}
-      <div className="max-w-7xl mx-auto px-5 sm:px-16 -mt-8 sm:-mt-12 mb-8 relative z-30">
-        <div className="bg-gradient-to-r from-blue-900 via-[#173572] to-blue-800 text-white rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-yellow-400/50 flex flex-col md:flex-row items-center justify-between gap-6 transition-all transform hover:scale-[1.005]">
-          
-          <div className="flex items-start sm:items-center gap-4">
-            <div className="bg-yellow-400 text-blue-950 p-3.5 sm:p-4 rounded-2xl shrink-0 shadow-lg font-black animate-pulse">
-              <Vote size={32} />
-            </div>
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-400/20 text-yellow-300 text-xs font-black uppercase tracking-wider mb-2 border border-yellow-400/30">
-                🚨 CONSULTA PÚBLICA ABERTA
-              </div>
-              <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">
-                ORÇAMENTO PARTICIPATIVO 2027
-              </h2>
-              <p className="text-blue-100 text-xs sm:text-sm font-medium mt-1 max-w-2xl leading-relaxed">
-                A Prefeitura de Padre Marcos convida você a opinar na elaboração da Lei Orçamentária Anual (LOA 2027). Indique as áreas prioritárias para o desenvolvimento da cidade!
-              </p>
-            </div>
-          </div>
-
-          <a
-            href="/orcamento-participativo-2027"
-            className="inline-flex items-center justify-center gap-2 bg-[#FFD84D] hover:bg-yellow-300 text-blue-950 font-extrabold py-3.5 px-7 rounded-2xl transition-all shadow-xl text-sm sm:text-base shrink-0 w-full md:w-auto hover:translate-x-1"
-          >
-            Participar Agora
-            <ArrowRight size={18} />
-          </a>
-
-        </div>
-      </div>
 
       {/* ─── Sections ─── */}
       {sections.map((section, index) => (
