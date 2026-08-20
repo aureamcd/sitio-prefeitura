@@ -144,7 +144,7 @@ const supabase = createClient(
 );
 
 const BASE =
-    "https://transparencia.padremarcos.pi.gov.br/Transparencia/VersaoJson/Pessoal/";
+    "https://contreina.padremarcos.pi.gov.br/transparencia/VersaoJson/Pessoal";
 
 const ANOS = [2023, 2024, 2025, 2026];
 
@@ -502,6 +502,11 @@ async function importarMes(
          */
 
         if (remuneracoes.length > 0) {
+            await supabase.schema("transparencia").from("remuneracoes")
+                .delete()
+                .eq("ano", ano)
+                .eq("mes", mes);
+
             const BATCH = 200;
             let ok = 0;
             for (let i = 0; i < remuneracoes.length; i += BATCH) {
@@ -509,10 +514,7 @@ async function importarMes(
                 const { error } = await supabase
                     .schema("transparencia")
                     .from("remuneracoes")
-                    .upsert(batch, {
-                        onConflict:
-                            "matricula,ano,mes,tipo",
-                    });
+                    .insert(batch);
 
                 if (error) {
                     console.error(
