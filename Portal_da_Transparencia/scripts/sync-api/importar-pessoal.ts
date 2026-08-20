@@ -409,9 +409,13 @@ async function importarMes(
                 carga_horaria,
 
                 ativo:
-                    !situacao
-                        ?.toUpperCase()
-                        ?.includes("INATIVO"),
+                    !data_desligamento &&
+                    !situacao?.toUpperCase()?.includes("INATIVO") &&
+                    !situacao?.toUpperCase()?.includes("DESLIGADO") &&
+                    !situacao?.toUpperCase()?.includes("DEMITIDO") &&
+                    !situacao?.toUpperCase()?.includes("EXONERADO") &&
+                    !situacao?.toUpperCase()?.includes("APOSENTADO") &&
+                    !situacao?.toUpperCase()?.includes("PENSIONISTA"),
 
                 raw_json: item,
             });

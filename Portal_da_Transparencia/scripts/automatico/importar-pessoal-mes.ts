@@ -246,7 +246,14 @@ async function importarMes(
                 data_admissao,
                 data_desligamento,
                 carga_horaria,
-                ativo: !situacao?.toUpperCase()?.includes("INATIVO"),
+                ativo:
+                    !data_desligamento &&
+                    !situacao?.toUpperCase()?.includes("INATIVO") &&
+                    !situacao?.toUpperCase()?.includes("DESLIGADO") &&
+                    !situacao?.toUpperCase()?.includes("DEMITIDO") &&
+                    !situacao?.toUpperCase()?.includes("EXONERADO") &&
+                    !situacao?.toUpperCase()?.includes("APOSENTADO") &&
+                    !situacao?.toUpperCase()?.includes("PENSIONISTA"),
                 raw_json: item,
             });
 
