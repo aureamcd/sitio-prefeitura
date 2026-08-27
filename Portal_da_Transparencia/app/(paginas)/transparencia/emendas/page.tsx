@@ -396,7 +396,7 @@ export default function EmendasPage() {
     }
   ];
 
-  const { anos: ANOS } = useAvailableYears('emendas_impositivas');
+  const { anos: ANOS } = useAvailableYears('cadastro_emendas');
 
   return (
     <ContentPage
