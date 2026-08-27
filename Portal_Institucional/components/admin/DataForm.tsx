@@ -52,6 +52,11 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
       config.formFields.forEach((field) => {
         data[field.key] = initialData[field.key] ?? (field.type === "number" ? 0 : "");
       });
+      // Garantir suporte a tipo/modalidade e valor_repassado em cadastro_emendas
+      if (config.slug === "emendas" || config.table === "cadastro_emendas") {
+        data.tipo = initialData.tipo ?? initialData?.raw_json?.modalidade ?? initialData?.raw_json?.tipo ?? "";
+        data.valor_repassado = initialData.valor_repassado ?? initialData?.raw_json?.valor_repassado ?? 0;
+      }
       // Garantir campos do PDF também na edição
       data.arquivo_r2_url = initialData?.arquivo_r2_url || initialData?.pdf_url || initialData?.url_arquivo || "";
       data.arquivo_nome = initialData?.arquivo_nome || "";
@@ -164,6 +169,24 @@ export default function DataForm({ slug: slugProp, mode, initialData }: Props) {
       if (config.slug === "emendas" || config.table === "cadastro_emendas") {
         payload.pdf_url = form.arquivo_r2_url;
       }
+    }
+
+    // ── Ajustes específicos para cadastro_emendas (evita erro PGRST204 de colunas inexistentes) ──
+    if (config.slug === "emendas" || config.table === "cadastro_emendas") {
+      const currentRaw = initialData?.raw_json || {};
+      payload.raw_json = {
+        ...currentRaw,
+        modalidade: payload.tipo || currentRaw.modalidade || currentRaw.tipo || "",
+        tipo: payload.tipo || currentRaw.tipo || "",
+        valor_repassado: payload.valor_repassado ?? currentRaw.valor_repassado ?? 0,
+      };
+      if (payload.arquivo_r2_url || form.arquivo_r2_url) {
+        payload.pdf_url = payload.arquivo_r2_url || form.arquivo_r2_url;
+      }
+      delete payload.tipo;
+      delete payload.valor_repassado;
+      delete payload.arquivo_r2_url;
+      delete payload.arquivo_nome;
     }
 
     // ── Verificação de duplicata (apenas licitações) ──
