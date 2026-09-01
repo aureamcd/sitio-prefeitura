@@ -22,6 +22,7 @@ import {
   HardHat,
   HeartPulse,
   Vote,
+  DollarSign,
 } from "lucide-react";
 
 import { LucideIcon } from "lucide-react";
@@ -119,6 +120,22 @@ const sections: SectionItem[] = [
         description: "Acompanhe as receitas e despesas do município.",
         href: "https://transparencia.padremarcos.pi.gov.br/",
         Icon: Eye,
+        variant: "highlight",
+        featured: true,
+      },
+      {
+        title: "Receitas Municipais",
+        description: "Consulte a arrecadação e receitas do município.",
+        href: "https://transparencia.padremarcos.pi.gov.br/S2-Execucao_Orc_e_Fin/receitas",
+        Icon: DollarSign,
+        variant: "highlight",
+        featured: true,
+      },
+      {
+        title: "Despesas Municipais",
+        description: "Acompanhe a execução dos gastos e despesas.",
+        href: "https://transparencia.padremarcos.pi.gov.br/S2-Execucao_Orc_e_Fin/despesas",
+        Icon: Receipt,
         variant: "highlight",
         featured: true,
       },

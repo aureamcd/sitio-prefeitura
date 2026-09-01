@@ -42,7 +42,7 @@ export default function TransparencyFooter(): JSX.Element {
       className="bg-[#173572] text-white"
     >
       <h2 id="footer-title" className="sr-only">
-        Rodapé institucional do Sitio Oficial da Prefeitura de Padre Marcos e do Portal da Transparência
+        Rodapé institucional do Sítio Oficial da Prefeitura de Padre Marcos e do Portal da Transparência
       </h2>
 
       {/* Faixa Brasil */}
@@ -64,7 +64,8 @@ export default function TransparencyFooter(): JSX.Element {
               width={70}
               height={70}
               className="w-[70px] h-[70px] object-contain shrink-0 
-    [filter:drop-shadow(1.5px_0_0_white)_drop-shadow(-1.5px_0_0_white)_drop-shadow(0_1.5px_0_white)_drop-shadow(0_-1.5px_0_white)]"            />
+    [filter:drop-shadow(1.5px_0_0_white)_drop-shadow(-1.5px_0_0_white)_drop-shadow(0_1.5px_0_white)_drop-shadow(0_-1.5px_0_white)]"
+            />
             <h3 className="font-bold text-[#FFE066] text-sm uppercase tracking-wider leading-tight">
               Prefeitura Municipal de<br />Padre Marcos
             </h3>
@@ -129,19 +130,19 @@ export default function TransparencyFooter(): JSX.Element {
           <ul className={linkListClass}>
             {[
               { href: "https://transparencia.padremarcos.pi.gov.br/", label: "Portal", icon: TrendingUp },
-              { href: "/receitas", label: "Receitas", icon: DollarSign },
-              { href: "/despesas", label: "Despesas", icon: DollarSign },
+              { href: "https://transparencia.padremarcos.pi.gov.br/S2-Execucao_Orc_e_Fin/receitas", label: "Receitas", icon: DollarSign },
+              { href: "https://transparencia.padremarcos.pi.gov.br/S2-Execucao_Orc_e_Fin/despesas", label: "Despesas", icon: DollarSign },
               { href: "https://transparencia.padremarcos.pi.gov.br/S3-Compras_Cont_e_Conven/licitacoes", label: "Licitações e Contratos", icon: Gavel },
-              { href: "/rh", label: "Recursos Humanos", icon: Users },
-              { href: "/relatorios", label: "Relatórios e Contas", icon: FileBarChart },
-              { href: "/obras", label: "Obras", icon: HardHat },
-              { href: "/convenios", label: "Convênios", icon: Handshake },
+              { href: "https://transparencia.padremarcos.pi.gov.br/transparencia/recursos-humanos/servidores", label: "Recursos Humanos", icon: Users },
+              { href: "https://transparencia.padremarcos.pi.gov.br/transparencia/relatorios", label: "Relatórios e Contas", icon: FileBarChart },
+              { href: "https://transparencia.padremarcos.pi.gov.br/transparencia/obras", label: "Obras", icon: HardHat },
+              { href: "https://transparencia.padremarcos.pi.gov.br/transparencia/transferencias", label: "Convênios", icon: Handshake },
             ].map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="flex items-center gap-2 hover:text-white hover:pl-1 transition-all">
+                <a href={item.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white hover:pl-1 transition-all">
                   <item.icon size={14} className="text-white/60" />
                   {item.label}
-                </Link>
+                </a>
               </li>
             ))}
           </ul>
@@ -219,7 +220,6 @@ export default function TransparencyFooter(): JSX.Element {
               rel="noopener noreferrer"
               aria-label="Acessar Radar da Transparência Pública"
             >
-
               <Image
                 src="/LOGO RADAR.png"
                 alt="Logo do Radar da Transparência Pública"
